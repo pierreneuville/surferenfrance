@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Compass, Sparkles, Waves, Wind, ExternalLink, MapPin, Share2, Check } from "lucide-react";
+import { Compass, Sparkles, Waves, Wind, ExternalLink, MapPin, Share2, Check, Heart } from "lucide-react";
 import Link from "next/link";
 import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
@@ -24,10 +24,12 @@ interface Props {
   dayIdx: number;
   level: Level;
   distanceKm?: number;
+  isFavorite?: boolean;
   onClick: () => void;
+  onToggleFavorite?: () => void;
 }
 
-export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props) {
+export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onClick, onToggleFavorite }: Props) {
   const d = forecast.days[dayIdx];
   const score = d.scoresByLevel?.[level] ?? d.score;
   const bestWindow = d.bestWindowByLevel?.[level]
@@ -66,6 +68,25 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props
     >
       {/* Region accent strip */}
       <div className={`h-1 bg-gradient-to-r ${gradient}`} />
+
+      {/* Favorite heart — top-right corner */}
+      {onToggleFavorite && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            onToggleFavorite();
+          }}
+          className="tap-target absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-black/30 backdrop-blur transition hover:scale-110 hover:bg-black/50 active:scale-90"
+          aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+        >
+          <Heart
+            className={`h-4 w-4 transition ${
+              isFavorite ? "fill-coral-400 text-coral-400" : "text-white/60 hover:text-white"
+            }`}
+          />
+        </button>
+      )}
 
       {/* Glow follows hover */}
       <div className={`pointer-events-none absolute -top-12 right-0 h-48 w-48 rounded-full bg-gradient-to-br ${gradient} opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20`} />

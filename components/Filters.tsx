@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Search, Target, X } from "lucide-react";
+import { Heart, MapPin, Search, Target, X } from "lucide-react";
 import type { Level } from "@/lib/types";
 import { REGIONS, REGION_EMOJI } from "@/lib/spots";
 import { dayShortLabel, dayDateNumber, dayIsWeekend } from "@/lib/utils";
@@ -15,12 +15,15 @@ interface FiltersProps {
   search: string;
   nearMe: boolean;
   hasGeo: boolean;
+  favoritesOnly: boolean;
+  favoritesCount: number;
   onDayChange: (d: number) => void;
   onRegionChange: (r: string) => void;
   onLevelChange: (l: Level) => void;
   onSortChange: (s: SortKey) => void;
   onSearchChange: (q: string) => void;
   onNearMeToggle: () => void;
+  onFavoritesToggle: () => void;
 }
 
 const LEVELS: { value: Level; label: string; emoji: string }[] = [
@@ -32,7 +35,8 @@ const LEVELS: { value: Level; label: string; emoji: string }[] = [
 export function Filters(props: FiltersProps) {
   const {
     dayIdx, region, level, sort, search, nearMe, hasGeo,
-    onDayChange, onRegionChange, onLevelChange, onSortChange, onSearchChange, onNearMeToggle,
+    favoritesOnly, favoritesCount,
+    onDayChange, onRegionChange, onLevelChange, onSortChange, onSearchChange, onNearMeToggle, onFavoritesToggle,
   } = props;
 
   return (
@@ -68,10 +72,24 @@ export function Filters(props: FiltersProps) {
 
         {/* Region chips — bigger touch targets, emoji vivid */}
         <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
+          {favoritesCount > 0 && (
+            <button
+              onClick={onFavoritesToggle}
+              className={`tap-target shrink-0 inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
+                favoritesOnly
+                  ? "border-coral-400 bg-coral-500/25 text-coral-100 shadow-md shadow-coral-500/20"
+                  : "border-coral-500/20 bg-coral-500/10 text-coral-200 hover:border-coral-400/40 hover:bg-coral-500/15"
+              }`}
+            >
+              <Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-coral-300" : "fill-coral-400"}`} />
+              Mes favoris
+              <span className="rounded-full bg-black/30 px-1.5 text-[10px] font-bold">{favoritesCount}</span>
+            </button>
+          )}
           <button
             onClick={() => onRegionChange("all")}
             className={`tap-target shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
-              region === "all"
+              region === "all" && !favoritesOnly
                 ? "border-ocean-400 bg-ocean-500/25 text-white shadow-md shadow-ocean-500/20"
                 : "border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10"
             }`}

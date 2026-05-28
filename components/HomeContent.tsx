@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Filters, SortKey } from "./Filters";
 import { QuickActions } from "./QuickActions";
+import { HotToday } from "./HotToday";
+import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
 import { SpotCard } from "./SpotCard";
 import { SpotModal } from "./SpotModal";
 import { AdSlot } from "./AdSlot";
@@ -41,8 +43,17 @@ export function HomeContent() {
   const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
   const [nearMe, setNearMe] = useState(false);
   const [hasGeo, setHasGeo] = useState(false);
+  const [favorites, setFavoritesState] = useState<string[]>([]);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
 
   useEffect(() => { setHasGeo(typeof navigator !== "undefined" && !!navigator.geolocation); }, []);
+
+  // Sync favorites from localStorage + listen to changes
+  useEffect(() => {
+    setFavoritesState(getFavorites());
+    const unsub = subscribeFavorites(() => setFavoritesState(getFavorites()));
+    return unsub;
+  }, []);
 
   useEffect(() => {
     try {
@@ -91,6 +102,8 @@ export function HomeContent() {
     );
   };
 
+  const favoritesSet = useMemo(() => new Set(favorites), [favorites]);
+
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return forecasts
@@ -101,7 +114,8 @@ export function HomeContent() {
         return { f, distanceKm };
       })
       .filter(({ f, distanceKm }) => {
-        if (prefs.region !== "all" && f.spot.region !== prefs.region) return false;
+        if (favoritesOnly && !favoritesSet.has(f.spot.slug)) return false;
+        if (!favoritesOnly && prefs.region !== "all" && f.spot.region !== prefs.region) return false;
         if (q && !f.spot.name.toLowerCase().includes(q) && !f.spot.shortName.toLowerCase().includes(q)) return false;
         if (nearMe && distanceKm != null && distanceKm > 200) return false;
         return true;
@@ -114,12 +128,30 @@ export function HomeContent() {
         const sb = b.f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? b.f.days[prefs.dayIdx]?.score ?? 0;
         return sb - sa;
       });
-  }, [forecasts, prefs, search, nearMe, userPos]);
+  }, [forecasts, prefs, search, nearMe, userPos, favoritesOnly, favoritesSet]);
+
+  // Hook: "X de tes favoris en feu" — return reason for users with favorites
+  const favsInFire = useMemo(() => {
+    if (!favorites.length || !forecasts.length) return 0;
+    return forecasts.filter(
+      (f) => favoritesSet.has(f.spot.slug) && (f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? f.days[prefs.dayIdx]?.score ?? 0) >= 70
+    ).length;
+  }, [forecasts, favoritesSet, favorites.length, prefs.dayIdx, prefs.level]);
 
   const openForecast = openSlug ? forecasts.find((f) => f.spot.slug === openSlug) : null;
 
   return (
     <div id="spots" className="mx-auto max-w-6xl px-4 pt-4 sm:pt-6">
+      {/* Hot today — variable reward, FOMO trigger (only when conditions warrant) */}
+      {!loading && (
+        <HotToday
+          forecasts={forecasts}
+          dayIdx={prefs.dayIdx}
+          level={prefs.level}
+          onOpen={(slug) => setOpenSlug(slug)}
+        />
+      )}
+
       <QuickActions
         dayIdx={prefs.dayIdx}
         sort={prefs.sort}
@@ -137,13 +169,32 @@ export function HomeContent() {
         search={search}
         nearMe={nearMe}
         hasGeo={hasGeo}
+        favoritesOnly={favoritesOnly}
+        favoritesCount={favorites.length}
         onDayChange={(d) => setPrefs({ ...prefs, dayIdx: d })}
-        onRegionChange={(r) => setPrefs({ ...prefs, region: r })}
+        onRegionChange={(r) => {
+          setFavoritesOnly(false);
+          setPrefs({ ...prefs, region: r });
+        }}
         onLevelChange={(l) => setPrefs({ ...prefs, level: l })}
         onSortChange={(s) => setPrefs({ ...prefs, sort: s })}
         onSearchChange={setSearch}
         onNearMeToggle={requestGeo}
+        onFavoritesToggle={() => setFavoritesOnly((v) => !v)}
       />
+
+      {/* Personalized hook for users with favorites */}
+      {favorites.length > 0 && favsInFire > 0 && !favoritesOnly && (
+        <button
+          onClick={() => setFavoritesOnly(true)}
+          className="mt-3 w-full rounded-2xl border border-coral-500/30 bg-gradient-to-r from-coral-500/10 via-sunset-500/8 to-transparent px-4 py-2.5 text-left text-sm transition hover:from-coral-500/15 hover:via-sunset-500/12"
+        >
+          <span className="font-script text-lg text-coral-200">
+            🔥 {favsInFire} de tes favoris {favsInFire > 1 ? "sont en feu" : "est en feu"}
+          </span>
+          <span className="ml-2 text-xs text-white/50">— afficher mes favoris</span>
+        </button>
+      )}
 
       <div className="mt-4 flex items-center justify-between gap-3 text-xs text-white/45">
         <span className="font-script text-base text-sand-200/80 sm:text-lg">
@@ -181,7 +232,9 @@ export function HomeContent() {
                   dayIdx={prefs.dayIdx}
                   level={prefs.level}
                   distanceKm={distanceKm}
+                  isFavorite={favoritesSet.has(f.spot.slug)}
                   onClick={() => setOpenSlug(f.spot.slug)}
+                  onToggleFavorite={() => toggleFavorite(f.spot.slug)}
                 />
               );
               if ((idx + 1) % 6 === 0) {
