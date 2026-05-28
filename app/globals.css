@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply bg-depth-950 text-white antialiased;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(11, 172, 226, 0.15), transparent 60%),
+      linear-gradient(180deg, #061320 0%, #0a1929 100%);
+    min-height: 100vh;
+  }
+  * { box-sizing: border-box; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+  .glass {
+    background: rgba(17, 42, 63, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .glass-hover:hover {
+    background: rgba(23, 56, 85, 0.7);
+    border-color: rgba(11, 172, 226, 0.4);
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { scrollbar-width: none; }
+}
