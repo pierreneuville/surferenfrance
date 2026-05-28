@@ -50,10 +50,7 @@ export function OnboardingSheet() {
       .slice(0, 6);
     setSuggested(famousSpots);
 
-    // Show after a short delay so the page renders first
-    const t = setTimeout(() => setOpen(true), 800);
-
-    // Optionally enrich with geolocation
+    // Optionally enrich with geolocation (does not block the trigger)
     if (typeof navigator !== "undefined" && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -73,7 +70,27 @@ export function OnboardingSheet() {
       );
     }
 
-    return () => clearTimeout(t);
+    // Defer the trigger: the user must SHOW INTEREST first.
+    // Trigger conditions (whichever comes first):
+    //  1. user has scrolled past the hero (300px)
+    //  2. user has been on the page 25s
+    let triggered = false;
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      setOpen(true);
+      cleanup();
+    }
+    function onScroll() {
+      if (window.scrollY > 300) trigger();
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const timeoutId = window.setTimeout(trigger, 25_000);
+    function cleanup() {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(timeoutId);
+    }
+    return cleanup;
   }, []);
 
   function togglePick(slug: string) {
