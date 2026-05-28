@@ -5,6 +5,7 @@ import { AdSenseScript } from "@/components/AdSenseScript";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { OnboardingSheet } from "@/components/OnboardingSheet";
 import { VersionWatcher } from "@/components/VersionWatcher";
 
 const sans = Inter({
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <AdSenseScript />
         <CookieBanner />
+        <OnboardingSheet />
         <VersionWatcher />
       </body>
     </html>
