@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Filters, SortKey } from "./Filters";
 import { QuickActions } from "./QuickActions";
 import { HotToday } from "./HotToday";
+import { WeekHighlights } from "./WeekHighlights";
 import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
 import { getEngagement, recordExploredSpot, subscribeEngagement } from "@/lib/engagement";
 import { SpotCard } from "./SpotCard";
@@ -163,6 +164,18 @@ export function HomeContent() {
           dayIdx={prefs.dayIdx}
           level={prefs.level}
           onOpen={(slug) => setOpenSlug(slug)}
+        />
+      )}
+
+      {/* This week — anticipation + planning behavior */}
+      {!loading && (
+        <WeekHighlights
+          forecasts={forecasts}
+          level={prefs.level}
+          onOpen={(slug, dayIdx) => {
+            setPrefs((p) => ({ ...p, dayIdx }));
+            setOpenSlug(slug);
+          }}
         />
       )}
 
