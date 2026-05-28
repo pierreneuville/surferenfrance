@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Filters, SortKey } from "./Filters";
+import { QuickActions } from "./QuickActions";
 import { SpotCard } from "./SpotCard";
 import { SpotModal } from "./SpotModal";
 import { AdSlot } from "./AdSlot";
@@ -118,7 +119,16 @@ export function HomeContent() {
   const openForecast = openSlug ? forecasts.find((f) => f.spot.slug === openSlug) : null;
 
   return (
-    <div id="spots" className="mx-auto max-w-6xl px-4">
+    <div id="spots" className="mx-auto max-w-6xl px-4 pt-4 sm:pt-6">
+      <QuickActions
+        dayIdx={prefs.dayIdx}
+        sort={prefs.sort}
+        nearMe={nearMe}
+        hasGeo={hasGeo}
+        level={prefs.level}
+        onApply={(patch) => setPrefs({ ...prefs, ...patch })}
+        onToggleNearMe={requestGeo}
+      />
       <Filters
         dayIdx={prefs.dayIdx}
         region={prefs.region}

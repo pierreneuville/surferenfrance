@@ -29,6 +29,19 @@ export function dayShortLabel(offset: number): string {
   return DAY_LABELS_SHORT[d.getDay()];
 }
 
+export function dayDateNumber(offset: number): number {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.getDate();
+}
+
+export function dayIsWeekend(offset: number): boolean {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  const wd = d.getDay();
+  return wd === 0 || wd === 6;
+}
+
 export function dayLongLabel(offset: number): string {
   const d = new Date();
   d.setDate(d.getDate() + offset);

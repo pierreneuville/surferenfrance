@@ -3,7 +3,7 @@
 import { MapPin, Search, Target, X } from "lucide-react";
 import type { Level } from "@/lib/types";
 import { REGIONS, REGION_EMOJI } from "@/lib/spots";
-import { dayShortLabel } from "@/lib/utils";
+import { dayShortLabel, dayDateNumber, dayIsWeekend } from "@/lib/utils";
 
 export type SortKey = "score" | "wave" | "distance" | "name";
 
@@ -38,31 +38,42 @@ export function Filters(props: FiltersProps) {
   return (
     <div className="sticky top-[57px] z-30 -mx-4 border-y border-white/5 bg-depth-950/85 backdrop-blur-lg">
       <div className="mx-auto max-w-6xl space-y-3 px-4 py-4">
-        {/* Day chips */}
-        <div className="scrollbar-hide flex gap-2 overflow-x-auto">
-          {Array.from({ length: 7 }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => onDayChange(i)}
-              className={`shrink-0 rounded-full border px-4 py-1.5 text-sm capitalize transition ${
-                dayIdx === i
-                  ? "border-ocean-400 bg-ocean-500/20 text-ocean-100 shadow-lg shadow-ocean-500/20"
-                  : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
-              }`}
-            >
-              {dayShortLabel(i)}
-            </button>
-          ))}
+        {/* Day chips — visual with day name + date number */}
+        <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
+          {Array.from({ length: 7 }, (_, i) => {
+            const isActive = dayIdx === i;
+            const weekend = dayIsWeekend(i);
+            return (
+              <button
+                key={i}
+                onClick={() => onDayChange(i)}
+                className={`tap-target flex shrink-0 flex-col items-center justify-center rounded-2xl border px-3.5 py-2 transition-all active:scale-95 ${
+                  isActive
+                    ? "border-coral-400/60 bg-gradient-to-br from-coral-500/25 via-sunset-500/15 to-sand-400/20 text-white shadow-lg shadow-coral-500/20"
+                    : weekend
+                    ? "border-sand-300/20 bg-sand-300/[0.04] text-white/85 hover:border-sand-300/40"
+                    : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
+                }`}
+              >
+                <span className={`text-[10px] uppercase tracking-widest leading-none ${isActive ? "text-sand-200" : "text-white/45"}`}>
+                  {dayShortLabel(i)}
+                </span>
+                <span className={`font-display text-lg font-bold leading-tight ${isActive ? "text-white" : ""}`}>
+                  {dayDateNumber(i)}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Region chips */}
-        <div className="scrollbar-hide flex gap-2 overflow-x-auto">
+        {/* Region chips — bigger touch targets, emoji vivid */}
+        <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
           <button
             onClick={() => onRegionChange("all")}
-            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition ${
+            className={`tap-target shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
               region === "all"
-                ? "border-ocean-400 bg-ocean-500/20 text-ocean-100"
-                : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
+                ? "border-ocean-400 bg-ocean-500/25 text-white shadow-md shadow-ocean-500/20"
+                : "border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10"
             }`}
           >
             🌍 Toutes
@@ -71,13 +82,14 @@ export function Filters(props: FiltersProps) {
             <button
               key={r}
               onClick={() => onRegionChange(r)}
-              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition ${
+              className={`tap-target shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
                 region === r
-                  ? "border-ocean-400 bg-ocean-500/20 text-ocean-100"
-                  : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
+                  ? "border-ocean-400 bg-ocean-500/25 text-white shadow-md shadow-ocean-500/20"
+                  : "border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10"
               }`}
             >
-              {REGION_EMOJI[r]} {r}
+              <span className="mr-1.5 text-base">{REGION_EMOJI[r]}</span>
+              {r}
             </button>
           ))}
         </div>
