@@ -93,20 +93,20 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[88dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-depth-950 shadow-2xl sm:max-h-[92vh] sm:rounded-3xl"
+        className="relative flex max-h-[94dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-depth-950 shadow-2xl sm:max-h-[92vh] sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* === HERO === */}
-        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-14 pt-3 sm:px-6 sm:pb-16 sm:pt-5`}>
-          {/* Decorative wave SVG — rendered FIRST in DOM (z-0). All text content gets z-10. */}
+        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-20 pt-3 sm:px-6 sm:pb-20 sm:pt-5`}>
+          {/* Decorative wave SVG — smaller, lower opacity, pushed down so it stays a thin lip at the bottom */}
           <svg
-            className="pointer-events-none absolute -bottom-px left-0 right-0 z-0 h-6 w-full text-depth-950 sm:h-8"
+            className="pointer-events-none absolute -bottom-1 left-0 right-0 z-0 h-4 w-full text-depth-950 sm:h-5"
             viewBox="0 0 1200 60"
             preserveAspectRatio="none"
             aria-hidden
           >
-            <path d="M0 40 Q 200 18 400 40 T 800 40 T 1200 40 V60 H0 Z" fill="currentColor" opacity="0.4" />
-            <path d="M0 50 Q 200 30 400 50 T 800 50 T 1200 50 V60 H0 Z" fill="currentColor" />
+            <path d="M0 45 Q 200 25 400 45 T 800 45 T 1200 45 V60 H0 Z" fill="currentColor" opacity="0.3" />
+            <path d="M0 52 Q 200 38 400 52 T 800 52 T 1200 52 V60 H0 Z" fill="currentColor" />
           </svg>
 
           {/* Mobile grabber */}
@@ -137,8 +137,8 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
                 {forecast.spot.type}
               </p>
             </div>
-            {/* Score in a translucent chip — clearly separated, no edge clipping */}
-            <div className="shrink-0 rounded-2xl bg-black/30 px-3.5 py-2 text-center backdrop-blur-sm">
+            {/* Score chip — opaque + visible border to stand out from any background */}
+            <div className="shrink-0 rounded-2xl border border-white/25 bg-depth-950/85 px-3.5 py-2 text-center shadow-lg shadow-black/30 backdrop-blur">
               <div className="font-display text-3xl font-extrabold leading-none text-white drop-shadow sm:text-4xl">
                 {score}
               </div>
