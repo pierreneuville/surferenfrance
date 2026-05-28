@@ -39,6 +39,9 @@ export const SPOTS: Spot[] = [
   s("le-touquet", "Le Touquet-Paris-Plage", "Le Touquet", "Manche & Nord", "Pas-de-Calais", 50.523, 1.586, 90, "beginner", "Beach break", "Longue plage facile, idéale pour débuter."),
   s("stella-plage", "Stella-Plage", "Stella", "Manche & Nord", "Pas-de-Calais", 50.473, 1.582, 90, "beginner", "Beach break", "Station tranquille sud Touquet. Vagues d'écoles."),
   s("berck-plage", "Berck-Plage", "Berck", "Manche & Nord", "Pas-de-Calais", 50.402, 1.561, 90, "beginner", "Beach break", "Vaste plage du Pas-de-Calais. Idéale en école par houle NW."),
+  s("cayeux-sur-mer", "Cayeux-sur-Mer", "Cayeux", "Manche & Nord", "Somme", 50.181, 1.502, 90, "beginner", "Galets", "Plage de galets, surf rare mais possible avec houle NW établie."),
+  s("ault", "Ault", "Ault", "Manche & Nord", "Somme", 50.099, 1.451, 90, "intermediate", "Galets", "Sous les falaises de craie, ambiance dramatique. Pour patients."),
+  s("mers-les-bains", "Mers-les-Bains", "Mers-les-Bains", "Manche & Nord", "Somme", 50.066, 1.388, 90, "beginner", "Galets", "Ville colorée, plage de galets entre falaises."),
 
   // Normandie - Seine-Maritime
   s("le-treport", "Le Tréport", "Le Tréport", "Manche & Nord", "Seine-Maritime", 50.062, 1.378, 180, "beginner", "Beach break / galets", "Plage de galets sous les falaises. Surf rare mais possible."),
@@ -51,6 +54,7 @@ export const SPOTS: Spot[] = [
   s("yport", "Yport", "Yport", "Manche & Nord", "Seine-Maritime", 49.737, 0.314, 180, "intermediate", "Galets", "Village de pêcheurs sous les falaises. Vagues sympas en hiver."),
   s("etretat", "Étretat", "Étretat", "Manche & Nord", "Seine-Maritime", 49.708, 0.205, 135, "intermediate", "Beach break / galets", "Spot mythique sous les falaises. Vagues de qualité par grosse houle NW."),
   s("sainte-adresse", "Sainte-Adresse", "Sainte-Adresse", "Manche & Nord", "Seine-Maritime", 49.512, 0.087, 180, "beginner", "Galets", "Plage urbaine du Havre. Surf possible par grosse houle."),
+  s("sotteville-sur-mer", "Sotteville-sur-Mer", "Sotteville", "Manche & Nord", "Seine-Maritime", 49.892, 0.862, 180, "intermediate", "Galets", "Plage confidentielle de la Côte d'Albâtre, vagues bien formées par houle N."),
 
   // Normandie - Calvados
   s("trouville", "Trouville-sur-Mer", "Trouville", "Manche & Nord", "Calvados", 49.366, 0.087, 180, "beginner", "Beach break", "Plage de la station chic. Vagues douces et école."),
@@ -76,6 +80,7 @@ export const SPOTS: Spot[] = [
   s("sciotot", "Sciotot (Les Pieux)", "Sciotot", "Manche & Nord", "Manche", 49.503, -1.881, 90, "intermediate", "Beach break", "Plage du Cotentin proche Siouville."),
   s("siouville", "Siouville-Hague", "Siouville", "Manche & Nord", "Manche", 49.555, -1.842, 90, "intermediate", "Beach break", "Le spot phare de Normandie. Capricieux mais peut être excellent."),
   s("vauville", "Vauville", "Vauville", "Manche & Nord", "Manche", 49.631, -1.839, 90, "intermediate", "Beach break", "Baie sauvage à côté de Siouville. Ambiance bout du monde."),
+  s("saint-vaast", "Saint-Vaast-la-Hougue", "Saint-Vaast", "Manche & Nord", "Manche", 49.585, -1.265, 90, "beginner", "Beach break", "Côte est du Cotentin, plage tranquille face à Tatihou."),
 
   // ==================== BRETAGNE ====================
   // Ille-et-Vilaine + Côtes-d'Armor (Côte d'Émeraude / Trégor)
@@ -104,6 +109,8 @@ export const SPOTS: Spot[] = [
   s("treompan", "Tréompan (Ploudalmézeau)", "Tréompan", "Bretagne", "Finistère", 48.555, -4.660, 90, "intermediate", "Beach break", "Côte des Abers, vagues régulières."),
   s("porspoder", "Porspoder", "Porspoder", "Bretagne", "Finistère", 48.493, -4.770, 90, "intermediate", "Beach break", "Pays d'Iroise. Cadre breton authentique."),
   s("lampaul-plouarzel", "Lampaul-Plouarzel", "Lampaul", "Bretagne", "Finistère", 48.448, -4.778, 90, "intermediate", "Beach break", "Côte sauvage de l'Iroise."),
+  s("le-conquet", "Le Conquet - Blancs Sablons", "Le Conquet", "Bretagne", "Finistère", 48.358, -4.766, 90, "intermediate", "Beach break", "Plage des Blancs Sablons, pointe ouest de la France. Vagues régulières."),
+  s("sainte-anne-la-palud", "Sainte-Anne-la-Palud", "Sainte-Anne", "Bretagne", "Finistère", 48.180, -4.241, 90, "intermediate", "Beach break", "Baie de Douarnenez, longue plage sauvage. Ambiance pardon breton."),
 
   // Finistère - Presqu'île de Crozon
   s("pen-hat", "Anse de Pen Hat (Camaret)", "Pen Hat", "Bretagne", "Finistère", 48.282, -4.580, 90, "intermediate", "Beach break", "Anse spectaculaire de la presqu'île de Crozon."),
@@ -111,6 +118,8 @@ export const SPOTS: Spot[] = [
   s("la-palue", "La Palue (Crozon)", "La Palue", "Bretagne", "Finistère", 48.220, -4.570, 90, "advanced", "Beach break", "Spot puissant et capricieux. Réservé aux confirmés."),
   s("lostmarch", "Lostmarc'h", "Lostmarc'h", "Bretagne", "Finistère", 48.183, -4.544, 90, "intermediate", "Beach break", "Plage sauvage de Crozon. Vagues puissantes."),
   s("goulien-crozon", "Goulien (Crozon)", "Goulien", "Bretagne", "Finistère", 48.215, -4.555, 90, "intermediate", "Beach break", "Plage de la presqu'île, plus protégée que La Palue."),
+  s("bordardoue", "Bordardoué (Crozon)", "Bordardoué", "Bretagne", "Finistère", 48.235, -4.560, 90, "intermediate", "Beach break", "Petite plage de Crozon, ambiance secrète."),
+  s("anse-de-dinan", "Anse de Dinan (Crozon)", "Anse de Dinan", "Bretagne", "Finistère", 48.230, -4.585, 90, "intermediate", "Beach break", "Anse spectaculaire de la presqu'île, vagues quand ça rentre."),
 
   // Finistère - Cap Sizun & Pays Bigouden
   s("plage-du-loch", "Pointe du Raz - Plage du Loch", "Plage du Loch", "Bretagne", "Finistère", 48.038, -4.728, 90, "intermediate", "Beach break", "Sauvage et venteux, à la pointe du Raz."),
@@ -133,6 +142,7 @@ export const SPOTS: Spot[] = [
   s("plouharnel", "Plouharnel - Sainte-Barbe", "Plouharnel", "Bretagne", "Morbihan", 47.580, -3.110, 90, "beginner", "Beach break", "Plage accueillante pour débutants."),
   s("carnac-plage", "Carnac-Plage", "Carnac", "Bretagne", "Morbihan", 47.580, -3.067, 0, "beginner", "Beach break", "Plage abritée, idéale pour les enfants."),
   s("houat", "Île d'Houat - Treac'h ar Gourhed", "Houat", "Bretagne", "Morbihan", 47.388, -2.969, 0, "intermediate", "Beach break", "Île sauvage, plage d'une beauté rare."),
+  s("fort-bloque", "Ploemeur - Fort-Bloqué", "Fort-Bloqué", "Bretagne", "Morbihan", 47.731, -3.491, 180, "intermediate", "Beach break", "Plage longue avec un fort en mer, vagues régulières."),
 
   // ==================== ATLANTIQUE NORD ====================
   // Loire-Atlantique
@@ -152,6 +162,7 @@ export const SPOTS: Spot[] = [
   s("sion-sur-l-ocean", "Sion-sur-l'Océan", "Sion", "Atlantique Nord", "Vendée", 46.755, -2.026, 90, "beginner", "Beach break", "Saint-Hilaire-de-Riez. École active."),
   s("saint-gilles-croix-de-vie", "Saint-Gilles-Croix-de-Vie", "Croix-de-Vie", "Atlantique Nord", "Vendée", 46.700, -1.945, 90, "beginner", "Beach break", "Port et plages familiales."),
   s("ile-d-yeu-vieilles", "Île d'Yeu - Anse des Vieilles", "Île d'Yeu", "Atlantique Nord", "Vendée", 46.700, -2.378, 0, "intermediate", "Beach break", "Côte sauvage de l'île. Vagues confidentielles."),
+  s("ile-d-yeu-pointe-but", "Île d'Yeu - Pointe du But", "Pointe du But", "Atlantique Nord", "Vendée", 46.732, -2.405, 270, "advanced", "Beach break / reef", "Pointe ouest, exposition max aux houles atlantiques."),
   s("bretignolles", "Bretignolles-sur-Mer (Sauzaie)", "Bretignolles", "Atlantique Nord", "Vendée", 46.636, -1.865, 90, "intermediate", "Beach break", "Spot phare de Vendée. Étape historique."),
   s("brem-sur-mer", "Brem-sur-Mer", "Brem", "Atlantique Nord", "Vendée", 46.605, -1.850, 90, "intermediate", "Beach break", "Spot des Granges, à côté de Bretignolles."),
   s("sauveterre", "Sauveterre (Olonne)", "Sauveterre", "Atlantique Nord", "Vendée", 46.524, -1.815, 90, "intermediate", "Beach break", "Forêt domaniale. Spot tranquille hors saison."),
@@ -159,6 +170,8 @@ export const SPOTS: Spot[] = [
   s("longeville-sur-mer", "Longeville-sur-Mer", "Longeville", "Atlantique Nord", "Vendée", 46.413, -1.529, 45, "intermediate", "Beach break", "Spot du Rocher. Vagues puissantes par houle SW."),
   s("la-tranche-sur-mer", "La Tranche-sur-Mer", "La Tranche", "Atlantique Nord", "Vendée", 46.340, -1.435, 45, "beginner", "Beach break", "Spot familial. Idéal longboard et école."),
   s("la-faute-sur-mer", "La Faute-sur-Mer", "La Faute", "Atlantique Nord", "Vendée", 46.300, -1.317, 45, "beginner", "Beach break", "Pointe d'Arçay, plage longue et sauvage."),
+  s("saint-vincent-jard", "Saint-Vincent-sur-Jard", "Saint-Vincent", "Atlantique Nord", "Vendée", 46.395, -1.523, 45, "intermediate", "Beach break", "Spot intime de Vendée, ancien repaire de Clemenceau."),
+  s("talmont-saint-hilaire", "Talmont-Saint-Hilaire", "Talmont", "Atlantique Nord", "Vendée", 46.469, -1.617, 45, "intermediate", "Beach break", "Plage du Veillon, fond varié, bonne école."),
 
   // Charente-Maritime
   s("ile-de-re-le-lizay", "Île de Ré - Le Lizay", "Le Lizay", "Atlantique Nord", "Charente-Maritime", 46.238, -1.568, 0, "intermediate", "Beach break", "Pointe nord de l'île. Cadre paradisiaque."),
@@ -181,6 +194,7 @@ export const SPOTS: Spot[] = [
   s("amelie-soulac", "L'Amélie-sur-Mer (Soulac)", "L'Amélie", "Côte d'Argent", "Gironde", 45.500, -1.137, 90, "intermediate", "Beach break", "Petite plage à côté de Soulac. Spot local."),
   s("montalivet", "Montalivet", "Montalivet", "Côte d'Argent", "Gironde", 45.379, -1.143, 90, "intermediate", "Beach break", "Plage forestière préservée. Vagues puissantes."),
   s("hourtin", "Hourtin-Plage", "Hourtin", "Côte d'Argent", "Gironde", 45.246, -1.158, 90, "intermediate", "Beach break", "Station familiale dans la pinède."),
+  s("le-pin-sec", "Le Pin Sec (Naujac)", "Le Pin Sec", "Côte d'Argent", "Gironde", 45.297, -1.156, 90, "intermediate", "Beach break", "Plage forestière préservée, accès sauvage."),
   s("carcans", "Carcans-Plage", "Carcans", "Côte d'Argent", "Gironde", 45.111, -1.176, 90, "intermediate", "Beach break", "Plage sauvage au nord de Lacanau."),
   s("lacanau", "Lacanau-Océan", "Lacanau", "Côte d'Argent", "Gironde", 45.000, -1.205, 90, "intermediate", "Beach break", "Référence du Médoc. Étape du tour pro."),
   s("super-sud-lacanau", "Lacanau - Super Sud", "Super Sud", "Côte d'Argent", "Gironde", 44.985, -1.213, 90, "intermediate", "Beach break", "Spot sud de Lacanau, moins fréquenté."),
@@ -214,6 +228,7 @@ export const SPOTS: Spot[] = [
   s("labenne", "Labenne-Océan", "Labenne", "Côte d'Argent", "Landes", 43.595, -1.450, 90, "intermediate", "Beach break", "Station landaise, plage longue."),
   s("ondres", "Ondres-Plage", "Ondres", "Côte d'Argent", "Landes", 43.572, -1.460, 90, "intermediate", "Beach break", "Petite station landaise, peu fréquentée."),
   s("tarnos", "Tarnos - La Digue", "Tarnos", "Côte d'Argent", "Landes", 43.547, -1.500, 90, "intermediate", "Beach break / jetée", "Plage de la Digue Nord, jetée de l'Adour."),
+  s("hourquet", "Hourquet (Vieux-Boucau)", "Hourquet", "Côte d'Argent", "Landes", 43.770, -1.412, 90, "intermediate", "Beach break", "Petit spot landais entre Vieux-Boucau et Seignosse, ambiance secrète."),
 
   // ==================== PAYS BASQUE ====================
   s("anglet-barre", "Anglet - La Barre", "La Barre", "Pays Basque", "Pyrénées-Atlantiques", 43.525, -1.515, 90, "advanced", "Beach break / jetée", "Spot historique, vagues puissantes près de la jetée de l'Adour."),
@@ -237,6 +252,8 @@ export const SPOTS: Spot[] = [
   s("guethary-alcyons", "Guéthary - Les Alcyons", "Alcyons", "Pays Basque", "Pyrénées-Atlantiques", 43.420, -1.611, 135, "advanced", "Reef break", "Reef break exigeant à côté de Parlementia."),
   s("cenitz", "Cenitz", "Cenitz", "Pays Basque", "Pyrénées-Atlantiques", 43.415, -1.617, 135, "intermediate", "Beach break", "Plage tranquille entre Guéthary et Saint-Jean-de-Luz."),
   s("lafitenia", "Saint-Jean-de-Luz - Lafitenia", "Lafitenia", "Pays Basque", "Pyrénées-Atlantiques", 43.397, -1.640, 135, "advanced", "Reef break", "Belle vague de droite, spot technique."),
+  s("acotz", "Saint-Jean-de-Luz - Acotz", "Acotz", "Pays Basque", "Pyrénées-Atlantiques", 43.402, -1.635, 135, "intermediate", "Beach break", "Plage des Flots Bleus, spot d'école sympa à côté de Lafiténia."),
+  s("sainte-barbe", "Saint-Jean-de-Luz - Sainte-Barbe", "Sainte-Barbe", "Pays Basque", "Pyrénées-Atlantiques", 43.392, -1.658, 135, "intermediate", "Beach break", "À côté du port, vagues sous la statue Sainte-Barbe."),
   s("erromardie", "Erromardie", "Erromardie", "Pays Basque", "Pyrénées-Atlantiques", 43.408, -1.642, 135, "beginner", "Beach break", "Spot familial entre Saint-Jean-de-Luz et Guéthary."),
   s("mayarco", "Mayarco", "Mayarco", "Pays Basque", "Pyrénées-Atlantiques", 43.400, -1.645, 135, "intermediate", "Beach break", "Petite plage tranquille."),
   s("belharra", "Belharra (Saint-Jean-de-Luz)", "Belharra", "Pays Basque", "Pyrénées-Atlantiques", 43.388, -1.692, 135, "advanced", "Big wave / reef", "Vague géante mythique, pour gros surf uniquement."),
@@ -269,6 +286,8 @@ export const SPOTS: Spot[] = [
   s("frontignan", "Frontignan", "Frontignan", "Méditerranée", "Hérault", 43.439, 3.752, 0, "intermediate", "Beach break", "Plage longue de l'Hérault."),
   s("palavas", "Palavas-les-Flots", "Palavas", "Méditerranée", "Hérault", 43.527, 3.928, 0, "intermediate", "Beach break", "Station urbaine de Montpellier."),
   s("la-grande-motte", "La Grande-Motte", "Grande-Motte", "Méditerranée", "Hérault", 43.564, 4.083, 0, "intermediate", "Beach break", "Station moderniste. Surf par houle SE."),
+  s("grand-travers", "Grand Travers (Carnon)", "Grand Travers", "Méditerranée", "Hérault", 43.539, 4.020, 0, "intermediate", "Beach break", "Longue plage sauvage entre Carnon et La Grande-Motte."),
+  s("aresquiers", "Les Aresquiers (Frontignan)", "Aresquiers", "Méditerranée", "Hérault", 43.452, 3.815, 0, "intermediate", "Beach break", "Plage naturelle protégée entre étangs et mer."),
 
   // Gard
   s("le-grau-du-roi", "Le Grau-du-Roi", "Grau-du-Roi", "Méditerranée", "Gard", 43.535, 4.137, 0, "intermediate", "Beach break", "Petit Camargue, plage urbaine."),
@@ -277,6 +296,7 @@ export const SPOTS: Spot[] = [
   s("saintes-maries", "Saintes-Maries-de-la-Mer", "Saintes-Maries", "Méditerranée", "Bouches-du-Rhône", 43.452, 4.428, 0, "intermediate", "Beach break", "Camargue mystique. Surf par tempête."),
   s("beauduc", "Beauduc", "Beauduc", "Méditerranée", "Bouches-du-Rhône", 43.367, 4.589, 0, "advanced", "Beach break", "Spot reculé de Camargue. Big wave par tempête."),
   s("carro", "Carro (Martigues)", "Carro", "Méditerranée", "Bouches-du-Rhône", 43.330, 5.030, 0, "intermediate", "Beach break", "Côte Bleue, plage à l'ouest de Marseille."),
+  s("la-couronne", "La Couronne (Martigues)", "La Couronne", "Méditerranée", "Bouches-du-Rhône", 43.323, 5.060, 0, "intermediate", "Beach break / reef", "Spot reef de la Côte Bleue, vagues par tempête SW."),
   s("sausset", "Sausset-les-Pins", "Sausset", "Méditerranée", "Bouches-du-Rhône", 43.331, 5.107, 0, "beginner", "Beach break", "Côte Bleue, plage urbaine."),
   s("carry-le-rouet", "Carry-le-Rouet", "Carry-le-Rouet", "Méditerranée", "Bouches-du-Rhône", 43.330, 5.150, 0, "beginner", "Beach break", "Port et plage de la Côte Bleue."),
   s("marseille-prado", "Marseille - Le Prado", "Le Prado", "Méditerranée", "Bouches-du-Rhône", 43.263, 5.364, 0, "intermediate", "Beach break", "Plage urbaine de Marseille."),
@@ -294,12 +314,15 @@ export const SPOTS: Spot[] = [
   s("le-lavandou", "Le Lavandou", "Le Lavandou", "Méditerranée", "Var", 43.137, 6.367, 0, "beginner", "Beach break", "Station du Var, plage urbaine."),
   s("cavalaire", "Cavalaire-sur-Mer", "Cavalaire", "Méditerranée", "Var", 43.169, 6.527, 0, "beginner", "Beach break", "Grande baie de la côte d'Azur."),
   s("pampelonne", "Pampelonne (Ramatuelle)", "Pampelonne", "Méditerranée", "Var", 43.218, 6.690, 0, "beginner", "Beach break", "Plage star de Saint-Tropez. Surf très occasionnel."),
+  s("pampelonne-tahiti", "Pampelonne - Tahiti Plage", "Tahiti Plage", "Méditerranée", "Var", 43.230, 6.682, 0, "beginner", "Beach break", "Section nord de Pampelonne, ambiance plus chill."),
   s("saint-aygulf", "Saint-Aygulf", "Saint-Aygulf", "Méditerranée", "Var", 43.395, 6.722, 0, "beginner", "Beach break", "Station tranquille du Var."),
   s("frejus", "Fréjus - Saint-Aygulf", "Fréjus", "Méditerranée", "Var", 43.435, 6.737, 0, "beginner", "Beach break", "Cité romaine et plages familiales."),
 
   // Alpes-Maritimes
   s("nice", "Nice - Promenade des Anglais", "Nice", "Méditerranée", "Alpes-Maritimes", 43.690, 7.265, 0, "beginner", "Galets", "Plage de galets urbaine. Surf rarissime."),
   s("cagnes", "Cagnes-sur-Mer", "Cagnes", "Méditerranée", "Alpes-Maritimes", 43.660, 7.150, 0, "beginner", "Galets", "Plage de galets près de Nice."),
+  s("mandelieu", "Mandelieu - La Napoule", "Mandelieu", "Méditerranée", "Alpes-Maritimes", 43.522, 6.940, 180, "beginner", "Beach break", "Plage du Riou, ambiance Estérel rouge."),
+  s("esquillon", "Plage de l'Esquillon (Théoule)", "Esquillon", "Méditerranée", "Alpes-Maritimes", 43.495, 6.937, 180, "intermediate", "Reef / galets", "Petite crique de l'Estérel, vagues par houle SE."),
 
   // ==================== CORSE ====================
   s("calvi", "Calvi", "Calvi", "Corse", "Haute-Corse", 42.566, 8.755, 90, "intermediate", "Beach break", "Baie de Calvi. Surf par tempête de W et NW."),
@@ -307,6 +330,10 @@ export const SPOTS: Spot[] = [
   s("saleccia", "Saleccia (Agriates)", "Saleccia", "Corse", "Haute-Corse", 42.793, 9.218, 90, "intermediate", "Beach break", "Plage paradisiaque sauvage. Vagues par tempête W."),
   s("propriano", "Propriano", "Propriano", "Corse", "Corse-du-Sud", 41.677, 8.902, 270, "intermediate", "Beach break", "Golfe de Valinco. Vagues par tempête SW."),
   s("porto-vecchio-palombaggia", "Porto-Vecchio - Palombaggia", "Palombaggia", "Corse", "Corse-du-Sud", 41.566, 9.343, 90, "beginner", "Beach break", "Plage paradisiaque, surf très occasionnel."),
+  s("cala-rossa", "Cala Rossa (Porto-Vecchio)", "Cala Rossa", "Corse", "Corse-du-Sud", 41.629, 9.359, 90, "intermediate", "Beach break", "Crique rouge mythique, vagues quand tempête E."),
+  s("pinarello", "Pinarello", "Pinarello", "Corse", "Corse-du-Sud", 41.687, 9.388, 90, "intermediate", "Beach break", "Plage du sud-est corse, ambiance lagon."),
+  s("algajola", "Algajola", "Algajola", "Corse", "Haute-Corse", 42.611, 8.857, 0, "intermediate", "Beach break", "Plage entre Calvi et L'Île-Rousse, vagues régulières en hiver."),
+  s("lumio", "Lumio (Sant'Ambroggio)", "Lumio", "Corse", "Haute-Corse", 42.580, 8.825, 0, "intermediate", "Beach break", "Spot du golfe de Calvi, accessible et joli."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {

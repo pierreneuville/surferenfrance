@@ -40,36 +40,41 @@ export function Filters(props: FiltersProps) {
   } = props;
 
   return (
-    <div className="sticky top-[57px] z-30 -mx-4 border-y border-white/5 bg-depth-950/85 backdrop-blur-lg">
-      <div className="mx-auto max-w-6xl space-y-3 px-4 py-4">
-        {/* Day chips — visual with day name + date number */}
-        <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
-          {Array.from({ length: 7 }, (_, i) => {
-            const isActive = dayIdx === i;
-            const weekend = dayIsWeekend(i);
-            return (
-              <button
-                key={i}
-                onClick={() => onDayChange(i)}
-                className={`tap-target flex shrink-0 flex-col items-center justify-center rounded-2xl border px-3.5 py-2 transition-all active:scale-95 ${
-                  isActive
-                    ? "border-coral-400/60 bg-gradient-to-br from-coral-500/25 via-sunset-500/15 to-sand-400/20 text-white shadow-lg shadow-coral-500/20"
-                    : weekend
-                    ? "border-sand-300/20 bg-sand-300/[0.04] text-white/85 hover:border-sand-300/40"
-                    : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
-                }`}
-              >
-                <span className={`text-[10px] uppercase tracking-widest leading-none ${isActive ? "text-sand-200" : "text-white/45"}`}>
-                  {dayShortLabel(i)}
-                </span>
-                <span className={`font-display text-lg font-bold leading-tight ${isActive ? "text-white" : ""}`}>
-                  {dayDateNumber(i)}
-                </span>
-              </button>
-            );
-          })}
+    <>
+      {/* STICKY day picker only — preserves vertical space on mobile */}
+      <div className="sticky top-[57px] z-30 -mx-4 border-y border-white/[0.06] bg-depth-950/90 px-4 py-2.5 backdrop-blur-xl sm:py-3">
+        <div className="mx-auto max-w-6xl">
+          <div className="scrollbar-hide flex gap-1.5 overflow-x-auto py-0.5 sm:gap-2">
+            {Array.from({ length: 7 }, (_, i) => {
+              const isActive = dayIdx === i;
+              const weekend = dayIsWeekend(i);
+              return (
+                <button
+                  key={i}
+                  onClick={() => onDayChange(i)}
+                  className={`tap-target flex shrink-0 flex-col items-center justify-center rounded-xl border px-2.5 py-1.5 transition-all active:scale-95 sm:rounded-2xl sm:px-3.5 sm:py-2 ${
+                    isActive
+                      ? "border-coral-400/60 bg-gradient-to-br from-coral-500/25 via-sunset-500/15 to-sand-400/20 text-white shadow-lg shadow-coral-500/20"
+                      : weekend
+                      ? "border-sand-300/20 bg-sand-300/[0.04] text-white/85 hover:border-sand-300/40"
+                      : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
+                  }`}
+                >
+                  <span className={`text-[9px] uppercase tracking-widest leading-none sm:text-[10px] ${isActive ? "text-sand-200" : "text-white/45"}`}>
+                    {dayShortLabel(i)}
+                  </span>
+                  <span className={`font-display text-base font-bold leading-tight sm:text-lg ${isActive ? "text-white" : ""}`}>
+                    {dayDateNumber(i)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+      </div>
 
+      {/* NON-STICKY filters — scrolls with content */}
+      <div className="mx-auto max-w-6xl space-y-3 pt-3">
         {/* Region chips — bigger touch targets, emoji vivid */}
         <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
           {favoritesCount > 0 && (
@@ -187,6 +192,6 @@ export function Filters(props: FiltersProps) {
           </span>
         </div>
       </div>
-    </div>
+    </>
   );
 }
