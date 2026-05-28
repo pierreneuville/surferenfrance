@@ -63,7 +63,8 @@ export function WeekHighlights({ forecasts, level, onOpen }: Props) {
         </span>
       </div>
 
-      <div className="scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+      <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
+      <div className="scrollbar-hide flex snap-x snap-proximity scroll-px-4 gap-3 overflow-x-auto pb-2">
         {sessions.map((s) => {
           const day = s.forecast.days[s.dayIdx];
           const t = scoreTone(s.score);
@@ -73,7 +74,7 @@ export function WeekHighlights({ forecasts, level, onOpen }: Props) {
             <button
               key={`${s.spot.slug}-${s.dayIdx}`}
               onClick={() => onOpen(s.spot.slug, s.dayIdx)}
-              className="group flex w-[220px] shrink-0 flex-col gap-2 overflow-hidden rounded-2xl border border-white/[0.07] bg-gradient-to-br from-ocean-950/30 via-depth-950 to-depth-950 p-3 text-left transition hover:border-ocean-400/40 hover:-translate-y-0.5 active:scale-[0.98] sm:w-[240px]"
+              className="group flex w-[220px] shrink-0 snap-start flex-col gap-2 overflow-hidden rounded-2xl border border-white/[0.07] bg-gradient-to-br from-ocean-950/30 via-depth-950 to-depth-950 p-3 text-left transition hover:border-ocean-400/40 hover:-translate-y-0.5 active:scale-[0.98] sm:w-[240px]"
             >
               {/* day chip */}
               <div className="flex items-center justify-between">
@@ -118,6 +119,9 @@ export function WeekHighlights({ forecasts, level, onOpen }: Props) {
             </button>
           );
         })}
+      </div>
+      {/* fade-out affordance */}
+      <div className="pointer-events-none absolute bottom-0 right-0 top-0 w-10 bg-gradient-to-l from-depth-950 to-transparent" />
       </div>
     </section>
   );

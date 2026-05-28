@@ -28,7 +28,7 @@ export function Hero() {
         la carte des vagues
       </div>
 
-      <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col items-center justify-center px-5 pb-12 pt-24 text-center md:min-h-[92vh] md:pt-32">
+      <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col items-center justify-center px-5 pb-12 pt-24 text-center md:min-h-[72vh] md:pt-28">
         {/* Live badge */}
         <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] uppercase tracking-[0.18em] text-white backdrop-blur-md">
           <span className="relative flex h-2 w-2">

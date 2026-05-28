@@ -26,7 +26,40 @@ export function SpotDetailClient({ spot }: Props) {
   }, [spot.slug]);
 
   if (!forecast) {
-    return <div className="mt-8 animate-pulse rounded-2xl border border-white/5 bg-white/[0.02] h-64" />;
+    return (
+      <div className="mt-8 space-y-6">
+        {/* Day picker skeleton */}
+        <div className="flex flex-wrap gap-2">
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="shimmer-wave h-[78px] w-[72px] rounded-2xl bg-white/[0.04]" />
+          ))}
+        </div>
+        {/* Level chips skeleton */}
+        <div className="flex flex-wrap gap-2">
+          <div className="shimmer-wave h-6 w-40 rounded-full bg-white/[0.04]" />
+        </div>
+        {/* 4 tile grid skeleton */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="shimmer-wave h-20 rounded-xl border border-white/[0.05] bg-white/[0.03]" />
+          ))}
+        </div>
+        {/* Loading hint */}
+        <div className="flex items-center gap-2 text-sm text-white/45">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ocean-400" />
+          <span className="font-script text-base text-sand-200/70">Lecture des marées…</span>
+        </div>
+        {/* Hourly grid skeleton */}
+        <div
+          className="grid gap-1"
+          style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}
+        >
+          {Array.from({ length: 24 }, (_, i) => (
+            <div key={i} className="shimmer-wave aspect-square rounded-md bg-white/[0.03]" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (

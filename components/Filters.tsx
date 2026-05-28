@@ -44,31 +44,35 @@ export function Filters(props: FiltersProps) {
       {/* STICKY day picker only — preserves vertical space on mobile */}
       <div className="sticky top-[57px] z-30 -mx-4 border-y border-white/[0.06] bg-depth-950/90 px-4 py-2.5 backdrop-blur-xl sm:py-3">
         <div className="mx-auto max-w-6xl">
-          <div className="scrollbar-hide flex gap-1.5 overflow-x-auto py-0.5 sm:gap-2">
-            {Array.from({ length: 7 }, (_, i) => {
-              const isActive = dayIdx === i;
-              const weekend = dayIsWeekend(i);
-              return (
-                <button
-                  key={i}
-                  onClick={() => onDayChange(i)}
-                  className={`tap-target flex shrink-0 flex-col items-center justify-center rounded-xl border px-2.5 py-1.5 transition-all active:scale-95 sm:rounded-2xl sm:px-3.5 sm:py-2 ${
-                    isActive
-                      ? "border-coral-400/60 bg-gradient-to-br from-coral-500/25 via-sunset-500/15 to-sand-400/20 text-white shadow-lg shadow-coral-500/20"
-                      : weekend
-                      ? "border-sand-300/20 bg-sand-300/[0.04] text-white/85 hover:border-sand-300/40"
-                      : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
-                  }`}
-                >
-                  <span className={`text-[9px] uppercase tracking-widest leading-none sm:text-[10px] ${isActive ? "text-sand-200" : "text-white/45"}`}>
-                    {dayShortLabel(i)}
-                  </span>
-                  <span className={`font-display text-base font-bold leading-tight sm:text-lg ${isActive ? "text-white" : ""}`}>
-                    {dayDateNumber(i)}
-                  </span>
-                </button>
-              );
-            })}
+          <div className="relative">
+            <div className="scrollbar-hide flex snap-x snap-proximity gap-1.5 overflow-x-auto scroll-px-4 py-0.5 sm:gap-2">
+              {Array.from({ length: 7 }, (_, i) => {
+                const isActive = dayIdx === i;
+                const weekend = dayIsWeekend(i);
+                return (
+                  <button
+                    key={i}
+                    onClick={() => onDayChange(i)}
+                    className={`tap-target flex shrink-0 snap-start flex-col items-center justify-center rounded-xl border px-2.5 py-1.5 transition-all active:scale-95 sm:rounded-2xl sm:px-3.5 sm:py-2 ${
+                      isActive
+                        ? "border-coral-400/60 bg-gradient-to-br from-coral-500/25 via-sunset-500/15 to-sand-400/20 text-white shadow-lg shadow-coral-500/20"
+                        : weekend
+                        ? "border-sand-300/20 bg-sand-300/[0.04] text-white/85 hover:border-sand-300/40"
+                        : "border-white/10 bg-white/5 text-white/70 hover:border-white/20"
+                    }`}
+                  >
+                    <span className={`text-[9px] uppercase tracking-widest leading-none sm:text-[10px] ${isActive ? "text-sand-200" : "text-white/45"}`}>
+                      {dayShortLabel(i)}
+                    </span>
+                    <span className={`font-display text-base font-bold leading-tight sm:text-lg ${isActive ? "text-white" : ""}`}>
+                      {dayDateNumber(i)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {/* fade-out affordance */}
+            <div className="pointer-events-none absolute bottom-0 right-0 top-0 w-8 bg-gradient-to-l from-depth-950 to-transparent" />
           </div>
         </div>
       </div>
@@ -76,7 +80,8 @@ export function Filters(props: FiltersProps) {
       {/* NON-STICKY filters — scrolls with content */}
       <div className="mx-auto max-w-6xl space-y-3 pt-3">
         {/* Region chips — bigger touch targets, emoji vivid */}
-        <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
+        <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="scrollbar-hide flex snap-x snap-proximity gap-2 overflow-x-auto py-0.5">
           {favoritesCount > 0 && (
             <button
               onClick={onFavoritesToggle}
@@ -105,7 +110,7 @@ export function Filters(props: FiltersProps) {
             <button
               key={r}
               onClick={() => onRegionChange(r)}
-              className={`tap-target shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
+              className={`tap-target shrink-0 snap-start rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
                 region === r
                   ? "border-ocean-400 bg-ocean-500/25 text-white shadow-md shadow-ocean-500/20"
                   : "border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10"
@@ -115,6 +120,9 @@ export function Filters(props: FiltersProps) {
               {r}
             </button>
           ))}
+        </div>
+        {/* fade-out affordance */}
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 w-8 bg-gradient-to-l from-depth-950 to-transparent" />
         </div>
 
         {/* Filters row : Search, NearMe, Sort */}
