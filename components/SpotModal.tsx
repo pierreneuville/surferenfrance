@@ -2,14 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles } from "lucide-react";
+import {
+  X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles, Share2, Check, MapPin,
+} from "lucide-react";
 import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
 import { fetchSpotForecastFromApi } from "@/lib/clientApi";
-import { SCORE_COLORS, scoreTone } from "@/lib/score";
-import { degToCardinal, fmt, dayLongLabel, timeFromIso } from "@/lib/utils";
+import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
+import { degToCardinal, fmt, dayLongLabel, timeFromIso, dayShortLabel, dayDateNumber } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
-import { REGION_EMOJI } from "@/lib/spots";
+
+const REGION_GRADIENT: Record<string, string> = {
+  "Manche & Nord": "from-slate-400 via-ocean-500 to-ocean-800",
+  "Bretagne": "from-teal-500 via-ocean-600 to-ocean-900",
+  "Atlantique Nord": "from-ocean-300 via-lagoon-500 to-ocean-800",
+  "Côte d'Argent": "from-sand-200 via-sand-500 to-sunset-600",
+  "Pays Basque": "from-coral-400 via-sunset-500 to-sand-300",
+  "Méditerranée": "from-lagoon-300 via-lagoon-500 to-ocean-700",
+  "Corse": "from-emerald-400 via-lagoon-500 to-sand-400",
+};
 
 interface Props {
   forecast: SpotForecast;
@@ -18,12 +29,11 @@ interface Props {
   onClose: () => void;
 }
 
-export function SpotModal({ forecast: lightForecast, dayIdx, level, onClose }: Props) {
-  // Light forecast comes from /api/forecasts (no hourly). Fetch full hourly via
-  // /api/forecast/[slug] when modal opens. Cached at the edge for 30 min so the
-  // first user pays ~500ms, all subsequent users get an instant HIT.
+export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, onClose }: Props) {
   const [forecast, setForecast] = useState<SpotForecast>(lightForecast);
   const [hourlyLoading, setHourlyLoading] = useState(true);
+  const [dayIdx, setDayIdx] = useState(initialDay);
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -47,8 +57,11 @@ export function SpotModal({ forecast: lightForecast, dayIdx, level, onClose }: P
   const d = forecast.days[dayIdx];
   const score = d.scoresByLevel?.[level] ?? d.score;
   const tone = scoreTone(score);
+  const colors = SCORE_COLORS[tone];
   const hasHourly = forecast.hourly.times.length > 0;
   const best = hasHourly ? bestHoursForDay(forecast, dayIdx, level) : null;
+  const fallbackBest = d.bestWindowByLevel?.[level];
+  const gradient = REGION_GRADIENT[forecast.spot.region] ?? "from-ocean-500 to-ocean-900";
 
   const startH = dayIdx * 24;
   const seaSlice = forecast.hourly.seaTemp.slice(startH, startH + 24).filter((t) => t != null) as number[];
@@ -56,122 +69,234 @@ export function SpotModal({ forecast: lightForecast, dayIdx, level, onClose }: P
   const seaTempAvg = seaSlice.length ? seaSlice.reduce((a, b) => a + b, 0) / seaSlice.length : null;
   const airTempMax = airSlice.length ? Math.max(...airSlice) : null;
 
-  // Fallback to server-precomputed best window if hourly not loaded yet
-  const fallbackBest = d.bestWindowByLevel?.[level];
+  async function handleShare() {
+    const url = `${window.location.origin}/spot/${forecast.spot.slug}`;
+    const text = `Surf à ${forecast.spot.name} — score ${score}/100 sur surferenfrance`;
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator & { share?: unknown }).share) {
+        await (navigator as Navigator & { share: (data: ShareData) => Promise<void> }).share({
+          title: forecast.spot.name, text, url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch { /* user cancelled */ }
+  }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-md sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-md sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
-        className="relative max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-white/10 bg-gradient-to-b from-depth-900 to-depth-950 p-6 shadow-2xl sm:rounded-3xl"
+        className="relative flex max-h-[95vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-depth-950 shadow-2xl sm:max-h-[92vh] sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/5 transition hover:bg-white/15"
-          aria-label="Fermer"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        {/* === HERO === */}
+        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} p-5 pt-3 sm:p-6 sm:pt-4`}>
+          {/* Mobile grabber */}
+          <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-white/30 sm:hidden" />
 
-        <div className="mb-1 text-xs text-white/50">
-          {REGION_EMOJI[forecast.spot.region]} {forecast.spot.region} · {forecast.spot.department}
-        </div>
-        <h2 className="font-display text-3xl font-bold leading-tight">{forecast.spot.name}</h2>
-        <p className="mt-1 text-sm text-white/60">
-          {dayLongLabel(dayIdx)} · {forecast.spot.type}
-        </p>
-        <div className="mt-2 flex items-center gap-3 text-xs text-white/50">
-          <span className="flex items-center gap-1"><Sunrise className="h-3.5 w-3.5" /> {timeFromIso(d.sunrise)}</span>
-          <span className="flex items-center gap-1"><Sunset className="h-3.5 w-3.5" /> {timeFromIso(d.sunset)}</span>
-        </div>
+          {/* Decorative wave SVG */}
+          <svg
+            className="pointer-events-none absolute -bottom-1 left-0 right-0 h-12 w-full text-depth-950"
+            viewBox="0 0 1200 60"
+            preserveAspectRatio="none"
+            aria-hidden
+          >
+            <path d="M0 30 Q 200 0 400 30 T 800 30 T 1200 30 V60 H0 Z" fill="currentColor" opacity="0.4" />
+            <path d="M0 40 Q 200 10 400 40 T 800 40 T 1200 40 V60 H0 Z" fill="currentColor" />
+          </svg>
 
-        <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Tile label="Score" value={score.toString()} sub="" color={SCORE_COLORS[tone].text} />
-          <Tile label="Vague" value={`${fmt(d.waveHeight)} m`} sub={`${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`} icon={<Waves className="h-3.5 w-3.5" />} />
-          <Tile label="Vent" value={`${fmt(d.windSpeed, 0)} km/h`} sub={`raf. ${fmt(d.windGusts, 0)} ${degToCardinal(d.windDir)}`} icon={<Wind className="h-3.5 w-3.5" />} />
-          <Tile label="Eau / Air" value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `air ${fmt(airTempMax, 0)}°C` : ""} icon={<Thermometer className="h-3.5 w-3.5" />} />
-        </div>
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/50 sm:right-5 sm:top-5"
+            aria-label="Fermer"
+          >
+            <X className="h-4 w-4" />
+          </button>
 
-        {best && best.best ? (
-          <div className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-            <div className="mb-2 flex items-center gap-2 text-sm text-emerald-200">
-              <Sparkles className="h-4 w-4" />
-              Meilleur créneau du jour
+          {/* Region + department */}
+          <div className="relative flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-white/85">
+            <MapPin className="h-3 w-3" />
+            {forecast.spot.region} · {forecast.spot.department}
+          </div>
+
+          {/* Spot name + score */}
+          <div className="relative mt-2 flex items-end justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h2 className="font-display text-2xl font-bold leading-tight text-white drop-shadow-md sm:text-3xl">
+                {forecast.spot.shortName}
+              </h2>
+              <p className="mt-1 font-script text-base text-white/85 sm:text-lg">
+                {forecast.spot.type}
+              </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {best.top.map((h) => {
-                const i = startH + h.hour;
-                return (
-                  <div key={h.hour} className="rounded-lg bg-emerald-500/15 px-3 py-1.5 text-xs">
-                    <strong className="text-emerald-200">{String(h.hour).padStart(2, "0")}h</strong>
-                    {" · "}{fmt(forecast.hourly.waveHeight[i])}m
-                    {" · "}{fmt(forecast.hourly.windSpeed[i], 0)} km/h
-                    {" · "}<span className="text-white/70">score {h.score}</span>
-                  </div>
-                );
-              })}
+            <div className="text-center">
+              <div className="font-display text-5xl font-extrabold leading-none text-white drop-shadow-lg sm:text-6xl">
+                {score}
+              </div>
+              <div className="text-[10px] uppercase tracking-widest text-white/80">
+                {scoreLabel(score)}
+              </div>
             </div>
           </div>
-        ) : fallbackBest ? (
-          <div className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm">
-            <div className="mb-1 flex items-center gap-2 text-emerald-200">
-              <Sparkles className="h-4 w-4" />
-              Meilleur créneau du jour
-            </div>
-            <div className="text-white/80">
-              <strong className="text-emerald-200">
-                {String(fallbackBest.start).padStart(2, "0")}h–{String(fallbackBest.end + 1).padStart(2, "0")}h
-              </strong>
-              {" · "}score moyen {fallbackBest.avg}
-            </div>
-          </div>
-        ) : null}
+        </div>
 
-        <div className="mt-6">
-          <div className="mb-2 text-xs uppercase tracking-wider text-white/50">
-            Heure par heure (couleur = score, gris = nuit)
+        {/* === DAY PICKER (sticky inside modal) === */}
+        <div className="border-b border-white/[0.06] bg-depth-950 px-4 py-3 sm:px-6">
+          <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
+            {forecast.days.map((day, i) => {
+              const ds = day.scoresByLevel?.[level] ?? day.score;
+              const isActive = i === dayIdx;
+              const t = scoreTone(ds);
+              return (
+                <button
+                  key={i}
+                  onClick={() => setDayIdx(i)}
+                  className={`tap-target flex shrink-0 flex-col items-center gap-0.5 rounded-2xl border px-3 py-1.5 transition-all active:scale-95 ${
+                    isActive
+                      ? "border-white/40 bg-white/[0.08]"
+                      : "border-white/[0.06] bg-white/[0.02] hover:border-white/15"
+                  }`}
+                >
+                  <span className="text-[10px] uppercase tracking-widest text-white/45">
+                    {dayShortLabel(i)}
+                  </span>
+                  <span className="font-display text-base font-bold text-white">
+                    {dayDateNumber(i)}
+                  </span>
+                  <span className="text-[10px] font-bold" style={{ color: SCORE_COLORS[t].hex }}>{ds}</span>
+                </button>
+              );
+            })}
           </div>
-          {hourlyLoading && !hasHourly ? (
-            <div className="grid gap-1 animate-pulse" style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}>
-              {Array.from({ length: 24 }, (_, i) => (
-                <div key={i} className="aspect-square rounded-md bg-white/5" />
-              ))}
+        </div>
+
+        {/* === BODY (scrollable) === */}
+        <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+          {/* Sun / day info */}
+          <div className="mb-4 flex items-center justify-between gap-3 text-sm">
+            <p className="font-script text-lg text-sand-200/90">{dayLongLabel(dayIdx)}</p>
+            <div className="flex items-center gap-2.5 text-xs text-white/55">
+              <span className="flex items-center gap-1"><Sunrise className="h-3.5 w-3.5 text-sand-300" /> {timeFromIso(d.sunrise)}</span>
+              <span className="flex items-center gap-1"><Sunset className="h-3.5 w-3.5 text-coral-400" /> {timeFromIso(d.sunset)}</span>
             </div>
-          ) : hasHourly ? (
-            <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
-          ) : (
-            <p className="text-xs text-white/40">Détail horaire indisponible pour ce spot pour le moment.</p>
+          </div>
+
+          {/* Quick stats — 4 tiles */}
+          <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Tile icon={<Waves />} label="Vague" value={`${fmt(d.waveHeight)} m`} sub={`${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`} accent={colors.hex} />
+            <Tile icon={<Wind />} label="Vent" value={`${fmt(d.windSpeed, 0)} km/h`} sub={`raf. ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
+            <Tile icon={<Thermometer />} label="Eau" value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `air ${fmt(airTempMax, 0)}°C` : ""} />
+            <Tile icon={<Sparkles />} label="Note" value={scoreLabel(score)} sub={`${score}/100`} />
+          </div>
+
+          {/* Best window — hero */}
+          {(best?.best || fallbackBest) && (
+            <div className="mb-5 overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent p-4">
+              <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-300/90">
+                <Sparkles className="h-3.5 w-3.5" />
+                Meilleur créneau du jour
+              </div>
+              {best?.top?.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {best.top.map((h) => {
+                    const i = startH + h.hour;
+                    return (
+                      <div key={h.hour} className="flex items-center gap-2 rounded-xl bg-emerald-500/15 px-3 py-2 text-sm">
+                        <strong className="font-display text-lg text-emerald-200">{String(h.hour).padStart(2, "0")}h</strong>
+                        <span className="text-white/70">
+                          {fmt(forecast.hourly.waveHeight[i])}m · {fmt(forecast.hourly.windSpeed[i], 0)} km/h
+                        </span>
+                        <span className="ml-auto rounded-full bg-emerald-500/25 px-2 text-[10px] font-semibold text-emerald-100">
+                          {h.score}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : fallbackBest && (
+                <div className="text-white/80">
+                  <strong className="font-display text-2xl text-emerald-200">
+                    {String(fallbackBest.start).padStart(2, "0")}h <span className="text-emerald-400/60">→</span> {String(fallbackBest.end + 1).padStart(2, "0")}h
+                  </strong>
+                  <span className="ml-2 text-sm text-white/55">score moyen {fallbackBest.avg}</span>
+                </div>
+              )}
+            </div>
           )}
+
+          {/* Hourly grid */}
+          <div className="mb-5">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-widest text-white/45">
+                Heure par heure
+              </span>
+              <span className="text-[10px] text-white/30">couleur = score · gris = nuit</span>
+            </div>
+            {hourlyLoading && !hasHourly ? (
+              <div className="grid gap-1 shimmer-wave rounded-md" style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}>
+                {Array.from({ length: 24 }, (_, i) => (
+                  <div key={i} className="aspect-square rounded-md bg-white/[0.04]" />
+                ))}
+              </div>
+            ) : hasHourly ? (
+              <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
+            ) : (
+              <p className="text-xs text-white/40">Détail horaire indisponible.</p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <div className="mb-1.5 font-script text-sm text-sand-200/80">À propos du spot</div>
+            <p className="text-pretty text-sm leading-relaxed text-white/75">{forecast.spot.description}</p>
+          </div>
         </div>
 
-        <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.03] p-4 text-sm text-white/70">
-          <p className="text-pretty">{forecast.spot.description}</p>
+        {/* === FOOTER ACTIONS === */}
+        <div className="flex shrink-0 gap-2 border-t border-white/[0.06] bg-depth-950 p-3 sm:p-4">
+          <button
+            onClick={handleShare}
+            className="tap-target flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium transition hover:bg-white/10 active:scale-[0.98]"
+          >
+            {shared ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
+            {shared ? "Lien copié !" : "Partager"}
+          </button>
+          <Link
+            href={`/spot/${forecast.spot.slug}`}
+            className="tap-target flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-coral-500 via-sunset-500 to-sand-400 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-coral-500/30 transition hover:scale-[1.01] active:scale-[0.98]"
+          >
+            Fiche complète
+            <ExternalLink className="h-4 w-4" />
+          </Link>
         </div>
-
-        <Link
-          href={`/spot/${forecast.spot.slug}`}
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-ocean-500/20 px-4 py-2 text-sm text-ocean-200 transition hover:bg-ocean-500/30"
-        >
-          Voir la page du spot
-          <ExternalLink className="h-3.5 w-3.5" />
-        </Link>
       </div>
     </div>
   );
 }
 
-function Tile({ label, value, sub, icon, color }: { label: string; value: string; sub?: string; icon?: React.ReactNode; color?: string }) {
+function Tile({
+  icon, label, value, sub, accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: string;
+}) {
   return (
-    <div className="rounded-xl bg-white/[0.04] p-3">
-      <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-white/50">
-        {icon}
+    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.025] p-3">
+      <div className="mb-1 flex items-center gap-1 text-[10px] uppercase tracking-widest text-white/45">
+        <span className="text-ocean-300/80">{icon}</span>
         {label}
       </div>
-      <div className={`mt-1 font-display text-xl font-bold ${color ?? "text-white"}`}>{value}</div>
-      {sub && <div className="text-[11px] text-white/40">{sub}</div>}
+      <div className="font-display text-xl font-bold" style={accent ? { color: accent } : undefined}>{value}</div>
+      {sub && <div className="text-[10px] text-white/40">{sub}</div>}
     </div>
   );
 }
