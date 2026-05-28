@@ -93,11 +93,17 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[95vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-depth-950 shadow-2xl sm:max-h-[92vh] sm:rounded-3xl"
+        className="relative flex max-h-[88dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-depth-950 shadow-2xl sm:max-h-[92vh] sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* === HERO === */}
-        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-14 pt-4 sm:px-6 sm:pb-16 sm:pt-5`}>
+        <div
+          className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-14 sm:px-6 sm:pb-16 sm:pt-5`}
+          style={{
+            // Respect iPhone notch / Dynamic Island so the grabber/X never get bitten by the OS UI.
+            paddingTop: "max(1rem, calc(0.75rem + env(safe-area-inset-top)))",
+          }}
+        >
           {/* Decorative wave SVG — rendered FIRST in DOM (z-0). All text content gets z-10. */}
           <svg
             className="pointer-events-none absolute -bottom-px left-0 right-0 z-0 h-6 w-full text-depth-950 sm:h-8"
@@ -112,10 +118,11 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           {/* Mobile grabber */}
           <div className="relative z-10 mx-auto mb-3 h-1 w-12 rounded-full bg-white/30 sm:hidden" />
 
-          {/* Close button — explicit z-20 so it always stays on top */}
+          {/* Close button — pushed below safe-area-inset-top on iOS notched devices */}
           <button
             onClick={onClose}
-            className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60 sm:right-4 sm:top-4"
+            className="absolute right-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60 sm:right-4 sm:top-4"
+            style={{ top: "max(0.75rem, calc(0.5rem + env(safe-area-inset-top)))" }}
             aria-label="Fermer"
           >
             <X className="h-4 w-4" />
@@ -262,7 +269,13 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
         </div>
 
         {/* === FOOTER ACTIONS === */}
-        <div className="flex shrink-0 gap-2 border-t border-white/[0.06] bg-depth-950 p-3 sm:p-4">
+        <div
+          className="flex shrink-0 gap-2 border-t border-white/[0.06] bg-depth-950 p-3 sm:p-4"
+          style={{
+            // Respect iPhone home indicator so the CTA buttons aren't covered.
+            paddingBottom: "max(0.75rem, calc(0.75rem + env(safe-area-inset-bottom)))",
+          }}
+        >
           <button
             onClick={handleShare}
             className="tap-target flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium transition hover:bg-white/10 active:scale-[0.98]"
