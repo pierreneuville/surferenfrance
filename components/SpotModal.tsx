@@ -97,13 +97,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
         onClick={(e) => e.stopPropagation()}
       >
         {/* === HERO === */}
-        <div
-          className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-14 sm:px-6 sm:pb-16 sm:pt-5`}
-          style={{
-            // Respect iPhone notch / Dynamic Island so the grabber/X never get bitten by the OS UI.
-            paddingTop: "max(1rem, calc(0.75rem + env(safe-area-inset-top)))",
-          }}
-        >
+        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-14 pt-3 sm:px-6 sm:pb-16 sm:pt-5`}>
           {/* Decorative wave SVG — rendered FIRST in DOM (z-0). All text content gets z-10. */}
           <svg
             className="pointer-events-none absolute -bottom-px left-0 right-0 z-0 h-6 w-full text-depth-950 sm:h-8"
@@ -118,11 +112,10 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           {/* Mobile grabber */}
           <div className="relative z-10 mx-auto mb-3 h-1 w-12 rounded-full bg-white/30 sm:hidden" />
 
-          {/* Close button — pushed below safe-area-inset-top on iOS notched devices */}
+          {/* Close button — sits inside the modal hero; max-h-[88dvh] keeps the modal top under the notch already. */}
           <button
             onClick={onClose}
-            className="absolute right-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60 sm:right-4 sm:top-4"
-            style={{ top: "max(0.75rem, calc(0.5rem + env(safe-area-inset-top)))" }}
+            className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60 sm:right-4 sm:top-4"
             aria-label="Fermer"
           >
             <X className="h-4 w-4" />
