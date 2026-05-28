@@ -5,6 +5,7 @@ import { Filters, SortKey } from "./Filters";
 import { QuickActions } from "./QuickActions";
 import { HotToday } from "./HotToday";
 import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
+import { getEngagement, recordExploredSpot, subscribeEngagement } from "@/lib/engagement";
 import { SpotCard } from "./SpotCard";
 import { SpotModal } from "./SpotModal";
 import { AdSlot } from "./AdSlot";
@@ -45,6 +46,7 @@ export function HomeContent() {
   const [hasGeo, setHasGeo] = useState(false);
   const [favorites, setFavoritesState] = useState<string[]>([]);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [exploredCount, setExploredCount] = useState(0);
 
   useEffect(() => { setHasGeo(typeof navigator !== "undefined" && !!navigator.geolocation); }, []);
 
@@ -54,6 +56,18 @@ export function HomeContent() {
     const unsub = subscribeFavorites(() => setFavoritesState(getFavorites()));
     return unsub;
   }, []);
+
+  // Sync engagement (explored count)
+  useEffect(() => {
+    setExploredCount(getEngagement().exploredSlugs.length);
+    const unsub = subscribeEngagement(() => setExploredCount(getEngagement().exploredSlugs.length));
+    return unsub;
+  }, []);
+
+  // Track spot exploration when a modal opens
+  useEffect(() => {
+    if (openSlug) recordExploredSpot(openSlug);
+  }, [openSlug]);
 
   useEffect(() => {
     try {
@@ -207,14 +221,23 @@ export function HomeContent() {
             </span>
           )}
         </span>
-        {loading && (
+        {loading ? (
           <div className="h-1 w-32 overflow-hidden rounded-full bg-white/5">
             <div
               className="h-full bg-gradient-to-r from-coral-400 via-sunset-400 to-sand-300 transition-all duration-300"
               style={{ width: `${(progress.done / Math.max(1, progress.total)) * 100}%` }}
             />
           </div>
-        )}
+        ) : exploredCount > 0 && SPOTS.length > 0 ? (
+          <span
+            className="hidden items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.025] px-2.5 py-1 text-[10px] uppercase tracking-widest text-white/45 sm:inline-flex"
+            title="Spots que tu as ouverts au moins une fois"
+          >
+            <span className="font-display text-xs font-bold text-sand-200">{exploredCount}</span>
+            <span className="text-white/30">/</span>
+            <span>{SPOTS.length} explorés</span>
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

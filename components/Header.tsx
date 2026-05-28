@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Logo, Wordmark } from "./Logo";
+import { StreakBadge } from "./StreakBadge";
 
 export function Header() {
   return (
@@ -19,10 +20,13 @@ export function Header() {
             </span>
           </span>
         </Link>
-        <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
-          <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
-          <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
-        </nav>
+        <div className="flex items-center gap-4">
+          <StreakBadge />
+          <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
+            <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
+            <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
+          </nav>
+        </div>
       </div>
     </header>
   );

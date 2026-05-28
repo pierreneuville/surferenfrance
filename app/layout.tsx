@@ -5,6 +5,7 @@ import { AdSenseScript } from "@/components/AdSenseScript";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { MilestoneToast } from "@/components/MilestoneToast";
 import { OnboardingSheet } from "@/components/OnboardingSheet";
 import { VersionWatcher } from "@/components/VersionWatcher";
 
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AdSenseScript />
         <CookieBanner />
         <OnboardingSheet />
+        <MilestoneToast />
         <VersionWatcher />
       </body>
     </html>
