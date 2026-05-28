@@ -61,34 +61,41 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — solid bg + max z-index so no content bleeds through */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-50 flex flex-col bg-depth-950/95 backdrop-blur-xl md:hidden"
+          className="fixed inset-0 z-[60] md:hidden"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <Logo size={32} />
-              <Wordmark className="text-lg" />
+          {/* Solid opaque background — guarantee no content bleed regardless of backdrop-blur support */}
+          <div className="absolute inset-0 bg-depth-950" aria-hidden />
+          {/* Subtle ambient glow on top of solid bg */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(244,63,94,0.18),transparent_60%)]" aria-hidden />
+
+          <div className="relative flex h-full flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <Logo size={32} />
+                <Wordmark className="text-lg" />
+              </div>
+              <button
+                onClick={() => setMenuOpen(false)}
+                aria-label="Fermer le menu"
+                className="tap-target grid h-9 w-9 place-items-center rounded-full bg-white/10"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <button
-              onClick={() => setMenuOpen(false)}
-              aria-label="Fermer le menu"
-              className="tap-target grid h-9 w-9 place-items-center rounded-full bg-white/5"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <nav className="flex flex-1 flex-col gap-1 p-4 text-base">
+              <MobileLink href="/#spots" onClick={() => setMenuOpen(false)}>🏄 Tous les spots</MobileLink>
+              <MobileLink href="/#a-propos" onClick={() => setMenuOpen(false)}>ℹ️ À propos du score</MobileLink>
+              <MobileLink href="/mentions-legales" onClick={() => setMenuOpen(false)}>Mentions légales</MobileLink>
+              <MobileLink href="/politique-confidentialite" onClick={() => setMenuOpen(false)}>Confidentialité</MobileLink>
+            </nav>
+            <p className="px-4 pb-6 text-center font-script text-sm text-sand-200/70">
+              yo, ta vague est prête.
+            </p>
           </div>
-          <nav className="flex flex-1 flex-col gap-1 p-4 text-base">
-            <MobileLink href="/#spots" onClick={() => setMenuOpen(false)}>🏄 Tous les spots</MobileLink>
-            <MobileLink href="/#a-propos" onClick={() => setMenuOpen(false)}>ℹ️ À propos du score</MobileLink>
-            <MobileLink href="/mentions-legales" onClick={() => setMenuOpen(false)}>Mentions légales</MobileLink>
-            <MobileLink href="/politique-confidentialite" onClick={() => setMenuOpen(false)}>Confidentialité</MobileLink>
-          </nav>
-          <p className="px-4 pb-6 text-center font-script text-sm text-sand-200/70">
-            yo, ta vague est prête.
-          </p>
         </div>
       )}
     </header>
