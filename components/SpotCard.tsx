@@ -1,6 +1,7 @@
 "use client";
 
-import { Compass, Sparkles, Waves, Wind, ExternalLink, MapPin } from "lucide-react";
+import { useState } from "react";
+import { Compass, Sparkles, Waves, Wind, ExternalLink, MapPin, Share2, Check } from "lucide-react";
 import Link from "next/link";
 import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
@@ -34,9 +35,29 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props
   const tone = scoreTone(score);
   const colors = SCORE_COLORS[tone];
   const gradient = REGION_GRADIENT[forecast.spot.region] ?? "from-ocean-400 to-ocean-700";
+  const [shared, setShared] = useState(false);
 
   // Compute the max score over 7 days for normalizing the mini chart
   const maxScore = Math.max(...forecast.days.map((day) => day.scoresByLevel?.[level] ?? day.score), 1);
+
+  async function handleShare(e: React.MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    const url = `${window.location.origin}/spot/${forecast.spot.slug}`;
+    const text = score >= 75
+      ? `🌊 ${forecast.spot.shortName} : ${score}/100 aujourd'hui. Tu viens ?`
+      : `${forecast.spot.shortName} — ${score}/100 sur Yosurf, la carte des vagues.`;
+    try {
+      const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+      if (nav.share) {
+        await nav.share({ title: `${forecast.spot.name} · Yosurf`, text, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShared(true);
+        setTimeout(() => setShared(false), 1800);
+      }
+    } catch { /* user cancelled */ }
+  }
 
   return (
     <article
@@ -137,15 +158,26 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props
         </div>
       </div>
 
-      {/* Bottom link */}
-      <Link
-        href={`/spot/${forecast.spot.slug}`}
-        onClick={(e) => e.stopPropagation()}
-        className="flex items-center justify-center gap-1.5 border-t border-white/[0.05] bg-white/[0.015] px-5 py-2.5 text-[11px] text-white/40 transition hover:bg-white/[0.04] hover:text-sand-200"
-      >
-        Voir la fiche complète
-        <ExternalLink className="h-3 w-3" />
-      </Link>
+      {/* Bottom links — fiche + partage */}
+      <div className="flex border-t border-white/[0.05]">
+        <Link
+          href={`/spot/${forecast.spot.slug}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex flex-1 items-center justify-center gap-1.5 bg-white/[0.015] px-3 py-2.5 text-[11px] text-white/40 transition hover:bg-white/[0.04] hover:text-sand-200"
+        >
+          Fiche complète
+          <ExternalLink className="h-3 w-3" />
+        </Link>
+        <button
+          onClick={handleShare}
+          className="tap-target flex items-center justify-center gap-1.5 border-l border-white/[0.05] bg-white/[0.015] px-4 py-2.5 text-[11px] text-white/40 transition hover:bg-white/[0.04] hover:text-sand-200"
+          aria-label="Partager ce spot"
+          title="Partager ce spot"
+        >
+          {shared ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Share2 className="h-3.5 w-3.5" />}
+          {shared ? "Copié" : "Partager"}
+        </button>
+      </div>
     </article>
   );
 }
