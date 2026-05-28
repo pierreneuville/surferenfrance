@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Bricolage_Grotesque } from "next/font/google";
+import { Inter, Bricolage_Grotesque, Caveat } from "next/font/google";
 import "./globals.css";
 import { AdSenseScript } from "@/components/AdSenseScript";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -17,6 +17,13 @@ const display = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
+});
+
+const script = Caveat({
+  subsets: ["latin"],
+  variable: "--font-script",
+  display: "swap",
+  weight: ["500", "600", "700"],
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://surf-france.vercel.app";
@@ -59,7 +66,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${sans.variable} ${display.variable}`}>
+    <html lang="fr" className={`${sans.variable} ${display.variable} ${script.variable}`}>
       <body className="font-sans flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">{children}</main>

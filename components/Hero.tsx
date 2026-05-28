@@ -1,53 +1,116 @@
 import Image from "next/image";
-import { ArrowDown, Waves } from "lucide-react";
+import { ArrowDown, MapPin, Waves } from "lucide-react";
 import { SPOTS } from "@/lib/spots";
+
+const HERO_IMG = "https://images.unsplash.com/photo-1502933691298-84fc14542831?auto=format&fit=crop&w=2400&q=80";
 
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
+      {/* Background — full-bleed surf shot with cinematic overlay */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="https://images.unsplash.com/photo-1502933691298-84fc14542831?auto=format&fit=crop&w=2400&q=80"
-          alt="Vague de surf en France"
+          src={HERO_IMG}
+          alt="Surfeur dans une vague au coucher du soleil sur la côte française"
           fill
           priority
-          className="object-cover opacity-50"
+          className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-depth-950/70 via-depth-950/60 to-depth-950" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ocean-950/50 via-transparent to-sunset-500/10" />
+        {/* Vignette + sunset glow + bottom fade for legibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-depth-950/60 via-depth-950/30 to-depth-950" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-ocean-950/60 via-transparent to-coral-500/15" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_30%,rgba(251,191,36,0.18),transparent_70%)]" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 py-20 md:py-28">
-        <div className="flex flex-col items-center text-center">
-          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-widest text-ocean-200 backdrop-blur">
-            <Waves className="h-3.5 w-3.5" />
-            {SPOTS.length} spots de l'Atlantique à la Méditerranée
+      {/* Top hairline accent */}
+      <div className="absolute left-1/2 top-12 -translate-x-1/2 text-sand-200/70 text-xs uppercase tracking-[0.4em] font-medium">
+        Carte vivante des vagues
+      </div>
+
+      <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col items-center justify-center px-5 pb-12 pt-24 text-center md:min-h-[92vh] md:pt-32">
+        {/* Live badge */}
+        <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] uppercase tracking-[0.18em] text-white backdrop-blur-md">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          <h1 className="font-display text-balance text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
-            <span className="bg-gradient-to-br from-white via-ocean-100 to-ocean-300 bg-clip-text text-transparent">
-              Trouve la vague.
-            </span>
-            <br />
-            <span className="bg-gradient-to-br from-sand-200 via-sand-300 to-sunset-400 bg-clip-text text-transparent">
-              Pose-toi sur la planche.
-            </span>
-          </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg text-white/70 md:text-xl">
-            Prévisions surf en temps réel pour toute la côte française.
-            Score de session par spot, meilleur créneau du jour, vagues, période et vent.
-          </p>
+          {SPOTS.length} spots · prévisions live
+        </span>
+
+        {/* Headline — display font + script accent */}
+        <h1 className="font-display text-balance text-[clamp(2.6rem,8vw,5.5rem)] font-bold leading-[0.95] tracking-tight">
+          <span className="text-gradient-ocean drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+            Trouve ta vague.
+          </span>
+          <br />
+          <span className="font-script font-semibold text-[1.15em] leading-[0.85] text-gradient-sunset drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+            embrasse la liberté.
+          </span>
+        </h1>
+
+        {/* Tagline */}
+        <p className="mt-7 max-w-xl text-pretty text-base text-white/85 sm:text-lg md:text-xl">
+          Du <span className="font-medium text-sand-200">Pas-de-Calais</span> à la <span className="font-medium text-sand-200">Méditerranée</span>,
+          la carte vivante des vagues françaises.
+          <br className="hidden sm:block" />
+          Trouve le spot. Choisis l'heure. Pose-toi sur la planche.
+        </p>
+
+        {/* Primary CTA + secondary */}
+        <div className="mt-10 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
           <a
             href="#spots"
-            className="mt-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-ocean-400 to-ocean-600 px-7 py-3 font-medium text-white shadow-lg shadow-ocean-500/40 transition hover:scale-[1.02] hover:shadow-xl hover:shadow-ocean-500/60"
+            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-coral-500 via-sunset-500 to-sand-400 px-7 py-3.5 text-base font-semibold text-white shadow-2xl shadow-coral-500/40 transition hover:scale-[1.02] hover:shadow-coral-500/60 active:scale-[0.98] sm:w-auto sm:text-lg"
           >
-            Voir les spots
-            <ArrowDown className="h-4 w-4 animate-bounce" />
+            <Waves className="h-4 w-4" />
+            Voir les sessions du jour
+            <span className="transition group-hover:translate-x-0.5">→</span>
+          </a>
+          <a
+            href="#a-propos"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white/80 backdrop-blur-md transition hover:bg-white/10 sm:py-3.5"
+          >
+            <MapPin className="h-4 w-4" />
+            Comment ça marche
           </a>
         </div>
+
+        {/* Mini stats — desktop only */}
+        <div className="mt-14 hidden gap-10 text-center md:flex">
+          <Stat number={SPOTS.length.toString()} label="spots couverts" />
+          <Stat number="6" label="régions du littoral" />
+          <Stat number="7j" label="de prévisions" />
+          <Stat number="24h" label="détail horaire" />
+        </div>
+
+        {/* Scroll cue */}
+        <a href="#spots" className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float text-white/60">
+          <ArrowDown className="h-5 w-5" />
+        </a>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-depth-950" />
+      {/* SVG wave divider at bottom — blends into the page bg */}
+      <svg
+        className="absolute bottom-0 left-0 right-0 h-16 w-full text-depth-950"
+        viewBox="0 0 1200 80"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M0 50 Q 150 0 300 40 T 600 40 T 900 40 T 1200 40 V80 H0 Z"
+          fill="currentColor"
+        />
+      </svg>
     </section>
+  );
+}
+
+function Stat({ number, label }: { number: string; label: string }) {
+  return (
+    <div>
+      <div className="font-display text-3xl font-bold text-gradient-golden">{number}</div>
+      <div className="mt-0.5 text-xs uppercase tracking-widest text-white/50">{label}</div>
+    </div>
   );
 }
