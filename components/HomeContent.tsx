@@ -145,21 +145,21 @@ export function HomeContent() {
         onNearMeToggle={requestGeo}
       />
 
-      <div className="mt-4 flex items-center justify-between text-xs text-white/40">
-        <span>
+      <div className="mt-4 flex items-center justify-between gap-3 text-xs text-white/45">
+        <span className="font-script text-base text-sand-200/80 sm:text-lg">
           {loading
-            ? `Chargement ${progress.done} / ${progress.total} spots…`
-            : `${visible.length} spot${visible.length > 1 ? "s" : ""} sur ${forecasts.length}`}
+            ? `Lecture des marées… ${progress.done}/${progress.total}`
+            : `${visible.length} spot${visible.length > 1 ? "s" : ""} en vue 🤙`}
           {updatedAt && !loading && (
-            <span className="ml-2">
-              · mis à jour à {updatedAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+            <span className="ml-2 font-sans text-[10px] uppercase tracking-widest text-white/35">
+              · maj {updatedAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
         </span>
         {loading && (
           <div className="h-1 w-32 overflow-hidden rounded-full bg-white/5">
             <div
-              className="h-full bg-gradient-to-r from-ocean-400 to-emerald-400 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-coral-400 via-sunset-400 to-sand-300 transition-all duration-300"
               style={{ width: `${(progress.done / Math.max(1, progress.total)) * 100}%` }}
             />
           </div>
@@ -201,18 +201,34 @@ export function HomeContent() {
         )}
       </div>
 
-      <section id="a-propos" className="mt-20 rounded-3xl border border-white/5 bg-white/[0.02] p-8">
-        <h2 className="font-display text-2xl font-bold">Comment on calcule le score ?</h2>
-        <p className="mt-3 text-white/70 text-pretty">
-          Le score 0–100 combine trois facteurs : la <strong>hauteur des vagues</strong> (40 %),
-          la <strong>période de la houle</strong> (30 %, plus c'est long, plus c'est puissant) et
-          le <strong>vent</strong> (30 %, avec bonus quand il est offshore — vent de terre vers la mer). Le score est
-          ajusté selon ton niveau (débutant, intermédiaire, confirmé) pour t'éviter de te retrouver
-          dans des conditions trop puissantes — ou trop molles.
-        </p>
-        <p className="mt-3 text-sm text-white/50">
-          Données fournies par <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="underline hover:text-ocean-300">Open-Meteo</a>,
-          mises à jour toutes les 6 heures. Modèle haute résolution 5 km sur les côtes européennes.
+      <section id="a-propos" className="mt-20 overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-ocean-950/40 via-depth-950 to-depth-950 p-8 sm:p-10">
+        <div className="mb-2 text-xs uppercase tracking-[0.3em] text-sand-200/70">À propos du score</div>
+        <h2 className="font-display text-3xl font-bold leading-tight sm:text-4xl">
+          <span className="text-gradient-ocean">Une note simple,</span>
+          <br />
+          <span className="font-script text-4xl text-gradient-sunset sm:text-5xl">trois ingrédients.</span>
+        </h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          <Pillar
+            icon="🌊"
+            title="La vague (40%)"
+            text="Sa hauteur. 1 à 2,5 m c'est souvent la zone douce. Trop petit = épuisant. Trop gros = uniquement pour ceux qui savent."
+          />
+          <Pillar
+            icon="⏱️"
+            title="La période (30%)"
+            text="Le temps entre deux vagues. Au-delà de 10 s, c'est de la vraie houle, formée loin au large — plus puissante, plus propre."
+          />
+          <Pillar
+            icon="💨"
+            title="Le vent (30%)"
+            text="Idéalement faible. Bonus quand il vient de la terre (offshore) : il sculpte les vagues. Malus s'il vient du large (onshore)."
+          />
+        </div>
+        <p className="mt-6 text-sm text-white/55">
+          Le score se recalcule selon ton niveau, pour que <em>Hossegor La Gravière</em> ne ressorte pas en débutant.
+          Données <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="underline hover:text-sand-200">Open-Meteo</a> rafraîchies toutes les 6 h,
+          modèle haute résolution 5 km sur les côtes françaises.
         </p>
       </section>
 
@@ -224,6 +240,16 @@ export function HomeContent() {
           onClose={() => setOpenSlug(null)}
         />
       )}
+    </div>
+  );
+}
+
+function Pillar({ icon, title, text }: { icon: string; title: string; text: string }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-5">
+      <div className="mb-2 text-2xl">{icon}</div>
+      <div className="mb-1 font-display text-lg font-bold">{title}</div>
+      <p className="text-sm leading-relaxed text-white/65">{text}</p>
     </div>
   );
 }

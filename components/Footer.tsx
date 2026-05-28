@@ -1,31 +1,72 @@
 import Link from "next/link";
-import { Waves } from "lucide-react";
+import { Github, Heart, Waves } from "lucide-react";
+
+const QUOTES = [
+  { text: "La meilleure planche est celle que tu prends.", author: "proverbe surfeur" },
+  { text: "Il n'y a pas de mauvaises vagues, juste des mauvais surfeurs.", author: "Laird Hamilton" },
+  { text: "Tout ce dont tu as besoin pour surfer, c'est un peu d'eau.", author: "Kelly Slater" },
+  { text: "Le surf, c'est un acte de foi en chaque vague.", author: "Tom Curren" },
+  { text: "L'océan ne nous appartient pas. On lui rend visite.", author: "—" },
+  { text: "Out there in the soup, you find yourself.", author: "Mickey Munoz" },
+];
 
 export function Footer() {
+  // Pick a quote based on date (rotates daily without RSC re-renders)
+  const quote = QUOTES[new Date().getDate() % QUOTES.length];
+
   return (
-    <footer className="mt-20 border-t border-white/5 bg-depth-950/80">
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-ocean-400 to-ocean-700">
+    <footer className="relative mt-24 overflow-hidden border-t border-white/[0.06] bg-depth-950/80">
+      {/* subtle bottom gradient glow */}
+      <div className="pointer-events-none absolute -bottom-32 left-1/2 h-64 w-[120%] -translate-x-1/2 rounded-full bg-gradient-to-t from-coral-500/10 via-sunset-500/5 to-transparent blur-3xl" />
+
+      <div className="relative mx-auto max-w-6xl px-4 py-12">
+        {/* Quote of the day */}
+        <div className="mx-auto max-w-2xl text-center">
+          <svg viewBox="0 0 200 30" className="mx-auto mb-4 h-6 w-32 text-ocean-400/50" aria-hidden>
+            <path d="M0 15 Q 25 0 50 15 T 100 15 T 150 15 T 200 15" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+          </svg>
+          <p className="font-script text-2xl leading-snug text-sand-200 sm:text-3xl">
+            « {quote.text} »
+          </p>
+          <p className="mt-2 text-xs uppercase tracking-widest text-white/40">
+            — {quote.author}
+          </p>
+        </div>
+
+        <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-white/[0.06] pt-8 sm:flex-row">
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-coral-500 via-sunset-500 to-sand-400">
               <Waves className="h-5 w-5 text-white" />
             </span>
             <div>
-              <div className="font-display font-bold">Surf France</div>
-              <div className="text-xs text-white/50">
-                Données : <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="hover:text-ocean-300">Open-Meteo</a>
-              </div>
+              <div className="font-display text-base font-bold">surferenfrance</div>
+              <div className="font-script text-sm text-sand-200/70">la carte des vagues</div>
             </div>
           </div>
-          <nav className="flex flex-wrap gap-4 text-sm text-white/60">
-            <Link href="/mentions-legales" className="hover:text-ocean-300">Mentions légales</Link>
-            <Link href="/politique-confidentialite" className="hover:text-ocean-300">Confidentialité</Link>
-            <a href="mailto:contact@example.com" className="hover:text-ocean-300">Contact</a>
+
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/60">
+            <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
+            <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
+            <Link href="/mentions-legales" className="transition hover:text-sand-200">Mentions légales</Link>
+            <Link href="/politique-confidentialite" className="transition hover:text-sand-200">Confidentialité</Link>
+            <a
+              href="https://github.com/pierreneuville/surferenfrance"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 transition hover:text-sand-200"
+            >
+              <Github className="h-3.5 w-3.5" />
+              Code
+            </a>
           </nav>
         </div>
-        <p className="mt-6 text-xs text-white/40 text-pretty">
-          Les scores sont indicatifs et calculés automatiquement à partir des prévisions. Vérifie toujours
-          les conditions sur place avant de te mettre à l'eau. Surfe à ton niveau, respecte les locaux et la nature 🌊
+
+        <p className="mt-8 text-center text-xs text-white/35">
+          Fait avec <Heart className="inline h-3 w-3 fill-coral-400 text-coral-400" /> en France · données{" "}
+          <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="underline hover:text-sand-200">
+            Open-Meteo
+          </a>
+          {" "}· surfe à ton niveau et respecte les locaux 🤙
         </p>
       </div>
     </footer>
