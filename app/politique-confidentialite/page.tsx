@@ -32,14 +32,15 @@ export default function PolitiqueConfidentialitePage() {
 
         <h2 className="font-display text-xl font-bold">Gestion du consentement</h2>
         <p>
-          Vous pouvez à tout moment retirer votre consentement en effaçant les cookies de votre navigateur,
-          ou en utilisant la fenêtre de gestion du consentement à votre prochaine visite.
+          Vous pouvez à tout moment retirer votre consentement via le module de consentement publicitaire
+          affiché sur le site, ou en effaçant les cookies de votre navigateur.
         </p>
 
         <h2 className="font-display text-xl font-bold">Partenaires publicitaires</h2>
         <p>
-          Nous utilisons Google AdSense pour diffuser de la publicité. Google peut déposer des cookies
-          pour personnaliser les annonces. Plus d'informations sur
+          Nous utilisons Google AdSense pour diffuser de la publicité. Google peut déposer des cookies,
+          sous réserve de votre consentement, pour personnaliser les annonces et mesurer leur performance.
+          Plus d'informations sur
           <a className="ml-1 text-ocean-300 underline" href="https://policies.google.com/technologies/ads" target="_blank" rel="noreferrer">les règles publicitaires Google</a>.
         </p>
       </div>

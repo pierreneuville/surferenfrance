@@ -6,7 +6,8 @@ export type Region =
   | "Atlantique Nord"
   | "Côte d'Argent"
   | "Pays Basque"
-  | "Méditerranée";
+  | "Méditerranée"
+  | "Corse";
 
 export interface Spot {
   slug: string;

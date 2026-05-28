@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
+import { AdSenseScript } from "@/components/AdSenseScript";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s · Surf France",
   },
   description:
-    "Les meilleures prévisions de surf en France : 34 spots du Pays Basque à la Bretagne, scores de session quotidiens, meilleur créneau horaire, vagues, houle et vent.",
+    "Les meilleures prévisions de surf en France : plus de 230 spots de la Côte d'Opale à la Corse, scores de session quotidiens, meilleur créneau horaire, vagues, houle et vent.",
   keywords: [
     "surf France",
     "prévisions surf",
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Surf France — Prévisions surf",
-    description: "Score de session quotidien pour 34 spots français.",
+    description: "Score de session quotidien pour 230+ spots français.",
   },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },
@@ -62,14 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <AdSenseScript />
         <CookieBanner />
-        {/* AdSense — décommenter une fois validé
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-          crossOrigin="anonymous"
-        />
-        */}
       </body>
     </html>
   );

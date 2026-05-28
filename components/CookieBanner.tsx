@@ -3,10 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Cookie } from "lucide-react";
+import { ADSENSE_CLIENT } from "@/lib/adsense";
 
 const STORAGE_KEY = "surf-cookie-consent-v1";
 
 export function CookieBanner() {
+  return ADSENSE_CLIENT ? null : <LocalCookieBanner />;
+}
+
+function LocalCookieBanner() {
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
@@ -18,9 +23,6 @@ export function CookieBanner() {
   const choose = (value: "all" | "essential") => {
     try { localStorage.setItem(STORAGE_KEY, value); } catch {}
     setShown(false);
-    if (value === "all") {
-      // hook for analytics/AdSense activation goes here
-    }
   };
 
   if (!shown) return null;

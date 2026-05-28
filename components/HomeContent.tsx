@@ -8,7 +8,8 @@ import { AdSlot } from "./AdSlot";
 import { EmptyState } from "./EmptyState";
 import { SkeletonCard } from "./SkeletonCard";
 import { SPOTS } from "@/lib/spots";
-import { fetchAllForecasts } from "@/lib/api";
+import { fetchAllForecastsProgressive } from "@/lib/api";
+import { ADSENSE_SLOT_IN_FEED } from "@/lib/adsense";
 import { haversineKm } from "@/lib/utils";
 import type { Level, SpotForecast } from "@/lib/types";
 
@@ -33,6 +34,7 @@ export function HomeContent() {
   const [search, setSearch] = useState("");
   const [forecasts, setForecasts] = useState<SpotForecast[]>([]);
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState<{ done: number; total: number }>({ done: 0, total: SPOTS.length });
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [openSlug, setOpenSlug] = useState<string | null>(null);
   const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
@@ -52,13 +54,24 @@ export function HomeContent() {
     try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch {}
   }, [prefs]);
 
-  // Refetch when level changes (score depends on it)
+  // Refetch when level changes (score depends on it). Progressive: cards stream in.
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetchAllForecasts(SPOTS, prefs.level).then((data) => {
+    setForecasts([]);
+    setProgress({ done: 0, total: SPOTS.length });
+    fetchAllForecastsProgressive(
+      SPOTS,
+      prefs.level,
+      ({ results, done, total }) => {
+        if (cancelled) return;
+        setForecasts(results);
+        setProgress({ done, total });
+      },
+      () => cancelled,
+      20
+    ).then(() => {
       if (cancelled) return;
-      setForecasts(data);
       setUpdatedAt(new Date());
       setLoading(false);
     });
@@ -123,25 +136,33 @@ export function HomeContent() {
 
       <div className="mt-4 flex items-center justify-between text-xs text-white/40">
         <span>
-          {loading ? "Chargement…" : `${visible.length} spot${visible.length > 1 ? "s" : ""}`}
+          {loading
+            ? `Chargement ${progress.done} / ${progress.total} spots…`
+            : `${visible.length} spot${visible.length > 1 ? "s" : ""} sur ${forecasts.length}`}
           {updatedAt && !loading && (
             <span className="ml-2">
               · mis à jour à {updatedAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
         </span>
+        {loading && (
+          <div className="h-1 w-32 overflow-hidden rounded-full bg-white/5">
+            <div
+              className="h-full bg-gradient-to-r from-ocean-400 to-emerald-400 transition-all duration-300"
+              style={{ width: `${(progress.done / Math.max(1, progress.total)) * 100}%` }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {loading
-          ? Array.from({ length: 9 }, (_, i) => <SkeletonCard key={i} />)
-          : visible.length === 0
-          ? (
-            <div className="col-span-full">
-              <EmptyState message="Aucun spot ne correspond à tes filtres." />
-            </div>
-          )
-          : visible.flatMap(({ f, distanceKm }, idx) => {
+        {visible.length === 0 && !loading ? (
+          <div className="col-span-full">
+            <EmptyState message="Aucun spot ne correspond à tes filtres." />
+          </div>
+        ) : (
+          <>
+            {visible.flatMap(({ f, distanceKm }, idx) => {
               const card = (
                 <SpotCard
                   key={f.spot.slug}
@@ -156,12 +177,17 @@ export function HomeContent() {
                 return [
                   card,
                   <div key={`ad-${idx}`} className="col-span-full">
-                    <AdSlot label="Publicité in-feed" className="my-2" />
+                    <AdSlot slot={ADSENSE_SLOT_IN_FEED} label="Publicité in-feed" className="my-2" />
                   </div>,
                 ];
               }
               return [card];
             })}
+            {loading && Array.from({ length: Math.min(6, progress.total - progress.done) }, (_, i) => (
+              <SkeletonCard key={`skel-${i}`} />
+            ))}
+          </>
+        )}
       </div>
 
       <section id="a-propos" className="mt-20 rounded-3xl border border-white/5 bg-white/[0.02] p-8">

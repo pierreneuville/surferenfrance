@@ -29,7 +29,9 @@ vercel --prod # déploiement production
 | Variable | Valeur exemple | Quand |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `https://ousurfer.fr` | Dès que tu as ton domaine (sitemap + canonicals) |
-| `NEXT_PUBLIC_ADSENSE_CLIENT` | `ca-pub-XXXXXXXXXXXXXXXX` | Après validation AdSense |
+| `NEXT_PUBLIC_ADSENSE_CLIENT` | `ca-pub-XXXXXXXXXXXXXXXX` | Dès que le site est ajouté dans AdSense |
+| `NEXT_PUBLIC_ADSENSE_SLOT_IN_FEED` | `1234567890` | Après création du bloc in-feed |
+| `NEXT_PUBLIC_ADSENSE_SLOT_SPOT_DETAIL` | `1234567890` | Après création du bloc page spot |
 
 ---
 
@@ -65,7 +67,7 @@ components/           UI components
 └── CookieBanner      Consentement RGPD
 
 lib/
-├── spots.ts          Liste des 34 spots avec coordonnées + descriptions
+├── spots.ts          Catalogue de 231 spots français avec coordonnées + descriptions
 ├── api.ts            Fetch Open-Meteo (vagues + vent) + scoring horaire
 ├── score.ts          Score 0-100, adapté au niveau du surfeur
 └── utils.ts          Helpers (distance, formatage, etc.)
@@ -94,14 +96,13 @@ L'app est **prête pour la publicité** au niveau code. Reste à faire côté bu
 
 ### 3. Une fois AdSense validé
 - [ ] Ajoute `NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-XXXX...` dans Vercel
-- [ ] Décommente le `<script>` dans `app/layout.tsx`
 - [ ] Crée tes blocs publicitaires dans la console AdSense, récupère les `slot` IDs
-- [ ] Passe le `slot` à chaque `<AdSlot slot="..." />`
-- [ ] Remplis `public/ads.txt` avec ta ligne AdSense
+- [ ] Ajoute `NEXT_PUBLIC_ADSENSE_SLOT_IN_FEED` et `NEXT_PUBLIC_ADSENSE_SLOT_SPOT_DETAIL` dans Vercel
+- [ ] Vérifie `https://ton-domaine.fr/ads.txt` après déploiement
+- [ ] Active les annonces automatiques dans AdSense si tu veux que Google teste d'autres emplacements
 
 ### 4. Conformité RGPD (obligatoire en France)
-- [x] Bandeau de consentement (CookieBanner) — version minimale
-- [ ] **À faire** : installer un **CMP certifié IAB TCF v2.2**. Recommandé : [Funding Choices](https://fundingchoices.google.com/) (gratuit, parfaitement intégré à AdSense)
+- [ ] **À faire dans AdSense** : activer un message RGPD via **Confidentialité et messages** ou installer une **CMP certifiée Google / IAB TCF v2.2**
 - [x] Politique de confidentialité (à compléter avec ton nom/contact)
 - [x] Mentions légales (à compléter)
 

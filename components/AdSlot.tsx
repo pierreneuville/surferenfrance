@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { ADSENSE_CLIENT } from "@/lib/adsense";
+
+declare global {
+  interface Window {
+    adsbygoogle?: Array<Record<string, unknown>>;
+  }
+}
 
 interface AdSlotProps {
   slot?: string;
@@ -9,20 +16,23 @@ interface AdSlotProps {
   label?: string;
 }
 
-const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
-
 export function AdSlot({ slot, format = "auto", className, label = "Publicité" }: AdSlotProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const pushedSlotRef = useRef<string | null>(null);
+  const isConfigured = Boolean(ADSENSE_CLIENT && slot);
 
   useEffect(() => {
-    if (!ADSENSE_CLIENT || !slot) return;
+    if (!isConfigured || !slot || pushedSlotRef.current === slot) return;
     try {
-      // @ts-expect-error AdSense injects this global
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch { /* noop */ }
-  }, [slot]);
+      window.adsbygoogle = window.adsbygoogle || [];
+      window.adsbygoogle.push({});
+      pushedSlotRef.current = slot;
+    } catch {
+      pushedSlotRef.current = null;
+    }
+  }, [isConfigured, slot]);
 
-  if (!ADSENSE_CLIENT || !slot) {
+  if (!isConfigured) {
     return (
       <div
         ref={ref}

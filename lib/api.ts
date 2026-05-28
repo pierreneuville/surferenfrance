@@ -59,41 +59,76 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
   return { spot, days, hourly };
 }
 
+function emptyForecast(spot: Spot): SpotForecast {
+  return {
+    spot,
+    days: Array.from({ length: 7 }, () => ({
+      date: "",
+      waveHeight: null,
+      wavePeriod: null,
+      waveDir: null,
+      windSpeed: null,
+      windDir: null,
+      windGusts: null,
+      sunrise: null,
+      sunset: null,
+      score: 0,
+    })),
+    hourly: {
+      times: [], waveHeight: [], wavePeriod: [], waveDir: [], seaTemp: [],
+      windSpeed: [], windDir: [], windGusts: [], airTemp: [],
+    },
+  };
+}
+
 export async function fetchAllForecasts(spots: Spot[], level: Level = "intermediate"): Promise<SpotForecast[]> {
   return Promise.all(
     spots.map(async (spot) => {
-      try {
-        return await fetchSpotForecast(spot, level);
-      } catch (e) {
-        return {
-          spot,
-          days: Array(7).fill({
-            date: "",
-            waveHeight: null,
-            wavePeriod: null,
-            waveDir: null,
-            windSpeed: null,
-            windDir: null,
-            windGusts: null,
-            sunrise: null,
-            sunset: null,
-            score: 0,
-          }),
-          hourly: {
-            times: [],
-            waveHeight: [],
-            wavePeriod: [],
-            waveDir: [],
-            seaTemp: [],
-            windSpeed: [],
-            windDir: [],
-            windGusts: [],
-            airTemp: [],
-          },
-        };
-      }
+      try { return await fetchSpotForecast(spot, level); }
+      catch { return emptyForecast(spot); }
     })
   );
+}
+
+export interface ProgressUpdate {
+  results: SpotForecast[];
+  done: number;
+  total: number;
+}
+
+/**
+ * Fetch all spots with a concurrency-limited worker pool.
+ * onProgress fires after every completed fetch.
+ * cancelled() lets the caller abort cleanly.
+ */
+export async function fetchAllForecastsProgressive(
+  spots: Spot[],
+  level: Level,
+  onProgress: (u: ProgressUpdate) => void,
+  cancelled: () => boolean = () => false,
+  concurrency = 20
+): Promise<SpotForecast[]> {
+  const results: SpotForecast[] = [];
+  let nextIdx = 0;
+  const total = spots.length;
+
+  async function worker() {
+    while (true) {
+      if (cancelled()) return;
+      const idx = nextIdx++;
+      if (idx >= total) return;
+      const spot = spots[idx];
+      let res: SpotForecast;
+      try { res = await fetchSpotForecast(spot, level); }
+      catch { res = emptyForecast(spot); }
+      if (cancelled()) return;
+      results.push(res);
+      onProgress({ results: [...results], done: results.length, total });
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, total) }, () => worker()));
+  return results;
 }
 
 export interface BestWindow {

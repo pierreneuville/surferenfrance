@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Spot, SpotForecast, Level } from "@/lib/types";
 import { fetchSpotForecast } from "@/lib/api";
+import { ADSENSE_SLOT_SPOT_DETAIL } from "@/lib/adsense";
 import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
@@ -74,7 +75,7 @@ export function SpotDetailClient({ spot }: Props) {
         <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="Soleil" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
       </div>
 
-      <AdSlot label="Publicité — page spot" />
+      <AdSlot slot={ADSENSE_SLOT_SPOT_DETAIL} format="rectangle" label="Publicité — page spot" />
 
       <div>
         <div className="mb-3 text-xs uppercase tracking-wider text-white/50">Heure par heure</div>
