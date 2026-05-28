@@ -339,3 +339,23 @@ export const SPOTS: Spot[] = [
 export function getSpotBySlug(slug: string): Spot | undefined {
   return SPOTS.find((s) => s.slug === slug);
 }
+
+const EARTH_KM = 6371;
+function distKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 2 * EARTH_KM * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** Returns the N closest spots to the given one, sorted by distance ascending. */
+export function getNearbySpots(spot: Spot, count = 4): Array<{ spot: Spot; km: number }> {
+  return SPOTS
+    .filter((s) => s.slug !== spot.slug)
+    .map((s) => ({ spot: s, km: distKm(spot.lat, spot.lon, s.lat, s.lon) }))
+    .sort((a, b) => a.km - b.km)
+    .slice(0, count);
+}

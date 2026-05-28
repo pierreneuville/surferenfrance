@@ -112,12 +112,13 @@ export function SpotDetailClient({ spot }: Props) {
         <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="Soleil" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
       </div>
 
-      <AdSlot slot={ADSENSE_SLOT_SPOT_DETAIL} format="rectangle" label="Publicité — page spot" />
-
       <div>
         <div className="mb-3 text-xs uppercase tracking-wider text-white/50">Heure par heure</div>
         <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
       </div>
+
+      {/* Ad placed AFTER hourly so it doesn't push useful data below the fold */}
+      <AdSlot slot={ADSENSE_SLOT_SPOT_DETAIL} format="auto" label="Publicité" className="mt-2" />
     </div>
   );
 }
