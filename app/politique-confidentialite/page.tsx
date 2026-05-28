@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
+  alternates: { canonical: "/politique-confidentialite" },
   robots: { index: false, follow: true },
 };
 

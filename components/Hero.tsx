@@ -81,7 +81,7 @@ export function Hero() {
         {/* Mini stats — desktop only */}
         <div className="mt-14 hidden gap-10 text-center md:flex">
           <Stat number={SPOTS.length.toString()} label="spots couverts" />
-          <Stat number="6" label="régions du littoral" />
+          <Stat number="7" label="régions du littoral" />
           <Stat number="7j" label="de prévisions" />
           <Stat number="24h" label="détail horaire" />
         </div>

@@ -4,7 +4,9 @@ import { ArrowLeft, ExternalLink, MapPin, Waves, Wind, AlertTriangle, Compass } 
 import type { Metadata } from "next";
 import { getSpotBySlug, getNearbySpots, SPOTS, REGION_EMOJI } from "@/lib/spots";
 import { SpotDetailClient } from "@/components/SpotDetailClient";
+import { JsonLd } from "@/components/JsonLd";
 import type { Level } from "@/lib/types";
+import { REGION_SLUGS, SITE_NAME, absoluteUrl, spotKeywords } from "@/lib/seo";
 
 interface PageProps { params: Promise<{ slug: string }> }
 
@@ -16,13 +18,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const spot = getSpotBySlug(slug);
   if (!spot) return { title: "Spot introuvable" };
+  const title = `Prévisions surf ${spot.shortName} — vagues, houle et vent`;
+  const description = `Prévisions surf ${spot.name} (${spot.department}) : score de session, hauteur des vagues, période de houle, vent, meilleur créneau du jour et spots à proximité.`;
   return {
-    title: `Surf ${spot.shortName} — prévisions vagues, houle et vent`,
-    description: `Prévisions de surf en temps réel à ${spot.name} (${spot.department}) : hauteur de vagues, période de houle, vent, meilleur créneau du jour. Spots à proximité.`,
+    title,
+    description,
     alternates: { canonical: `/spot/${spot.slug}` },
+    keywords: spotKeywords(spot),
     openGraph: {
-      title: `Surf à ${spot.shortName} — prévisions du jour`,
-      description: spot.description,
+      title: `${title} · ${SITE_NAME}`,
+      description,
+      url: absoluteUrl(`/spot/${spot.slug}`),
+      type: "article",
+      images: [{ url: `/spot/${spot.slug}/opengraph-image`, width: 1200, height: 630, alt: `Prévisions surf ${spot.name}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`/spot/${spot.slug}/opengraph-image`],
     },
   };
 }
@@ -78,19 +92,74 @@ export default async function SpotPage({ params }: PageProps) {
   if (!spot) notFound();
   const nearby = getNearbySpots(spot, 4);
   const levelKey = spot.level as Level;
+  const faqs = spotFaqs(spot, nearby.map((item) => item.spot));
 
+  const pageUrl = absoluteUrl(`/spot/${spot.slug}`);
   const ld = {
     "@context": "https://schema.org",
-    "@type": "TouristAttraction",
-    name: spot.name,
-    description: spot.description,
-    address: { "@type": "PostalAddress", addressCountry: "FR", addressRegion: spot.department },
-    geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: `Prévisions surf ${spot.name}`,
+        description: spot.description,
+        isPartOf: { "@id": `${absoluteUrl("/")}#website` },
+        breadcrumb: { "@id": `${pageUrl}#breadcrumb` },
+        about: { "@id": `${pageUrl}#spot` },
+        inLanguage: "fr-FR",
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Accueil", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Spots", item: absoluteUrl("/spots") },
+          { "@type": "ListItem", position: 3, name: spot.region, item: absoluteUrl(`/region/${REGION_SLUGS[spot.region]}`) },
+          { "@type": "ListItem", position: 4, name: spot.name, item: pageUrl },
+        ],
+      },
+      {
+        "@type": ["Place", "TouristAttraction", "SportsActivityLocation"],
+        "@id": `${pageUrl}#spot`,
+        name: spot.name,
+        alternateName: spot.shortName,
+        description: spot.description,
+        sport: "Surfing",
+        address: { "@type": "PostalAddress", addressCountry: "FR", addressRegion: spot.department },
+        geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
+        url: pageUrl,
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${pageUrl}#nearby`,
+        name: `Spots de surf proches de ${spot.shortName}`,
+        itemListElement: nearby.map(({ spot: nearbySpot }, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: nearbySpot.name,
+          url: absoluteUrl(`/spot/${nearbySpot.slug}`),
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${pageUrl}#faq`,
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+    ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <link rel="alternate" type="text/markdown" href={`/spot/${spot.slug}/llms.txt`} title={`${spot.name} LLM summary`} />
+      <JsonLd data={ld} />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
         <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-sand-200">
           <ArrowLeft className="h-4 w-4" />
@@ -98,8 +167,12 @@ export default async function SpotPage({ params }: PageProps) {
         </Link>
 
         {/* Header */}
-        <div className="mb-2 text-sm text-ocean-300">
-          {REGION_EMOJI[spot.region]} {spot.region} · {spot.department}
+        <div className="mb-2 flex flex-wrap items-center gap-2 text-sm text-ocean-300">
+          <Link href={`/region/${REGION_SLUGS[spot.region]}`} className="hover:text-sand-200">
+            {REGION_EMOJI[spot.region]} {spot.region}
+          </Link>
+          <span className="text-white/25">·</span>
+          <span>{spot.department}</span>
         </div>
         <h1 className="font-display text-4xl font-bold md:text-5xl">{spot.name}</h1>
         <p className="mt-3 max-w-2xl text-pretty text-white/70">{spot.description}</p>
@@ -130,6 +203,26 @@ export default async function SpotPage({ params }: PageProps) {
               <SeoBlock icon={<AlertTriangle className="h-4 w-4" />} title="Sécurité">
                 Surfe avec une combinaison adaptée. Repère les courants avant d'aller à l'eau. Respecte les locaux et la priorité. Vérifie la météo et la marée.
               </SeoBlock>
+            </section>
+
+            <section className="mt-10" aria-labelledby="faq-spot">
+              <h2 id="faq-spot" className="font-display text-2xl font-bold">
+                Questions fréquentes sur {spot.shortName}
+              </h2>
+              <div className="mt-4 grid gap-3">
+                {faqs.map((faq) => (
+                  <details
+                    key={faq.question}
+                    className="group rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 open:bg-white/[0.04]"
+                  >
+                    <summary className="cursor-pointer list-none font-display text-lg font-bold text-white/90">
+                      {faq.question}
+                      <span className="float-right ml-3 text-ocean-300 transition group-open:rotate-45">+</span>
+                    </summary>
+                    <p className="mt-3 text-pretty text-sm leading-relaxed text-white/65">{faq.answer}</p>
+                  </details>
+                ))}
+              </div>
             </section>
           </div>
 
@@ -211,4 +304,33 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
 function offshoreCardinal(deg: number): string {
   const dirs = ["Nord", "Nord-Est", "Est", "Sud-Est", "Sud", "Sud-Ouest", "Ouest", "Nord-Ouest"];
   return dirs[Math.round(deg / 45) % 8];
+}
+
+function spotFaqs(spot: NonNullable<ReturnType<typeof getSpotBySlug>>, nearby: NonNullable<ReturnType<typeof getSpotBySlug>>[]) {
+  const levelLabel = LEVEL_LABEL[spot.level as Level].toLowerCase();
+  const nearbyNames = nearby.slice(0, 3).map((item) => item.shortName).join(", ");
+
+  return [
+    {
+      question: `Quand surfer à ${spot.shortName} ?`,
+      answer: whenToSurf(spot),
+    },
+    {
+      question: `${spot.shortName} est-il adapté aux débutants ?`,
+      answer:
+        spot.level === "beginner"
+          ? `${spot.shortName} est plutôt accessible aux débutants quand les vagues restent petites et que le vent est faible. Vérifie tout de même les courants, la marée et les consignes locales avant d'entrer à l'eau.`
+          : `${spot.shortName} est plutôt conseillé aux surfeurs de niveau ${levelLabel}. Si tu débutes, privilégie une école de surf, une petite houle et une marée adaptée, ou cherche un spot plus abrité à proximité.`,
+    },
+    {
+      question: `Quel vent est idéal pour ${spot.shortName} ?`,
+      answer: `Le vent idéal à ${spot.shortName} vient globalement de ${offshoreCardinal(spot.offshore)} : il est offshore, donc il aide à lisser et tenir les vagues. Un vent fort venant du large dégrade généralement les conditions.`,
+    },
+    {
+      question: `Quels spots de surf sont proches de ${spot.shortName} ?`,
+      answer: nearbyNames
+        ? `Autour de ${spot.shortName}, tu peux aussi regarder les conditions à ${nearbyNames}. Compare les scores, le vent et l'orientation de houle avant de choisir où surfer.`
+        : `Les spots proches de ${spot.shortName} sont listés sur la fiche avec leur distance. Compare toujours l'exposition à la houle et le vent avant de partir.`,
+    },
+  ];
 }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Github, Heart } from "lucide-react";
 import { Logo, Wordmark } from "./Logo";
+import { REGION_EMOJI, REGIONS } from "@/lib/spots";
+import { REGION_SLUGS } from "@/lib/seo";
 
 const QUOTES = [
   { text: "La meilleure planche est celle que tu prends.", author: "proverbe surfeur" },
@@ -43,6 +45,7 @@ export function Footer() {
 
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/60">
             <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
+            <Link href="/spots" className="transition hover:text-sand-200">Index des spots</Link>
             <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
             <Link href="/mentions-legales" className="transition hover:text-sand-200">Mentions légales</Link>
             <Link href="/politique-confidentialite" className="transition hover:text-sand-200">Confidentialité</Link>
@@ -65,6 +68,21 @@ export function Footer() {
           </a>
           {" "}· surfe à ton niveau et respecte les locaux 🤙
         </p>
+
+        <nav
+          aria-label="Prévisions surf par région"
+          className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-white/45"
+        >
+          {REGIONS.map((region) => (
+            <Link
+              key={region}
+              href={`/region/${REGION_SLUGS[region]}`}
+              className="rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 transition hover:border-ocean-400/40 hover:text-ocean-200"
+            >
+              {REGION_EMOJI[region]} {region}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   );

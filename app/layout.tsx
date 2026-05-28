@@ -8,6 +8,8 @@ import { Header } from "@/components/Header";
 import { MilestoneToast } from "@/components/MilestoneToast";
 import { OnboardingSheet } from "@/components/OnboardingSheet";
 import { VersionWatcher } from "@/components/VersionWatcher";
+import { JsonLd } from "@/components/JsonLd";
+import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from "@/lib/seo";
 
 const sans = Inter({
   subsets: ["latin"],
@@ -28,21 +30,22 @@ const script = Caveat({
   weight: ["500", "600", "700"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yosurf.vercel.app";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Yosurf — yo, ta vague est prête",
-    template: "%s · Yosurf",
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s · ${SITE_NAME}`,
   },
-  description:
-    "Yosurf : la carte vivante des vagues françaises. 231 spots de la Côte d'Opale à la Corse, score de session, meilleur créneau du jour, vagues, houle et vent — gratuit, sans compte.",
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  category: "weather",
   keywords: [
-    "Yosurf",
+    SITE_NAME,
     "surf France",
     "prévisions surf",
     "houle France",
+    "météo surf",
+    "score surf",
     "vagues",
     "Hossegor",
     "Biarritz",
@@ -50,21 +53,27 @@ export const metadata: Metadata = {
     "La Torche",
     "spots de surf",
   ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   openGraph: {
-    title: "Yosurf — yo, ta vague est prête",
-    description: "La carte vivante des vagues françaises. 231 spots, score du jour, meilleur créneau.",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: DEFAULT_DESCRIPTION,
     type: "website",
     locale: "fr_FR",
     url: SITE_URL,
-    siteName: "Yosurf",
+    siteName: SITE_NAME,
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE_NAME} - ${SITE_TAGLINE}` }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yosurf — la carte des vagues",
-    description: "Score de session quotidien pour 231 spots français.",
+    title: `${SITE_NAME} — prévisions surf`,
+    description: DEFAULT_DESCRIPTION,
+    images: ["/opengraph-image"],
   },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },
+  icons: { icon: "/icon.svg" },
 };
 
 // viewport-fit=cover is REQUIRED for env(safe-area-inset-*) to populate on iOS notched devices.
@@ -76,9 +85,49 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}#website`,
+        url: SITE_URL,
+        name: SITE_NAME,
+        alternateName: ["Yo Surf", "Yosurf France"],
+        description: DEFAULT_DESCRIPTION,
+        inLanguage: "fr-FR",
+        publisher: { "@id": `${SITE_URL}#organization` },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}#organization`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: absoluteUrl("/icon.svg"),
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": `${SITE_URL}#app`,
+        name: SITE_NAME,
+        applicationCategory: "WeatherApplication",
+        operatingSystem: "Web",
+        url: SITE_URL,
+        description: DEFAULT_DESCRIPTION,
+        inLanguage: "fr-FR",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+        publisher: { "@id": `${SITE_URL}#organization` },
+      },
+    ],
+  };
+
   return (
     <html lang="fr" className={`${sans.variable} ${display.variable} ${script.variable}`}>
+      <head>
+        <link rel="alternate" type="text/markdown" href="/llms.txt" title={`${SITE_NAME} LLM summary`} />
+        <link rel="alternate" type="text/markdown" href="/llms-full.txt" title={`${SITE_NAME} full LLM context`} />
+      </head>
       <body className="font-sans flex min-h-screen flex-col">
+        <JsonLd data={jsonLd} />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

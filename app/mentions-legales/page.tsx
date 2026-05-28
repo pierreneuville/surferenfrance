@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Mentions légales",
+  alternates: { canonical: "/mentions-legales" },
   robots: { index: false, follow: true },
 };
 

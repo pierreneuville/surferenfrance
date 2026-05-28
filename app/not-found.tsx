@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Compass, Waves } from "lucide-react";
+import { SPOTS } from "@/lib/spots";
 
 export default function NotFound() {
   return (
@@ -36,7 +37,7 @@ export default function NotFound() {
           className="tap-target inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-white/80 backdrop-blur transition hover:bg-white/10"
         >
           <Compass className="h-4 w-4" />
-          Explorer les 231 spots
+          Explorer les {SPOTS.length} spots
         </Link>
       </div>
     </div>
