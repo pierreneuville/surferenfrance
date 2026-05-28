@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Github, Heart, Waves } from "lucide-react";
+import { Github, Heart } from "lucide-react";
+import { Logo, Wordmark } from "./Logo";
 
 const QUOTES = [
   { text: "La meilleure planche est celle que tu prends.", author: "proverbe surfeur" },
@@ -11,12 +12,10 @@ const QUOTES = [
 ];
 
 export function Footer() {
-  // Pick a quote based on date (rotates daily without RSC re-renders)
   const quote = QUOTES[new Date().getDate() % QUOTES.length];
 
   return (
     <footer className="relative mt-24 overflow-hidden border-t border-white/[0.06] bg-depth-950/80">
-      {/* subtle bottom gradient glow */}
       <div className="pointer-events-none absolute -bottom-32 left-1/2 h-64 w-[120%] -translate-x-1/2 rounded-full bg-gradient-to-t from-coral-500/10 via-sunset-500/5 to-transparent blur-3xl" />
 
       <div className="relative mx-auto max-w-6xl px-4 py-12">
@@ -35,11 +34,9 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-white/[0.06] pt-8 sm:flex-row">
           <div className="flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-coral-500 via-sunset-500 to-sand-400">
-              <Waves className="h-5 w-5 text-white" />
-            </span>
+            <Logo size={40} />
             <div>
-              <div className="font-display text-base font-bold">surferenfrance</div>
+              <Wordmark className="text-lg" />
               <div className="font-script text-sm text-sand-200/70">la carte des vagues</div>
             </div>
           </div>

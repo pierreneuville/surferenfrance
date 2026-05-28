@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SPOTS } from "@/lib/spots";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://surf-france.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yosurf.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

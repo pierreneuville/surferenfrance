@@ -14,7 +14,7 @@ export default function PolitiqueConfidentialitePage() {
 
         <h2 className="font-display text-xl font-bold">Données collectées</h2>
         <p>
-          Surf France ne demande aucune création de compte. Nous collectons uniquement
+          Yosurf ne demande aucune création de compte. Nous collectons uniquement
           les données suivantes, avec votre consentement explicite :
         </p>
         <ul className="ml-6 list-disc space-y-1">

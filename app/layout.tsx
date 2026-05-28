@@ -26,17 +26,18 @@ const script = Caveat({
   weight: ["500", "600", "700"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://surf-france.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yosurf.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Surf France — Prévisions vagues, houle & vent en temps réel",
-    template: "%s · Surf France",
+    default: "Yosurf — yo, ta vague est prête",
+    template: "%s · Yosurf",
   },
   description:
-    "Les meilleures prévisions de surf en France : plus de 230 spots de la Côte d'Opale à la Corse, scores de session quotidiens, meilleur créneau horaire, vagues, houle et vent.",
+    "Yosurf : la carte vivante des vagues françaises. 231 spots de la Côte d'Opale à la Corse, score de session, meilleur créneau du jour, vagues, houle et vent — gratuit, sans compte.",
   keywords: [
+    "Yosurf",
     "surf France",
     "prévisions surf",
     "houle France",
@@ -48,17 +49,17 @@ export const metadata: Metadata = {
     "spots de surf",
   ],
   openGraph: {
-    title: "Surf France — Trouvez où surfer aujourd'hui",
-    description: "Les meilleurs spots de surf en France, avec un score de session quotidien et le meilleur créneau horaire.",
+    title: "Yosurf — yo, ta vague est prête",
+    description: "La carte vivante des vagues françaises. 231 spots, score du jour, meilleur créneau.",
     type: "website",
     locale: "fr_FR",
     url: SITE_URL,
-    siteName: "Surf France",
+    siteName: "Yosurf",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Surf France — Prévisions surf",
-    description: "Score de session quotidien pour 230+ spots français.",
+    title: "Yosurf — la carte des vagues",
+    description: "Score de session quotidien pour 231 spots français.",
   },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },

@@ -12,7 +12,7 @@ export default function MentionsLegalesPage() {
       <div className="prose prose-invert mt-6 space-y-4 text-white/80">
         <h2 className="font-display text-xl font-bold">Éditeur</h2>
         <p>
-          Surf France — site édité par <strong>[Nom de l'éditeur]</strong>, [statut juridique], [adresse], [SIREN].
+          Yosurf — site édité par <strong>[Nom de l'éditeur]</strong>, [statut juridique], [adresse], [SIREN].
           Directeur de la publication : [Nom].
         </p>
         <p>Contact : <a href="mailto:contact@example.com" className="text-ocean-300 underline">contact@example.com</a></p>

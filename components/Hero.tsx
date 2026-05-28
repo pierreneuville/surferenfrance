@@ -25,7 +25,7 @@ export function Hero() {
 
       {/* Top hairline accent */}
       <div className="absolute left-1/2 top-12 -translate-x-1/2 text-sand-200/70 text-xs uppercase tracking-[0.4em] font-medium">
-        Carte vivante des vagues
+        la carte des vagues
       </div>
 
       <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col items-center justify-center px-5 pb-12 pt-24 text-center md:min-h-[92vh] md:pt-32">
@@ -35,26 +35,28 @@ export function Hero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          {SPOTS.length} spots · prévisions live
+          {SPOTS.length} spots · live
         </span>
 
         {/* Headline — display font + script accent */}
         <h1 className="font-display text-balance text-[clamp(2.6rem,8vw,5.5rem)] font-bold leading-[0.95] tracking-tight">
           <span className="text-gradient-ocean drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-            Trouve ta vague.
+            Yo,
+          </span>{" "}
+          <span className="text-gradient-ocean drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+            ta vague
           </span>
           <br />
           <span className="font-script font-semibold text-[1.15em] leading-[0.85] text-gradient-sunset drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-            embrasse la liberté.
+            est prête.
           </span>
         </h1>
 
         {/* Tagline */}
         <p className="mt-7 max-w-xl text-pretty text-base text-white/85 sm:text-lg md:text-xl">
-          Du <span className="font-medium text-sand-200">Pas-de-Calais</span> à la <span className="font-medium text-sand-200">Méditerranée</span>,
-          la carte vivante des vagues françaises.
+          La carte vivante des vagues françaises.
           <br className="hidden sm:block" />
-          Trouve le spot. Choisis l'heure. Pose-toi sur la planche.
+          Du <span className="font-medium text-sand-200">Pas-de-Calais</span> à la <span className="font-medium text-sand-200">Méditerranée</span> — trouve le spot, l'heure, file à l'eau.
         </p>
 
         {/* Primary CTA + secondary */}

@@ -71,7 +71,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
 
   async function handleShare() {
     const url = `${window.location.origin}/spot/${forecast.spot.slug}`;
-    const text = `Surf à ${forecast.spot.name} — score ${score}/100 sur surferenfrance`;
+    const text = `Surf à ${forecast.spot.name} — score ${score}/100 sur Yosurf`;
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator & { share?: unknown }).share) {
         await (navigator as Navigator & { share: (data: ShareData) => Promise<void> }).share({

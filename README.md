@@ -1,6 +1,8 @@
-# 🏄 Surf France
+# 🏄 Yosurf
 
-Application web qui agrège les prévisions de surf en France métropolitaine — du Pas-de-Calais à la Méditerranée — avec un score de session quotidien, le meilleur créneau horaire et le détail vagues / période / vent par spot.
+> _yo, ta vague est prête._
+
+Yosurf est la carte vivante des vagues françaises. 231 spots de la Côte d'Opale à la Corse, score de session quotidien, meilleur créneau du jour, vagues, houle et vent — gratuit, sans compte, sans pub intrusive.
 
 Stack : **Next.js 15 (App Router) + TypeScript + Tailwind CSS**. Données : **[Open-Meteo](https://open-meteo.com)** (gratuit, sans clé API).
 
