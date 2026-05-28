@@ -17,9 +17,12 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
     `&daily=wind_speed_10m_max,wind_direction_10m_dominant,wind_gusts_10m_max,sunrise,sunset` +
     `&timezone=Europe%2FParis&forecast_days=7`;
 
+  // next.revalidate is a server-side hint (ignored in browser) — when this runs in a
+  // Next.js Route Handler, the upstream response is cached at the edge for 30 min.
+  const fetchOpts = { next: { revalidate: 1800 } } as const;
   const [marineRes, windRes] = await Promise.all([
-    fetch(marineUrl).then((r) => r.json()),
-    fetch(windUrl).then((r) => r.json()),
+    fetch(marineUrl, fetchOpts).then((r) => r.json()),
+    fetch(windUrl, fetchOpts).then((r) => r.json()),
   ]);
 
   const days: DaySummary[] = [];

@@ -8,7 +8,7 @@ import { AdSlot } from "./AdSlot";
 import { EmptyState } from "./EmptyState";
 import { SkeletonCard } from "./SkeletonCard";
 import { SPOTS } from "@/lib/spots";
-import { fetchAllForecastsProgressive } from "@/lib/api";
+import { fetchHomeForecasts } from "@/lib/clientApi";
 import { ADSENSE_SLOT_IN_FEED } from "@/lib/adsense";
 import { haversineKm } from "@/lib/utils";
 import type { Level, SpotForecast } from "@/lib/types";
@@ -54,29 +54,28 @@ export function HomeContent() {
     try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch {}
   }, [prefs]);
 
-  // Refetch when level changes (score depends on it). Progressive: cards stream in.
+  // Single cached server-side fetch. Scores precomputed for the 3 levels, so changing
+  // level does NOT trigger a refetch.
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setForecasts([]);
     setProgress({ done: 0, total: SPOTS.length });
-    fetchAllForecastsProgressive(
-      SPOTS,
-      prefs.level,
-      ({ results, done, total }) => {
+    fetchHomeForecasts()
+      .then((data) => {
         if (cancelled) return;
-        setForecasts(results);
-        setProgress({ done, total });
-      },
-      () => cancelled,
-      20
-    ).then(() => {
-      if (cancelled) return;
-      setUpdatedAt(new Date());
-      setLoading(false);
-    });
+        setForecasts(data);
+        setProgress({ done: data.length, total: data.length });
+        setUpdatedAt(new Date());
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to load forecasts:", err);
+        setLoading(false);
+      });
     return () => { cancelled = true; };
-  }, [prefs.level]);
+  }, []);
 
   const requestGeo = () => {
     if (!hasGeo) return;
@@ -110,7 +109,9 @@ export function HomeContent() {
         if (prefs.sort === "name") return a.f.spot.shortName.localeCompare(b.f.spot.shortName);
         if (prefs.sort === "wave") return (b.f.days[prefs.dayIdx]?.waveHeight ?? 0) - (a.f.days[prefs.dayIdx]?.waveHeight ?? 0);
         if (prefs.sort === "distance" && nearMe) return (a.distanceKm ?? 1e9) - (b.distanceKm ?? 1e9);
-        return (b.f.days[prefs.dayIdx]?.score ?? 0) - (a.f.days[prefs.dayIdx]?.score ?? 0);
+        const sa = a.f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? a.f.days[prefs.dayIdx]?.score ?? 0;
+        const sb = b.f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? b.f.days[prefs.dayIdx]?.score ?? 0;
+        return sb - sa;
       });
   }, [forecasts, prefs, search, nearMe, userPos]);
 

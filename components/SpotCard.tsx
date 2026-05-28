@@ -2,7 +2,7 @@
 
 import { Compass, Sparkles, Waves, Wind, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import type { SpotForecast } from "@/lib/types";
+import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
 import { bestHoursForDay } from "@/lib/api";
 import { degToCardinal, fmt, dayShortLabel } from "@/lib/utils";
@@ -11,16 +11,19 @@ import { REGION_EMOJI } from "@/lib/spots";
 interface Props {
   forecast: SpotForecast;
   dayIdx: number;
-  level: "beginner" | "intermediate" | "advanced";
+  level: Level;
   distanceKm?: number;
   onClick: () => void;
 }
 
 export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props) {
   const d = forecast.days[dayIdx];
-  const tone = scoreTone(d.score);
+  // Prefer server-precomputed values; fall back to live compute if hourly is loaded.
+  const score = d.scoresByLevel?.[level] ?? d.score;
+  const bestWindow = d.bestWindowByLevel?.[level]
+    ?? (forecast.hourly?.times?.length ? bestHoursForDay(forecast, dayIdx, level).best : null);
+  const tone = scoreTone(score);
   const colors = SCORE_COLORS[tone];
-  const best = bestHoursForDay(forecast, dayIdx, level);
 
   return (
     <article
@@ -40,21 +43,21 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props
           </p>
         </div>
         <div className={`rounded-xl px-3 py-2 text-center ${colors.bg} ${colors.border} border`}>
-          <div className={`font-display text-2xl font-bold leading-none ${colors.text}`}>{d.score}</div>
+          <div className={`font-display text-2xl font-bold leading-none ${colors.text}`}>{score}</div>
           <div className={`mt-0.5 text-[10px] uppercase tracking-wider ${colors.text} opacity-80`}>
-            {scoreLabel(d.score)}
+            {scoreLabel(score)}
           </div>
         </div>
       </div>
 
-      {best.best && best.best.avg >= 30 ? (
+      {bestWindow && bestWindow.avg >= 30 ? (
         <div className="mb-3 flex items-center gap-2 rounded-lg border border-ocean-500/30 bg-ocean-500/10 px-3 py-2 text-xs">
           <Sparkles className="h-3.5 w-3.5 text-ocean-300" />
           <span className="text-white/70">Meilleur créneau :</span>
           <span className="font-semibold text-ocean-200">
-            {String(best.best.start).padStart(2, "0")}h–{String(best.best.end + 1).padStart(2, "0")}h
+            {String(bestWindow.start).padStart(2, "0")}h–{String(bestWindow.end + 1).padStart(2, "0")}h
           </span>
-          <span className="ml-auto text-white/50">score {best.best.avg}</span>
+          <span className="ml-auto text-white/50">score {bestWindow.avg}</span>
         </div>
       ) : (
         <div className="mb-3 flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-xs text-white/40">
@@ -71,14 +74,15 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, onClick }: Props
 
       <div className="mt-4 grid grid-cols-7 gap-1 border-t border-white/5 pt-3">
         {forecast.days.map((day, i) => {
-          const t = scoreTone(day.score);
+          const ds = day.scoresByLevel?.[level] ?? day.score;
+          const t = scoreTone(ds);
           return (
             <div
               key={i}
               className={`rounded text-center text-[10px] ${i === dayIdx ? "bg-ocean-500/15" : ""} py-1`}
             >
               <div className="text-white/40">{dayShortLabel(i)}</div>
-              <div className="mt-0.5 font-semibold" style={{ color: SCORE_COLORS[t].hex }}>{day.score}</div>
+              <div className="mt-0.5 font-semibold" style={{ color: SCORE_COLORS[t].hex }}>{ds}</div>
             </div>
           );
         })}

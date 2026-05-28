@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { X, Sunrise, Sunset, Waves, Wind, Compass, Droplets, Thermometer, ExternalLink, Sparkles } from "lucide-react";
+import { X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles } from "lucide-react";
 import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
+import { fetchSpotForecastFromApi } from "@/lib/clientApi";
 import { SCORE_COLORS, scoreTone } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel, timeFromIso } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
@@ -17,7 +18,13 @@ interface Props {
   onClose: () => void;
 }
 
-export function SpotModal({ forecast, dayIdx, level, onClose }: Props) {
+export function SpotModal({ forecast: lightForecast, dayIdx, level, onClose }: Props) {
+  // Light forecast comes from /api/forecasts (no hourly). Fetch full hourly via
+  // /api/forecast/[slug] when modal opens. Cached at the edge for 30 min so the
+  // first user pays ~500ms, all subsequent users get an instant HIT.
+  const [forecast, setForecast] = useState<SpotForecast>(lightForecast);
+  const [hourlyLoading, setHourlyLoading] = useState(true);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", handler);
@@ -28,15 +35,29 @@ export function SpotModal({ forecast, dayIdx, level, onClose }: Props) {
     };
   }, [onClose]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setHourlyLoading(true);
+    fetchSpotForecastFromApi(lightForecast.spot.slug)
+      .then((full) => { if (!cancelled) { setForecast(full); setHourlyLoading(false); } })
+      .catch(() => { if (!cancelled) setHourlyLoading(false); });
+    return () => { cancelled = true; };
+  }, [lightForecast.spot.slug]);
+
   const d = forecast.days[dayIdx];
-  const tone = scoreTone(d.score);
-  const best = bestHoursForDay(forecast, dayIdx, level);
+  const score = d.scoresByLevel?.[level] ?? d.score;
+  const tone = scoreTone(score);
+  const hasHourly = forecast.hourly.times.length > 0;
+  const best = hasHourly ? bestHoursForDay(forecast, dayIdx, level) : null;
 
   const startH = dayIdx * 24;
   const seaSlice = forecast.hourly.seaTemp.slice(startH, startH + 24).filter((t) => t != null) as number[];
   const airSlice = forecast.hourly.airTemp.slice(startH, startH + 24).filter((t) => t != null) as number[];
   const seaTempAvg = seaSlice.length ? seaSlice.reduce((a, b) => a + b, 0) / seaSlice.length : null;
   const airTempMax = airSlice.length ? Math.max(...airSlice) : null;
+
+  // Fallback to server-precomputed best window if hourly not loaded yet
+  const fallbackBest = d.bestWindowByLevel?.[level];
 
   return (
     <div
@@ -68,13 +89,13 @@ export function SpotModal({ forecast, dayIdx, level, onClose }: Props) {
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Tile label="Score" value={d.score.toString()} sub="" color={SCORE_COLORS[tone].text} />
+          <Tile label="Score" value={score.toString()} sub="" color={SCORE_COLORS[tone].text} />
           <Tile label="Vague" value={`${fmt(d.waveHeight)} m`} sub={`${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`} icon={<Waves className="h-3.5 w-3.5" />} />
           <Tile label="Vent" value={`${fmt(d.windSpeed, 0)} km/h`} sub={`raf. ${fmt(d.windGusts, 0)} ${degToCardinal(d.windDir)}`} icon={<Wind className="h-3.5 w-3.5" />} />
-          <Tile label="Eau / Air" value={`${fmt(seaTempAvg, 0)}°C`} sub={`air ${fmt(airTempMax, 0)}°C`} icon={<Thermometer className="h-3.5 w-3.5" />} />
+          <Tile label="Eau / Air" value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `air ${fmt(airTempMax, 0)}°C` : ""} icon={<Thermometer className="h-3.5 w-3.5" />} />
         </div>
 
-        {best.best && (
+        {best && best.best ? (
           <div className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
             <div className="mb-2 flex items-center gap-2 text-sm text-emerald-200">
               <Sparkles className="h-4 w-4" />
@@ -86,24 +107,44 @@ export function SpotModal({ forecast, dayIdx, level, onClose }: Props) {
                 return (
                   <div key={h.hour} className="rounded-lg bg-emerald-500/15 px-3 py-1.5 text-xs">
                     <strong className="text-emerald-200">{String(h.hour).padStart(2, "0")}h</strong>
-                    {" · "}
-                    {fmt(forecast.hourly.waveHeight[i])}m
-                    {" · "}
-                    {fmt(forecast.hourly.windSpeed[i], 0)} km/h
-                    {" · "}
-                    <span className="text-white/70">score {h.score}</span>
+                    {" · "}{fmt(forecast.hourly.waveHeight[i])}m
+                    {" · "}{fmt(forecast.hourly.windSpeed[i], 0)} km/h
+                    {" · "}<span className="text-white/70">score {h.score}</span>
                   </div>
                 );
               })}
             </div>
           </div>
-        )}
+        ) : fallbackBest ? (
+          <div className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm">
+            <div className="mb-1 flex items-center gap-2 text-emerald-200">
+              <Sparkles className="h-4 w-4" />
+              Meilleur créneau du jour
+            </div>
+            <div className="text-white/80">
+              <strong className="text-emerald-200">
+                {String(fallbackBest.start).padStart(2, "0")}h–{String(fallbackBest.end + 1).padStart(2, "0")}h
+              </strong>
+              {" · "}score moyen {fallbackBest.avg}
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-6">
           <div className="mb-2 text-xs uppercase tracking-wider text-white/50">
             Heure par heure (couleur = score, gris = nuit)
           </div>
-          <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
+          {hourlyLoading && !hasHourly ? (
+            <div className="grid gap-1 animate-pulse" style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}>
+              {Array.from({ length: 24 }, (_, i) => (
+                <div key={i} className="aspect-square rounded-md bg-white/5" />
+              ))}
+            </div>
+          ) : hasHourly ? (
+            <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
+          ) : (
+            <p className="text-xs text-white/40">Détail horaire indisponible pour ce spot pour le moment.</p>
+          )}
         </div>
 
         <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.03] p-4 text-sm text-white/70">

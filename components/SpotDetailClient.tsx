@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { Spot, SpotForecast, Level } from "@/lib/types";
-import { fetchSpotForecast } from "@/lib/api";
+import { fetchSpotForecastFromApi } from "@/lib/clientApi";
 import { ADSENSE_SLOT_SPOT_DETAIL } from "@/lib/adsense";
-import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
+import { SCORE_COLORS, scoreLabel, scoreTone, computeScore } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
 import { Waves, Wind, Compass, Sunrise } from "lucide-react";
@@ -20,9 +20,10 @@ export function SpotDetailClient({ spot }: Props) {
   useEffect(() => {
     let cancel = false;
     setForecast(null);
-    fetchSpotForecast(spot, level).then((f) => { if (!cancel) setForecast(f); });
+    // Level change doesn't refetch — scores are recomputed client-side from raw data.
+    fetchSpotForecastFromApi(spot.slug).then((f) => { if (!cancel) setForecast(f); });
     return () => { cancel = true; };
-  }, [spot, level]);
+  }, [spot.slug]);
 
   if (!forecast) {
     return <div className="mt-8 animate-pulse rounded-2xl border border-white/5 bg-white/[0.02] h-64" />;
@@ -32,7 +33,10 @@ export function SpotDetailClient({ spot }: Props) {
     <div className="mt-8 space-y-6">
       <div className="flex flex-wrap gap-2">
         {forecast.days.map((day, i) => {
-          const t = scoreTone(day.score);
+          // Prefer server-precomputed scoresByLevel; else recompute from raw values.
+          const ds = day.scoresByLevel?.[level]
+            ?? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, spot.offshore, level);
+          const t = scoreTone(ds);
           return (
             <button
               key={i}
@@ -45,9 +49,9 @@ export function SpotDetailClient({ spot }: Props) {
             >
               <div className="text-xs text-white/50 capitalize">{dayLongLabel(i)}</div>
               <div className="mt-1 font-display text-xl font-bold" style={{ color: SCORE_COLORS[t].hex }}>
-                {day.score}
+                {ds}
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-white/40">{scoreLabel(day.score)}</div>
+              <div className="text-[10px] uppercase tracking-wider text-white/40">{scoreLabel(ds)}</div>
             </button>
           );
         })}

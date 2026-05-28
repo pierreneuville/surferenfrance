@@ -23,6 +23,12 @@ export interface Spot {
   type: string;
 }
 
+export interface BestWindowSummary {
+  start: number;
+  end: number;
+  avg: number;
+}
+
 export interface DaySummary {
   date: string;
   waveHeight: number | null;
@@ -33,7 +39,12 @@ export interface DaySummary {
   windGusts: number | null;
   sunrise: string | null;
   sunset: string | null;
+  /** Score at "intermediate" level — kept for backward compat. Prefer scoresByLevel. */
   score: number;
+  /** Precomputed scores for each level (server-side). */
+  scoresByLevel?: Record<Level, number>;
+  /** Precomputed best 3h window per level (server-side, daylight hours). */
+  bestWindowByLevel?: Record<Level, BestWindowSummary | null>;
 }
 
 export interface HourlyData {
