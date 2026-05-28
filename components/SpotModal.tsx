@@ -97,55 +97,56 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
         onClick={(e) => e.stopPropagation()}
       >
         {/* === HERO === */}
-        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} p-5 pt-3 sm:p-6 sm:pt-4`}>
+        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-5`}>
           {/* Mobile grabber */}
           <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-white/30 sm:hidden" />
 
-          {/* Decorative wave SVG */}
-          <svg
-            className="pointer-events-none absolute -bottom-1 left-0 right-0 h-12 w-full text-depth-950"
-            viewBox="0 0 1200 60"
-            preserveAspectRatio="none"
-            aria-hidden
-          >
-            <path d="M0 30 Q 200 0 400 30 T 800 30 T 1200 30 V60 H0 Z" fill="currentColor" opacity="0.4" />
-            <path d="M0 40 Q 200 10 400 40 T 800 40 T 1200 40 V60 H0 Z" fill="currentColor" />
-          </svg>
-
-          {/* Close button */}
+          {/* Close button (absolute, doesn't take layout space) */}
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/50 sm:right-5 sm:top-5"
+            className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60 sm:right-4 sm:top-4"
             aria-label="Fermer"
           >
             <X className="h-4 w-4" />
           </button>
 
-          {/* Region + department */}
-          <div className="relative flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-white/85">
-            <MapPin className="h-3 w-3" />
-            {forecast.spot.region} · {forecast.spot.department}
+          {/* Region + department — padded right to clear the X button */}
+          <div className="relative flex items-center gap-1.5 pr-14 text-[10px] uppercase tracking-[0.18em] text-white/90 sm:pr-16">
+            <MapPin className="h-3 w-3 shrink-0" />
+            <span className="truncate">{forecast.spot.region} · {forecast.spot.department}</span>
           </div>
 
-          {/* Spot name + score */}
-          <div className="relative mt-2 flex items-end justify-between gap-4">
+          {/* Spot name + score chip */}
+          <div className="relative mt-3 flex items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className="font-display text-2xl font-bold leading-tight text-white drop-shadow-md sm:text-3xl">
+              <h2 className="font-display text-2xl font-bold leading-[1.05] text-white drop-shadow-md sm:text-3xl">
                 {forecast.spot.shortName}
               </h2>
-              <p className="mt-1 font-script text-base text-white/85 sm:text-lg">
+              <p className="mt-1 font-script text-base text-white/90 sm:text-lg">
                 {forecast.spot.type}
               </p>
             </div>
-            <div className="text-center">
-              <div className="font-display text-5xl font-extrabold leading-none text-white drop-shadow-lg sm:text-6xl">
+            {/* Score in a translucent chip — clearly separated, no edge clipping */}
+            <div className="shrink-0 rounded-2xl bg-black/25 px-3.5 py-2 text-center backdrop-blur-sm">
+              <div className="font-display text-3xl font-extrabold leading-none text-white drop-shadow sm:text-4xl">
                 {score}
               </div>
-              <div className="text-[10px] uppercase tracking-widest text-white/80">
+              <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/85">
                 {scoreLabel(score)}
               </div>
             </div>
           </div>
+
+          {/* Decorative wave SVG (subtler than before, rendered LAST so absolute stays on top of the gradient but below interactive elements) */}
+          <svg
+            className="pointer-events-none absolute -bottom-px left-0 right-0 h-8 w-full text-depth-950 sm:h-10"
+            viewBox="0 0 1200 60"
+            preserveAspectRatio="none"
+            aria-hidden
+          >
+            <path d="M0 35 Q 200 5 400 35 T 800 35 T 1200 35 V60 H0 Z" fill="currentColor" opacity="0.35" />
+            <path d="M0 45 Q 200 18 400 45 T 800 45 T 1200 45 V60 H0 Z" fill="currentColor" />
+          </svg>
         </div>
 
         {/* === DAY PICKER (sticky inside modal) === */}
