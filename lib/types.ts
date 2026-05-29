@@ -1,13 +1,24 @@
 export type Level = "beginner" | "intermediate" | "advanced";
 
 export type Region =
+  // 🇫🇷 France
   | "Manche & Nord"
   | "Bretagne"
   | "Atlantique Nord"
   | "Côte d'Argent"
   | "Pays Basque"
   | "Méditerranée"
-  | "Corse";
+  | "Corse"
+  // 🇪🇸 Espagne
+  | "Espagne Atlantique"
+  | "Canaries"
+  // 🇵🇹 Portugal
+  | "Portugal"
+  // 🇲🇦 Maroc
+  | "Maroc"
+  // 🇬🇧 UK + 🇮🇪 Irlande
+  | "Royaume-Uni"
+  | "Irlande";
 
 export interface Spot {
   slug: string;

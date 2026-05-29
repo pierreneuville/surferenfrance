@@ -8,6 +8,12 @@ export const REGIONS = [
   "Pays Basque",
   "Méditerranée",
   "Corse",
+  "Espagne Atlantique",
+  "Canaries",
+  "Portugal",
+  "Maroc",
+  "Royaume-Uni",
+  "Irlande",
 ] as const;
 
 export const REGION_EMOJI: Record<string, string> = {
@@ -18,6 +24,12 @@ export const REGION_EMOJI: Record<string, string> = {
   "Pays Basque": "🏄",
   "Méditerranée": "☀️",
   "Corse": "🏝️",
+  "Espagne Atlantique": "🇪🇸",
+  "Canaries": "🌋",
+  "Portugal": "🇵🇹",
+  "Maroc": "🇲🇦",
+  "Royaume-Uni": "🇬🇧",
+  "Irlande": "🇮🇪",
 };
 
 // Helper to keep entries compact
@@ -334,6 +346,31 @@ export const SPOTS: Spot[] = [
   s("pinarello", "Pinarello", "Pinarello", "Corse", "Corse-du-Sud", 41.687, 9.388, 90, "intermediate", "Beach break", "Plage du sud-est corse, ambiance lagon."),
   s("algajola", "Algajola", "Algajola", "Corse", "Haute-Corse", 42.611, 8.857, 0, "intermediate", "Beach break", "Plage entre Calvi et L'Île-Rousse, vagues régulières en hiver."),
   s("lumio", "Lumio (Sant'Ambroggio)", "Lumio", "Corse", "Haute-Corse", 42.580, 8.825, 0, "intermediate", "Beach break", "Spot du golfe de Calvi, accessible et joli."),
+
+  // ==================== 🇪🇸 ESPAGNE ATLANTIQUE — Pays basque + Cantabrie ====================
+  // Pays basque espagnol (Vizcaya / Gipuzkoa)
+  s("mundaka", "Mundaka", "Mundaka", "Espagne Atlantique", "Vizcaya", 43.405, -2.696, 180, "advanced", "Reef left", "Vague gauche mythique de classe mondiale. Tubes sur fond de sable estuarien. Pour confirmés."),
+  s("sopelana", "Sopelana", "Sopelana", "Espagne Atlantique", "Vizcaya", 43.391, -2.989, 180, "intermediate", "Beach break", "Spot urbain de Bilbao, plage la plus consistante du Pays basque ES."),
+  s("bakio", "Bakio", "Bakio", "Espagne Atlantique", "Vizcaya", 43.428, -2.815, 180, "intermediate", "Beach break", "Plage longue exposée aux houles NW. École locale active."),
+  s("plentzia", "Plentzia", "Plentzia", "Espagne Atlantique", "Vizcaya", 43.408, -2.949, 180, "beginner", "Beach break", "Plage d'estuaire abritée, parfaite pour démarrer."),
+  s("la-salvaje", "La Salvaje", "La Salvaje", "Espagne Atlantique", "Vizcaya", 43.371, -2.984, 180, "advanced", "Beach break", "Spot brutal de Bilbao, ferme dur. Pour confirmés."),
+  s("punta-galea", "Punta Galea", "Punta Galea", "Espagne Atlantique", "Vizcaya", 43.376, -3.008, 180, "advanced", "Reef right", "Vague de récif droite puissante, big wave en hiver."),
+  s("menakoz", "Meñakoz", "Meñakoz", "Espagne Atlantique", "Vizcaya", 43.382, -2.973, 180, "advanced", "Reef right", "Big wave spot, droite puissante, prend jusqu'à 5m."),
+  s("zarautz", "Zarautz", "Zarautz", "Espagne Atlantique", "Gipuzkoa", 43.286, -2.166, 180, "intermediate", "Beach break", "Plus longue plage du Pays basque ES, étape WSL. Vagues consistantes."),
+  s("zumaia", "Zumaia (Itzurun)", "Zumaia", "Espagne Atlantique", "Gipuzkoa", 43.305, -2.255, 180, "intermediate", "Beach break / reef", "Plage d'Itzurun encaissée par les falaises de flysch."),
+  s("orrua", "Orrua (Mutriku)", "Orrua", "Espagne Atlantique", "Gipuzkoa", 43.310, -2.367, 180, "advanced", "Reef left", "Big wave gauche, l'un des meilleurs spots experts d'Europe."),
+  s("roca-puta", "Roca Puta (Mutriku)", "Roca Puta", "Espagne Atlantique", "Gipuzkoa", 43.313, -2.379, 180, "advanced", "Reef right", "Vague de récif droite intense, locaux uniquement."),
+  s("hondarribia", "Hondarribia", "Hondarribia", "Espagne Atlantique", "Gipuzkoa", 43.380, -1.795, 180, "beginner", "Beach break", "Plage frontalière, vagues douces, alternative à Hendaye."),
+
+  // Cantabrie
+  s("liencres", "Liencres - Valdearenas", "Liencres", "Espagne Atlantique", "Cantabrie", 43.448, -3.953, 180, "intermediate", "Beach break", "Estuaire du Pas, dunes spectaculaires, vagues régulières."),
+  s("somo", "Somo", "Somo", "Espagne Atlantique", "Cantabrie", 43.443, -3.755, 180, "beginner", "Beach break", "Face à Santander, plage de référence pour débuter en Cantabrie."),
+  s("loredo", "Loredo", "Loredo", "Espagne Atlantique", "Cantabrie", 43.470, -3.747, 180, "intermediate", "Beach break", "Plage voisine de Somo, ambiance plus chill."),
+  s("suances", "Suances - Los Locos", "Suances", "Espagne Atlantique", "Cantabrie", 43.434, -4.046, 180, "intermediate", "Beach break / reef", "Spot mythique de Cantabrie, base de Pablo Gutiérrez."),
+  s("santander-sardinero", "Santander - El Sardinero", "El Sardinero", "Espagne Atlantique", "Cantabrie", 43.476, -3.770, 180, "intermediate", "Beach break", "Plage urbaine de Santander, ambiance ville."),
+  s("berria", "Berria (Santoña)", "Berria", "Espagne Atlantique", "Cantabrie", 43.451, -3.480, 180, "intermediate", "Beach break", "Longue plage sauvage de Santoña, étape WSL en juniors."),
+  s("langre", "Langre", "Langre", "Espagne Atlantique", "Cantabrie", 43.485, -3.715, 180, "intermediate", "Beach break", "Plage entre falaises, vagues consistantes."),
+  s("ris", "Ris (Noja)", "Ris", "Espagne Atlantique", "Cantabrie", 43.491, -3.512, 180, "beginner", "Beach break", "Spot famille de Noja, vagues douces."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
