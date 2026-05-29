@@ -134,4 +134,52 @@ export const en: Translations = {
   levelBeginnerTitle: "Beginner",
   levelIntermediateTitle: "Intermediate",
   levelAdvancedTitle: "Advanced",
+
+  hotMore: "and {n} other spot{s} ≥ 70",
+  hotBestWindow: "⭐ Best window",
+  weekUpcoming: "top {n} upcoming sessions",
+
+  cardTopGood: "groundswell",
+  cardTopMedium: "swell",
+  cardTopLow: "wind swell",
+
+  modalRegionLabel: "{region} · {dep}",
+  modalShareScoreText: "🌊 {name}: {score}/100 today. Coming?",
+  modalShareNeutralText: "{name} — {score}/100 on Yosurf, the wave map.",
+
+  installTitle: "Install Yosurf",
+  installDescription: "1-tap access, works offline once cached.",
+  installCta: "Install",
+
+  premiumSoon: "coming soon",
+  premiumHeadlineA: "Never miss",
+  premiumHeadlineB: "a swell.",
+  premiumFeatureAlerts: "Push alerts",
+  premiumFeatureAlertsSub: "« Exceptional swell D-2 at Hossegor »",
+  premiumFeature15Days: "15-day forecast",
+  premiumFeature15DaysSub: "vs 7 days free",
+  premiumFeatureTides: "Detailed tides",
+  premiumFeatureTidesSub: "High/low tide hours per spot",
+  premiumFeatureNoAds: "No ads",
+  premiumFeatureNoAdsSub: "Pure experience",
+  premiumPreorderLabel: "Pre-order the beta (free, no commitment)",
+  premiumCaptureTitle: "Get notified at launch",
+  premiumCaptureDescription: "You'll be the first to try Yosurf+, with a lifetime -50% discount on the subscription.",
+  premiumCaptureCta: "Notify me",
+
+  affPanelTitle: "Good deals",
+  affPanelDisclaimer: "Affiliate links — booking happens on the merchant site.",
+
+  filterSheetTitle: "Filters",
+  filterSheetCountry: "Country",
+  filterSheetRegion: "Region",
+  filterSheetLevel: "My level",
+  filterSheetSort: "Sort by",
+  filterSheetClose: "Apply",
+  filterSheetReset: "Reset",
+  filterSheetTrigger: "Filters",
+
+  newsletterThanks: "Thanks, we'll keep you posted — check your inbox 🌊",
+  newsletterPlaceholder: "your.email@example.com",
+  newsletterCta: "Sign up",
 };

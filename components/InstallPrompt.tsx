@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -17,6 +19,7 @@ const DELAY_MS = 30_000; // appear after 30s of engagement
  * is opened ~3× more than a bookmarked website.
  */
 export function InstallPrompt() {
+  const { locale } = useLocale();
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -68,16 +71,16 @@ export function InstallPrompt() {
           <Download className="h-4 w-4 text-white" />
         </span>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-white">Installe Yosurf</div>
-          <div className="text-xs text-white/55">Accès en 1 tap, fonctionne hors-ligne après cache.</div>
+          <div className="text-sm font-semibold text-white">{t(locale, "installTitle")}</div>
+          <div className="text-xs text-white/55">{t(locale, "installDescription")}</div>
         </div>
         <button
           onClick={install}
           className="tap-target rounded-full bg-gradient-to-r from-coral-500 via-sunset-500 to-sand-400 px-3.5 py-1.5 text-xs font-semibold text-white"
         >
-          Installer
+          {t(locale, "installCta")}
         </button>
-        <button onClick={dismiss} aria-label="Plus tard" className="grid h-7 w-7 place-items-center rounded-full text-white/40 hover:bg-white/10">
+        <button onClick={dismiss} aria-label={t(locale, "onboardingLater")} className="grid h-7 w-7 place-items-center rounded-full text-white/40 hover:bg-white/10">
           <X className="h-3.5 w-3.5" />
         </button>
       </div>

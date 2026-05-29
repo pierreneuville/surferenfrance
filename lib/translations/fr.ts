@@ -149,6 +149,62 @@ export const fr = {
   levelBeginnerTitle: "Débutant",
   levelIntermediateTitle: "Intermédiaire",
   levelAdvancedTitle: "Confirmé",
+
+  // Hot today + week
+  hotMore: "et {n} autre{s} spot{s} ≥ 70",
+  hotBestWindow: "⭐ Meilleur créneau",
+  weekUpcoming: "top {n} sessions à venir",
+
+  // SpotCard
+  cardTopGood: "groundswell",
+  cardTopMedium: "houle",
+  cardTopLow: "mer du vent",
+
+  // Modal
+  modalRegionLabel: "{region} · {dep}",
+  modalShareScoreText: "🌊 {name} : {score}/100 aujourd'hui. Tu viens ?",
+  modalShareNeutralText: "{name} — {score}/100 sur Yosurf, la carte des vagues.",
+
+  // Install prompt
+  installTitle: "Installe Yosurf",
+  installDescription: "Accès en 1 tap, fonctionne hors-ligne après cache.",
+  installCta: "Installer",
+
+  // Premium
+  premiumSoon: "bientôt disponible",
+  premiumHeadlineA: "Ne rate plus",
+  premiumHeadlineB: "une houle.",
+  premiumFeatureAlerts: "Alertes push",
+  premiumFeatureAlertsSub: "« Houle d'exception J-2 à Hossegor »",
+  premiumFeature15Days: "Prévisions 15 jours",
+  premiumFeature15DaysSub: "vs 7 jours gratuits",
+  premiumFeatureTides: "Marées détaillées",
+  premiumFeatureTidesSub: "Heure pleine mer / basse mer par spot",
+  premiumFeatureNoAds: "Pas de pub",
+  premiumFeatureNoAdsSub: "Expérience pure",
+  premiumPreorderLabel: "Précommande la beta (gratuit, sans engagement)",
+  premiumCaptureTitle: "Sois prévenu au lancement",
+  premiumCaptureDescription: "Tu seras dans les premiers à essayer Yosurf+, avec une réduction lifetime de -50% sur l'abonnement.",
+  premiumCaptureCta: "Me prévenir",
+
+  // Affiliate panel
+  affPanelTitle: "Bons plans",
+  affPanelDisclaimer: "Liens partenaires — la réservation se fait sur le site marchand.",
+
+  // Filter sheet (new)
+  filterSheetTitle: "Filtres",
+  filterSheetCountry: "Pays",
+  filterSheetRegion: "Région",
+  filterSheetLevel: "Mon niveau",
+  filterSheetSort: "Trier par",
+  filterSheetClose: "Appliquer",
+  filterSheetReset: "Réinitialiser",
+  filterSheetTrigger: "Filtres",
+
+  // Captures (newsletter)
+  newsletterThanks: "Merci, on te tient au courant — check ta boîte 🌊",
+  newsletterPlaceholder: "ton.email@exemple.fr",
+  newsletterCta: "Je m'inscris",
 };
 
 // Derive a string-valued type so EN/ES/PT can be checked structurally without

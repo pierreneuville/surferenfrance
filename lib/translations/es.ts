@@ -134,4 +134,52 @@ export const es: Translations = {
   levelBeginnerTitle: "Principiante",
   levelIntermediateTitle: "Intermedio",
   levelAdvancedTitle: "Avanzado",
+
+  hotMore: "y {n} spot{s} más ≥ 70",
+  hotBestWindow: "⭐ Mejor ventana",
+  weekUpcoming: "top {n} sesiones por venir",
+
+  cardTopGood: "groundswell",
+  cardTopMedium: "marejada",
+  cardTopLow: "mar de viento",
+
+  modalRegionLabel: "{region} · {dep}",
+  modalShareScoreText: "🌊 {name}: {score}/100 hoy. ¿Te vienes?",
+  modalShareNeutralText: "{name} — {score}/100 en Yosurf, el mapa de las olas.",
+
+  installTitle: "Instala Yosurf",
+  installDescription: "Acceso 1 tap, funciona sin conexión tras caché.",
+  installCta: "Instalar",
+
+  premiumSoon: "muy pronto",
+  premiumHeadlineA: "No vuelvas a perder",
+  premiumHeadlineB: "una marejada.",
+  premiumFeatureAlerts: "Alertas push",
+  premiumFeatureAlertsSub: "« Marejada excepcional D-2 en Mundaka »",
+  premiumFeature15Days: "Previsiones 15 días",
+  premiumFeature15DaysSub: "vs 7 días gratis",
+  premiumFeatureTides: "Mareas detalladas",
+  premiumFeatureTidesSub: "Hora pleamar/bajamar por spot",
+  premiumFeatureNoAds: "Sin publicidad",
+  premiumFeatureNoAdsSub: "Experiencia pura",
+  premiumPreorderLabel: "Reserva la beta (gratis, sin compromiso)",
+  premiumCaptureTitle: "Avísanos al lanzamiento",
+  premiumCaptureDescription: "Serás de los primeros en probar Yosurf+, con descuento de por vida del -50%.",
+  premiumCaptureCta: "Avísame",
+
+  affPanelTitle: "Buenos planes",
+  affPanelDisclaimer: "Enlaces afiliados — la reserva se hace en la web del vendedor.",
+
+  filterSheetTitle: "Filtros",
+  filterSheetCountry: "País",
+  filterSheetRegion: "Región",
+  filterSheetLevel: "Mi nivel",
+  filterSheetSort: "Ordenar por",
+  filterSheetClose: "Aplicar",
+  filterSheetReset: "Restablecer",
+  filterSheetTrigger: "Filtros",
+
+  newsletterThanks: "¡Gracias! Te avisamos — revisa tu correo 🌊",
+  newsletterPlaceholder: "tu.email@ejemplo.es",
+  newsletterCta: "Apuntarme",
 };

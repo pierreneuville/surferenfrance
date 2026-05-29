@@ -134,4 +134,52 @@ export const pt: Translations = {
   levelBeginnerTitle: "Iniciante",
   levelIntermediateTitle: "Intermédio",
   levelAdvancedTitle: "Avançado",
+
+  hotMore: "e mais {n} spot{s} ≥ 70",
+  hotBestWindow: "⭐ Melhor janela",
+  weekUpcoming: "top {n} sessões a chegar",
+
+  cardTopGood: "groundswell",
+  cardTopMedium: "ondulação",
+  cardTopLow: "vento",
+
+  modalRegionLabel: "{region} · {dep}",
+  modalShareScoreText: "🌊 {name}: {score}/100 hoje. Vens?",
+  modalShareNeutralText: "{name} — {score}/100 no Yosurf, o mapa das ondas.",
+
+  installTitle: "Instala o Yosurf",
+  installDescription: "Acesso 1 toque, funciona offline depois de cached.",
+  installCta: "Instalar",
+
+  premiumSoon: "em breve",
+  premiumHeadlineA: "Nunca mais",
+  premiumHeadlineB: "percas uma ondulação.",
+  premiumFeatureAlerts: "Alertas push",
+  premiumFeatureAlertsSub: "« Ondulação excecional D-2 em Ericeira »",
+  premiumFeature15Days: "Previsões 15 dias",
+  premiumFeature15DaysSub: "vs 7 dias grátis",
+  premiumFeatureTides: "Marés detalhadas",
+  premiumFeatureTidesSub: "Hora de maré alta/baixa por spot",
+  premiumFeatureNoAds: "Sem anúncios",
+  premiumFeatureNoAdsSub: "Experiência pura",
+  premiumPreorderLabel: "Reserva a beta (grátis, sem compromisso)",
+  premiumCaptureTitle: "Avisa-me no lançamento",
+  premiumCaptureDescription: "Serás dos primeiros a experimentar o Yosurf+, com desconto vitalício -50%.",
+  premiumCaptureCta: "Avisa-me",
+
+  affPanelTitle: "Boas dicas",
+  affPanelDisclaimer: "Links afiliados — a reserva é feita no site do parceiro.",
+
+  filterSheetTitle: "Filtros",
+  filterSheetCountry: "País",
+  filterSheetRegion: "Região",
+  filterSheetLevel: "O meu nível",
+  filterSheetSort: "Ordenar por",
+  filterSheetClose: "Aplicar",
+  filterSheetReset: "Repor",
+  filterSheetTrigger: "Filtros",
+
+  newsletterThanks: "Obrigado, vamos manter-te informado — verifica o teu email 🌊",
+  newsletterPlaceholder: "o.teu.email@exemplo.pt",
+  newsletterCta: "Inscrever",
 };
