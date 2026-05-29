@@ -6,6 +6,8 @@ import { Logo, Wordmark } from "./Logo";
 import { SPOTS, REGION_EMOJI } from "@/lib/spots";
 import { getFavorites, setFavorites } from "@/lib/favorites";
 import { haversineKm } from "@/lib/utils";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf } from "@/lib/i18n";
 import type { Spot } from "@/lib/types";
 
 const KEY = "yosurf-onboarded-v1";
@@ -26,6 +28,7 @@ const FAMOUS_SLUGS = [
  * Once they've tapped 1-3 ❤️, they own a personalized version of the app.
  */
 export function OnboardingSheet() {
+  const { locale } = useLocale();
   const [open, setOpen] = useState(false);
   const [suggested, setSuggested] = useState<Spot[]>([]);
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -131,7 +134,7 @@ export function OnboardingSheet() {
         <button
           onClick={dismiss}
           className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/5 transition hover:bg-white/15"
-          aria-label="Plus tard"
+          aria-label={t(locale, "onboardingLater")}
         >
           <X className="h-4 w-4" />
         </button>
@@ -144,20 +147,20 @@ export function OnboardingSheet() {
           <Logo size={48} />
           <div>
             <Wordmark className="text-xl" />
-            <div className="font-script text-sm text-sand-200/70">bienvenue !</div>
+            <div className="font-script text-sm text-sand-200/70">{t(locale, "onboardingWelcome")}</div>
           </div>
         </div>
 
         <h2 className="mt-6 font-display text-2xl font-bold leading-tight">
-          <span className="text-gradient-ocean">Quels spots</span>{" "}
-          <span className="font-script text-3xl text-gradient-sunset">tu surfes ?</span>
+          <span className="text-gradient-ocean">{t(locale, "onboardingTitleA")}</span>{" "}
+          <span className="font-script text-3xl text-gradient-sunset">{t(locale, "onboardingTitleB")}</span>
         </h2>
         <p className="mt-2 text-sm text-white/65">
-          Ajoute tes spots favoris pour les retrouver instantanément à chaque visite.
+          {t(locale, "onboardingDescription")}
           {usingGeo && (
             <span className="mt-1 block text-emerald-300/80">
               <MapPin className="mr-1 inline h-3 w-3" />
-              On t'a trouvé près de chez toi
+              {t(locale, "onboardingGeoFound")}
             </span>
           )}
         </p>
@@ -206,19 +209,19 @@ export function OnboardingSheet() {
             }`}
           >
             {picked.size > 0
-              ? `Ajouter ${picked.size} favori${picked.size > 1 ? "s" : ""} →`
-              : "Sélectionne au moins 1 spot"}
+              ? tf(locale, "onboardingAddCta", { n: picked.size, s: picked.size > 1 ? "s" : "" })
+              : t(locale, "onboardingPickHint")}
           </button>
           <button
             onClick={dismiss}
             className="tap-target rounded-full border border-white/10 px-4 py-3 text-sm text-white/60 transition hover:bg-white/5"
           >
-            Plus tard
+            {t(locale, "onboardingLater")}
           </button>
         </div>
 
         <p className="mt-4 text-center text-[10px] text-white/30">
-          Aucun compte, aucune donnée envoyée. Les favoris restent sur ton appareil.
+          {t(locale, "onboardingNoAccount")}
         </p>
       </div>
     </div>

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Bell, BellRing, Calendar, Sparkles, Waves, X } from "lucide-react";
 import { EmailCapture } from "./EmailCapture";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 /**
  * Yosurf+ teaser — apparait via lien dans le footer ou auprès du modal "À propos".
@@ -16,6 +18,7 @@ import { EmailCapture } from "./EmailCapture";
  *  - Pas de pub
  */
 export function PremiumTeaser({ trigger }: { trigger: React.ReactNode }) {
+  const { locale } = useLocale();
   const [open, setOpen] = useState(false);
 
   return (
@@ -48,30 +51,30 @@ export function PremiumTeaser({ trigger }: { trigger: React.ReactNode }) {
                 <div className="font-display text-2xl font-extrabold leading-none">
                   yo<span className="text-gradient-sunset">surf</span>+
                 </div>
-                <div className="text-[10px] uppercase tracking-widest text-sand-200/80">bientôt disponible</div>
+                <div className="text-[10px] uppercase tracking-widest text-sand-200/80">{t(locale, "premiumSoon")}</div>
               </div>
             </div>
 
             <h2 className="mt-5 font-display text-3xl font-bold leading-tight">
-              <span className="text-gradient-ocean">Ne rate plus</span>{" "}
-              <span className="font-script text-4xl text-gradient-sunset">une houle.</span>
+              <span className="text-gradient-ocean">{t(locale, "premiumHeadlineA")}</span>{" "}
+              <span className="font-script text-4xl text-gradient-sunset">{t(locale, "premiumHeadlineB")}</span>
             </h2>
 
             <ul className="mt-5 space-y-3 text-sm text-white/80">
-              <Feature icon={<BellRing className="h-4 w-4" />} title="Alertes push" sub="« Houle d'exception J-2 à Hossegor »" />
-              <Feature icon={<Calendar className="h-4 w-4" />} title="Prévisions 15 jours" sub="vs 7 jours gratuits" />
-              <Feature icon={<Waves className="h-4 w-4" />} title="Marées détaillées" sub="Heure pleine mer / basse mer par spot" />
-              <Feature icon={<Bell className="h-4 w-4" />} title="Pas de pub" sub="Expérience pure" />
+              <Feature icon={<BellRing className="h-4 w-4" />} title={t(locale, "premiumFeatureAlerts")} sub={t(locale, "premiumFeatureAlertsSub")} />
+              <Feature icon={<Calendar className="h-4 w-4" />} title={t(locale, "premiumFeature15Days")} sub={t(locale, "premiumFeature15DaysSub")} />
+              <Feature icon={<Waves className="h-4 w-4" />} title={t(locale, "premiumFeatureTides")} sub={t(locale, "premiumFeatureTidesSub")} />
+              <Feature icon={<Bell className="h-4 w-4" />} title={t(locale, "premiumFeatureNoAds")} sub={t(locale, "premiumFeatureNoAdsSub")} />
             </ul>
 
             <div className="mt-6 mb-2 text-xs uppercase tracking-widest text-sand-200/70">
-              Précommande la beta (gratuit, sans engagement)
+              {t(locale, "premiumPreorderLabel")}
             </div>
             <EmailCapture
               intent="premium-waitlist"
-              title="Sois prévenu au lancement"
-              description="Tu seras dans les premiers à essayer Yosurf+, avec une réduction lifetime de -50% sur l'abonnement."
-              ctaLabel="Me prévenir"
+              title={t(locale, "premiumCaptureTitle")}
+              description={t(locale, "premiumCaptureDescription")}
+              ctaLabel={t(locale, "premiumCaptureCta")}
               className="bg-transparent border-coral-400/20"
             />
           </div>

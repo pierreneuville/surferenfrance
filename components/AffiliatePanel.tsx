@@ -4,6 +4,8 @@ import { ExternalLink, Home, MapPin, ShoppingBag, Waves } from "lucide-react";
 import type { Spot } from "@/lib/types";
 import { affiliatesFor } from "@/lib/affiliates";
 import { trackEvent } from "@/lib/analytics";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 interface Props {
   spot: Spot;
@@ -14,6 +16,7 @@ interface Props {
  * Displays 1-3 relevant booking/affiliate slots per region.
  */
 export function AffiliatePanel({ spot }: Props) {
+  const { locale } = useLocale();
   const aff = affiliatesFor(spot);
   const items: Array<{ kind: keyof typeof aff; icon: React.ReactNode }> = [
     { kind: "surfCamp", icon: <Waves className="h-3.5 w-3.5" /> },
@@ -26,7 +29,7 @@ export function AffiliatePanel({ spot }: Props) {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
-      <h2 className="mb-3 text-xs uppercase tracking-widest text-white/45">Bons plans</h2>
+      <h2 className="mb-3 text-xs uppercase tracking-widest text-white/45">{t(locale, "affPanelTitle")}</h2>
       <div className="space-y-2">
         {present.map(({ kind, icon }) => {
           const link = aff[kind]!;
@@ -54,9 +57,7 @@ export function AffiliatePanel({ spot }: Props) {
           );
         })}
       </div>
-      <p className="mt-3 text-[10px] text-white/30">
-        Liens partenaires — la réservation se fait sur le site marchand.
-      </p>
+      <p className="mt-3 text-[10px] text-white/30">{t(locale, "affPanelDisclaimer")}</p>
     </div>
   );
 }

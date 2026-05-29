@@ -9,10 +9,13 @@ import { degToCardinal, fmt, dayLongLabel } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
 import { Waves, Wind, Compass, Sunrise } from "lucide-react";
 import { AdSlot } from "./AdSlot";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 interface Props { spot: Spot }
 
 export function SpotDetailClient({ spot }: Props) {
+  const { locale } = useLocale();
   const [forecast, setForecast] = useState<SpotForecast | null>(null);
   const [level, setLevel] = useState<Level>("intermediate");
   const [dayIdx, setDayIdx] = useState(0);
@@ -47,7 +50,7 @@ export function SpotDetailClient({ spot }: Props) {
         {/* Loading hint */}
         <div className="flex items-center gap-2 text-sm text-white/45">
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ocean-400" />
-          <span className="font-script text-base text-sand-200/70">Lecture des marées…</span>
+          <span className="font-script text-base text-sand-200/70">{t(locale, "modalLoadingTides")}</span>
         </div>
         {/* Hourly grid skeleton */}
         <div
@@ -91,7 +94,7 @@ export function SpotDetailClient({ spot }: Props) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <span className="text-xs text-white/50">Score adapté à mon niveau :</span>
+        <span className="text-xs text-white/50">{t(locale, "filterLevel")}</span>
         {(["beginner", "intermediate", "advanced"] as Level[]).map((l) => (
           <button
             key={l}
@@ -100,20 +103,20 @@ export function SpotDetailClient({ spot }: Props) {
               level === l ? "bg-ocean-500/30 text-ocean-100" : "bg-white/5 text-white/60 hover:text-white"
             }`}
           >
-            {l === "beginner" ? "Débutant" : l === "intermediate" ? "Intermédiaire" : "Confirmé"}
+            {t(locale, l === "beginner" ? "filterLevelBeginner" : l === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced")}
           </button>
         ))}
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Tile icon={<Waves className="h-3.5 w-3.5" />} label="Vague" value={`${fmt(forecast.days[dayIdx].waveHeight)} m`} sub={degToCardinal(forecast.days[dayIdx].waveDir)} />
-        <Tile icon={<Compass className="h-3.5 w-3.5" />} label="Période" value={`${fmt(forecast.days[dayIdx].wavePeriod, 0)} s`} />
-        <Tile icon={<Wind className="h-3.5 w-3.5" />} label="Vent" value={`${fmt(forecast.days[dayIdx].windSpeed, 0)} km/h`} sub={`raf. ${fmt(forecast.days[dayIdx].windGusts, 0)}`} />
-        <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="Soleil" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
+        <Tile icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "cardWave")} value={`${fmt(forecast.days[dayIdx].waveHeight)} m`} sub={degToCardinal(forecast.days[dayIdx].waveDir)} />
+        <Tile icon={<Compass className="h-3.5 w-3.5" />} label={t(locale, "cardPeriod")} value={`${fmt(forecast.days[dayIdx].wavePeriod, 0)} s`} />
+        <Tile icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(forecast.days[dayIdx].windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(forecast.days[dayIdx].windGusts, 0)}`} />
+        <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="☀" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
       </div>
 
       <div>
-        <div className="mb-3 text-xs uppercase tracking-wider text-white/50">Heure par heure</div>
+        <div className="mb-3 text-xs uppercase tracking-wider text-white/50">{t(locale, "modalHourly")}</div>
         <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
       </div>
 
