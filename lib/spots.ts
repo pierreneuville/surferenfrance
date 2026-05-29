@@ -392,6 +392,38 @@ export const SPOTS: Spot[] = [
   s("el-palmar", "El Palmar (Vejer)", "El Palmar", "Espagne Atlantique", "Cádiz", 36.232, -6.046, 90, "beginner", "Beach break", "Spot d'école star d'Andalousie, vagues douces et constantes."),
   s("los-caños", "Los Caños de Meca", "Los Caños", "Espagne Atlantique", "Cádiz", 36.180, -6.014, 90, "intermediate", "Beach break", "Plage des hippies, vagues plus consistantes que El Palmar."),
   s("bolonia", "Bolonia", "Bolonia", "Espagne Atlantique", "Cádiz", 36.080, -5.776, 90, "intermediate", "Beach break", "Dune monumentale, vagues exposées à la houle W et au Levante."),
+
+  // ==================== 🌋 CANARIES ====================
+  // Gran Canaria
+  s("el-confital", "El Confital (Las Palmas)", "El Confital", "Canaries", "Gran Canaria", 28.158, -15.444, 90, "advanced", "Reef right", "Vague de récif puissante au nord de Las Palmas, l'une des meilleures droites d'Europe."),
+  s("las-canteras", "Las Canteras", "Las Canteras", "Canaries", "Gran Canaria", 28.143, -15.439, 90, "beginner", "Beach break", "Plage urbaine de Las Palmas, école et vagues douces."),
+  s("el-fronton", "El Frontón", "El Frontón", "Canaries", "Gran Canaria", 28.122, -15.711, 0, "advanced", "Reef left", "Big wave gauche du nord Gran Canaria, capitale bodyboard."),
+  s("la-cicer", "La Cícer", "La Cícer", "Canaries", "Gran Canaria", 28.146, -15.438, 90, "intermediate", "Beach break", "Pointe sud de Las Canteras, vagues plus puissantes."),
+
+  // Lanzarote
+  s("la-santa", "La Santa", "La Santa", "Canaries", "Lanzarote", 29.115, -13.665, 90, "advanced", "Reef right", "Vague d'élite de Lanzarote, gauche/droite puissante sur fond de lave."),
+  s("el-quemao", "El Quemao", "El Quemao", "Canaries", "Lanzarote", 29.115, -13.503, 0, "advanced", "Reef left", "« The European Pipeline », gauche tubante mythique. Pour experts uniquement."),
+  s("famara", "Famara", "Famara", "Canaries", "Lanzarote", 29.117, -13.561, 90, "intermediate", "Beach break", "Longue plage exposée, écoles nombreuses."),
+  s("la-caleta", "La Caleta de Famara", "La Caleta", "Canaries", "Lanzarote", 29.120, -13.557, 90, "beginner", "Beach break", "Section école de Famara, parfait pour débuter."),
+  s("punta-mujeres", "Punta Mujeres", "Punta Mujeres", "Canaries", "Lanzarote", 29.157, -13.467, 0, "intermediate", "Reef", "Reef break du nord Lanzarote, ambiance volcanique."),
+
+  // Fuerteventura
+  s("el-hierro", "El Hierro (Fuerteventura)", "El Hierro", "Canaries", "Fuerteventura", 28.741, -13.945, 0, "advanced", "Reef right", "Vague de référence du Nord Fuerteventura, droite puissante."),
+  s("cotillo", "El Cotillo", "El Cotillo", "Canaries", "Fuerteventura", 28.683, -14.014, 90, "intermediate", "Beach break", "Plage du nord-ouest, vagues régulières, ambiance hippy."),
+  s("piedra-playa", "Piedra Playa", "Piedra Playa", "Canaries", "Fuerteventura", 28.696, -14.011, 90, "intermediate", "Beach break", "Plage longue à côté de Cotillo, vagues consistantes."),
+  s("la-pared", "La Pared", "La Pared", "Canaries", "Fuerteventura", 28.220, -14.215, 270, "intermediate", "Beach break", "Côte ouest sauvage, exposée aux houles."),
+  s("punta-blanca", "Punta Blanca", "Punta Blanca", "Canaries", "Fuerteventura", 28.730, -14.022, 0, "advanced", "Reef right", "Vague de récif au nord, droite rapide."),
+
+  // Tenerife
+  s("las-americas", "Playa de las Americas", "Las Americas", "Canaries", "Tenerife", 28.058, -16.731, 270, "intermediate", "Beach break / reef", "Sud touristique mais vagues régulières."),
+  s("el-socorro", "El Socorro (Los Realejos)", "El Socorro", "Canaries", "Tenerife", 28.398, -16.585, 0, "intermediate", "Beach break", "Plage nord, vagues puissantes l'hiver."),
+  s("martianez", "Playa Martiánez", "Martiánez", "Canaries", "Tenerife", 28.418, -16.541, 0, "beginner", "Beach break", "Puerto de la Cruz, plage urbaine et école."),
+
+  // La Palma
+  s("el-cabezo", "El Cabezo (La Palma)", "El Cabezo", "Canaries", "La Palma", 28.481, -17.756, 90, "advanced", "Reef left", "Gauche puissante sur la côte ouest de La Palma."),
+
+  // Hierro / Gomera (rares)
+  s("la-restinga", "La Restinga (El Hierro)", "La Restinga", "Canaries", "El Hierro", 27.642, -17.973, 0, "intermediate", "Reef", "Pointe sud de l'archipel, vagues confidentielles."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
