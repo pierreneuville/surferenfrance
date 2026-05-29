@@ -371,6 +371,27 @@ export const SPOTS: Spot[] = [
   s("berria", "Berria (Santoña)", "Berria", "Espagne Atlantique", "Cantabrie", 43.451, -3.480, 180, "intermediate", "Beach break", "Longue plage sauvage de Santoña, étape WSL en juniors."),
   s("langre", "Langre", "Langre", "Espagne Atlantique", "Cantabrie", 43.485, -3.715, 180, "intermediate", "Beach break", "Plage entre falaises, vagues consistantes."),
   s("ris", "Ris (Noja)", "Ris", "Espagne Atlantique", "Cantabrie", 43.491, -3.512, 180, "beginner", "Beach break", "Spot famille de Noja, vagues douces."),
+
+  // Asturies
+  s("salinas", "Salinas", "Salinas", "Espagne Atlantique", "Asturies", 43.575, -5.957, 180, "intermediate", "Beach break", "Capitale du surf asturien, longue plage exposée, école dense."),
+  s("rodiles", "Rodiles", "Rodiles", "Espagne Atlantique", "Asturies", 43.524, -5.371, 180, "intermediate", "Beach break", "Estuaire spectaculaire, gauche tubante quand la houle entre bien."),
+  s("xago", "Xagó", "Xagó", "Espagne Atlantique", "Asturies", 43.598, -5.916, 180, "intermediate", "Beach break", "Plage longue et sauvage, accessible par sentier."),
+  s("bayas", "Bayas", "Bayas", "Espagne Atlantique", "Asturies", 43.578, -6.075, 180, "intermediate", "Beach break", "Spot dunaire long, bancs de sable changeants."),
+  s("tapia", "Tapia de Casariego", "Tapia", "Espagne Atlantique", "Asturies", 43.567, -6.949, 180, "intermediate", "Beach break / reef", "Étape historique du Pro Junior, vagues qualitatives."),
+
+  // Galice
+  s("pantin", "Pantín", "Pantín", "Espagne Atlantique", "A Coruña", 43.610, -8.080, 180, "intermediate", "Beach break", "Étape WSL, beach break de qualité mondiale en automne."),
+  s("razo", "Razo", "Razo", "Espagne Atlantique", "A Coruña", 43.236, -8.806, 180, "intermediate", "Beach break", "Plage longue exposée aux houles NW de Galice."),
+  s("doniños", "Doniños", "Doniños", "Espagne Atlantique", "A Coruña", 43.494, -8.317, 180, "intermediate", "Beach break", "Vague consistante, beachies multiples sur 3 km."),
+  s("bastiagueiro", "Bastiagueiro", "Bastiagueiro", "Espagne Atlantique", "A Coruña", 43.346, -8.345, 180, "beginner", "Beach break", "Plage urbaine de La Corogne, école et windsurf."),
+  s("vilarrube", "Vilarrube", "Vilarrube", "Espagne Atlantique", "A Coruña", 43.668, -8.130, 180, "intermediate", "Beach break", "Plage sauvage des Rías Altas."),
+  s("patos", "Patos (Nigrán)", "Patos", "Espagne Atlantique", "Pontevedra", 42.144, -8.821, 180, "intermediate", "Beach break", "Plage sud galicienne, vagues régulières."),
+  s("foz", "Foz", "Foz", "Espagne Atlantique", "Lugo", 43.567, -7.262, 180, "intermediate", "Beach break", "Embouchure du Masma, plage sauvage."),
+
+  // Andalousie atlantique
+  s("el-palmar", "El Palmar (Vejer)", "El Palmar", "Espagne Atlantique", "Cádiz", 36.232, -6.046, 90, "beginner", "Beach break", "Spot d'école star d'Andalousie, vagues douces et constantes."),
+  s("los-caños", "Los Caños de Meca", "Los Caños", "Espagne Atlantique", "Cádiz", 36.180, -6.014, 90, "intermediate", "Beach break", "Plage des hippies, vagues plus consistantes que El Palmar."),
+  s("bolonia", "Bolonia", "Bolonia", "Espagne Atlantique", "Cádiz", 36.080, -5.776, 90, "intermediate", "Beach break", "Dune monumentale, vagues exposées à la houle W et au Levante."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
