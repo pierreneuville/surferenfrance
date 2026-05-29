@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Github, Heart } from "lucide-react";
 import { Logo, Wordmark } from "./Logo";
+import { PremiumTeaser } from "./PremiumTeaser";
 import { REGION_EMOJI, REGIONS } from "@/lib/spots";
 import { REGION_SLUGS } from "@/lib/seo";
 
@@ -47,6 +48,13 @@ export function Footer() {
             <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
             <Link href="/spots" className="transition hover:text-sand-200">Index des spots</Link>
             <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
+            <PremiumTeaser
+              trigger={
+                <span className="cursor-pointer transition hover:text-sand-200">
+                  yo<span className="text-gradient-sunset">surf</span>+
+                </span>
+              }
+            />
             <Link href="/mentions-legales" className="transition hover:text-sand-200">Mentions légales</Link>
             <Link href="/politique-confidentialite" className="transition hover:text-sand-200">Confidentialité</Link>
             <a
