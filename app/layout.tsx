@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { MilestoneToast } from "@/components/MilestoneToast";
 import { OnboardingSheet } from "@/components/OnboardingSheet";
 import { VersionWatcher } from "@/components/VersionWatcher";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { JsonLd } from "@/components/JsonLd";
 import { LocaleProvider } from "@/lib/useLocale";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from "@/lib/seo";
@@ -138,6 +139,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <OnboardingSheet />
           <MilestoneToast />
           <VersionWatcher />
+          <InstallPrompt />
         </LocaleProvider>
       </body>
     </html>
