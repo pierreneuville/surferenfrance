@@ -449,6 +449,37 @@ export const SPOTS: Spot[] = [
   s("cave", "Ericeira - Cave", "Cave", "Portugal", "Lisboa", 38.978, -9.418, 90, "advanced", "Reef right", "Vague droite intense, très technique."),
   s("pedra-branca", "Ericeira - Pedra Branca", "Pedra Branca", "Portugal", "Lisboa", 38.985, -9.420, 90, "intermediate", "Reef", "Reef rocky, vagues consistantes."),
   s("foz-do-lizandro", "Ericeira - Foz do Lizandro", "Foz Lizandro", "Portugal", "Lisboa", 38.963, -9.418, 90, "intermediate", "Beach break", "Plage centrale d'Ericeira, école et plaisir."),
+
+  // Lisbon area
+  s("praia-grande", "Praia Grande (Sintra)", "Praia Grande", "Portugal", "Lisboa", 38.808, -9.479, 90, "intermediate", "Beach break", "Spot mythique entre Cascais et Sintra, puissant."),
+  s("guincho", "Guincho", "Guincho", "Portugal", "Lisboa", 38.733, -9.475, 90, "intermediate", "Beach break", "Plage venteuse, paradis kitesurf et windsurf, vagues quand le vent baisse."),
+  s("carcavelos", "Carcavelos", "Carcavelos", "Portugal", "Lisboa", 38.682, -9.327, 0, "intermediate", "Beach break", "Plage de référence de Lisbonne, école dense."),
+  s("costa-caparica", "Costa da Caparica", "Costa da Caparica", "Portugal", "Setúbal", 38.642, -9.232, 90, "beginner", "Beach break", "Plage sud du Tage, longue et accessible."),
+  s("praia-do-norte-caparica", "Costa da Caparica - Praia do Norte", "Praia do Norte Caparica", "Portugal", "Setúbal", 38.638, -9.235, 90, "intermediate", "Beach break", "Section nord plus consistante."),
+  s("fonte-da-telha", "Fonte da Telha", "Fonte da Telha", "Portugal", "Setúbal", 38.580, -9.205, 90, "intermediate", "Beach break", "Plage longue au sud de Caparica."),
+
+  // Alentejo
+  s("comporta", "Comporta", "Comporta", "Portugal", "Setúbal", 38.382, -8.789, 270, "beginner", "Beach break", "Plage chic de l'Alentejo, vagues paisibles."),
+  s("zambujeira-do-mar", "Zambujeira do Mar", "Zambujeira", "Portugal", "Beja", 37.529, -8.788, 270, "intermediate", "Beach break", "Côte sauvage de l'Alentejo, falaises spectaculaires."),
+  s("praia-da-arrifana", "Praia da Arrifana", "Arrifana", "Portugal", "Faro", 37.296, -8.866, 270, "intermediate", "Beach break", "Spot iconique d'Aljezur, fonctionne avec houle NW."),
+  s("praia-do-amado", "Praia do Amado", "Amado", "Portugal", "Faro", 37.171, -8.901, 270, "intermediate", "Beach break", "Plage longue et sauvage, école de référence."),
+  s("praia-da-bordeira", "Praia da Bordeira (Carrapateira)", "Bordeira", "Portugal", "Faro", 37.198, -8.910, 270, "intermediate", "Beach break", "Dunes immenses, vagues puissantes."),
+
+  // Algarve
+  s("praia-do-tonel", "Praia do Tonel (Sagres)", "Tonel", "Portugal", "Faro", 37.013, -8.951, 270, "intermediate", "Beach break", "Vague exposée NW de Sagres, paysage de bout du monde."),
+  s("praia-do-beliche", "Praia do Beliche", "Beliche", "Portugal", "Faro", 37.018, -8.974, 270, "intermediate", "Beach break", "Crique abritée, vagues plus douces."),
+  s("praia-do-castelejo", "Praia do Castelejo", "Castelejo", "Portugal", "Faro", 37.116, -8.940, 270, "intermediate", "Beach break", "Côte ouest, vagues puissantes."),
+  s("praia-do-zavial", "Praia do Zavial", "Zavial", "Portugal", "Faro", 37.046, -8.879, 180, "intermediate", "Beach break", "Sud Algarve, vagues plus rares mais propres."),
+  s("praia-do-ancao", "Praia do Ancão (Quinta do Lago)", "Ancão", "Portugal", "Faro", 37.022, -8.001, 180, "beginner", "Beach break", "Algarve oriental, plage chic et vagues douces."),
+
+  // Açores
+  s("praia-da-vitoria-acores", "Praia da Vitória (Terceira)", "Praia da Vitória", "Portugal", "Açores", 38.732, -27.063, 90, "intermediate", "Beach break", "Plage de référence des Açores."),
+  s("santa-barbara", "Santa Bárbara (São Miguel)", "Santa Bárbara", "Portugal", "Açores", 37.829, -25.434, 90, "advanced", "Beach break", "Étape WSL aux Açores, vagues puissantes."),
+  s("praia-formosa-acores", "Praia Formosa (Santa Maria)", "Praia Formosa", "Portugal", "Açores", 36.971, -25.124, 90, "intermediate", "Beach break", "Plage sablonneuse, vagues consistantes."),
+
+  // Madère
+  s("jardim-do-mar", "Jardim do Mar", "Jardim do Mar", "Portugal", "Madère", 32.733, -17.183, 0, "advanced", "Reef right", "Pointe mythique de Madère, big wave en hiver."),
+  s("paul-do-mar", "Paúl do Mar", "Paúl do Mar", "Portugal", "Madère", 32.749, -17.226, 0, "advanced", "Reef left", "Gauche puissante de Madère, vagues longues."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
