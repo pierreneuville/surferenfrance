@@ -8,7 +8,7 @@ import {
 import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
 import { fetchSpotForecastFromApi } from "@/lib/clientApi";
-import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
+import { SCORE_COLORS, computeScore, scoreLabel, scoreTone } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel, timeFromIso, dayShortLabel, dayDateNumber } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
 
@@ -67,7 +67,15 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
   }, [lightForecast.spot.slug]);
 
   const d = forecast.days[dayIdx];
-  const score = d.scoresByLevel?.[level] ?? d.score;
+  // Score for the user's selected level. Priority:
+  //   1. server-precomputed scoresByLevel[level] (from /api/forecasts)
+  //   2. recompute client-side from raw daily values (when full-spot fetch overrode it)
+  //   3. fallback to .score (intermediate)
+  const score =
+    d.scoresByLevel?.[level]
+    ?? (d.waveHeight != null
+      ? computeScore(d.waveHeight, d.wavePeriod, d.windSpeed, d.windDir, forecast.spot.offshore, level)
+      : d.score);
   const tone = scoreTone(score);
   const colors = SCORE_COLORS[tone];
   const hasHourly = forecast.hourly.times.length > 0;
@@ -159,6 +167,11 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
               <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/85">
                 {scoreLabel(score)}
               </div>
+              {/* Level reminder — score is calibrated for the user's level */}
+              <div className="mt-1.5 flex items-center justify-center gap-1 border-t border-white/15 pt-1 text-[9px] text-white/65">
+                <span>{level === "beginner" ? "🌱" : level === "intermediate" ? "🤙" : "🔥"}</span>
+                <span className="font-medium">{level === "beginner" ? "Débutant" : level === "intermediate" ? "Interm." : "Confirmé"}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -167,7 +180,11 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
         <div className="border-b border-white/[0.06] bg-depth-950 px-4 py-3 sm:px-6">
           <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
             {forecast.days.map((day, i) => {
-              const ds = day.scoresByLevel?.[level] ?? day.score;
+              const ds =
+                day.scoresByLevel?.[level]
+                ?? (day.waveHeight != null
+                  ? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, forecast.spot.offshore, level)
+                  : day.score);
               const isActive = i === dayIdx;
               const t = scoreTone(ds);
               return (

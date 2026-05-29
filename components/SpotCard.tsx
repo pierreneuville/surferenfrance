@@ -115,8 +115,16 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
             </p>
           </div>
 
-          {/* Circular gauge */}
-          <ScoreGauge score={score} color={colors.hex} tone={tone} />
+          {/* Circular gauge + level marker */}
+          <div className="flex flex-col items-center gap-1">
+            <ScoreGauge score={score} color={colors.hex} tone={tone} />
+            <span
+              className="rounded-full border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[8px] uppercase tracking-widest text-white/55"
+              title={`Score calibré pour le niveau ${level === "beginner" ? "débutant" : level === "intermediate" ? "intermédiaire" : "confirmé"}`}
+            >
+              {level === "beginner" ? "🌱 Déb." : level === "intermediate" ? "🤙 Inter." : "🔥 Conf."}
+            </span>
+          </div>
         </div>
 
         {/* Best window — the hero info */}
