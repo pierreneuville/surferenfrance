@@ -34,6 +34,18 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
   const [hourlyLoading, setHourlyLoading] = useState(true);
   const [dayIdx, setDayIdx] = useState(initialDay);
   const [shared, setShared] = useState(false);
+  // Swipe-to-change-day on mobile
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  function onTouchStart(e: React.TouchEvent) { setTouchStartX(e.touches[0].clientX); }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (touchStartX == null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(delta) > 60) {
+      if (delta < 0 && dayIdx < 6) setDayIdx(dayIdx + 1);
+      else if (delta > 0 && dayIdx > 0) setDayIdx(dayIdx - 1);
+    }
+    setTouchStartX(null);
+  }
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -95,6 +107,8 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
       <div
         className="relative flex max-h-[94dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-depth-950 shadow-2xl sm:max-h-[92vh] sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
         {/* === HERO === */}
         <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-20 pt-3 sm:px-6 sm:pb-20 sm:pt-5`}>
