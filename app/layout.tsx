@@ -75,7 +75,16 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     images: ["/opengraph-image"],
   },
-  alternates: { canonical: SITE_URL },
+  alternates: {
+    canonical: SITE_URL,
+    languages: {
+      "fr-FR": SITE_URL,
+      "en": `${SITE_URL}?lang=en`,
+      "es-ES": `${SITE_URL}?lang=es`,
+      "pt-PT": `${SITE_URL}?lang=pt`,
+      "x-default": SITE_URL,
+    },
+  },
   robots: { index: true, follow: true },
   icons: { icon: "/icon.svg" },
 };
