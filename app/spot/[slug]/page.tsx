@@ -8,6 +8,8 @@ import { AffiliatePanel } from "@/components/AffiliatePanel";
 import { JsonLd } from "@/components/JsonLd";
 import type { Level } from "@/lib/types";
 import { REGION_SLUGS, SITE_NAME, absoluteUrl, spotKeywords } from "@/lib/seo";
+import { getServerLocale } from "@/lib/serverLocale";
+import { t, tf, type Locale, type TranslationKey } from "@/lib/i18n";
 
 interface PageProps { params: Promise<{ slug: string }> }
 
@@ -42,49 +44,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-const LEVEL_LABEL: Record<Level, string> = {
-  beginner: "Débutant",
-  intermediate: "Intermédiaire",
-  advanced: "Confirmé",
-};
-
-const LEVEL_ADVICE: Record<Level, string> = {
-  beginner: "Idéal pour démarrer ou pour le longboard. Vagues douces, peu de courant, école souvent sur place.",
-  intermediate: "Bon niveau requis. Tu sais déjà te lever, ramer et lire un peak. Quand ça envoie, mieux vaut savoir ce qu'on fait.",
-  advanced: "Pour confirmés uniquement. Vagues puissantes, courants forts ou fond technique. Renseigne-toi sur place.",
-};
-
-function whenToSurf(spot: ReturnType<typeof getSpotBySlug>): string {
-  if (!spot) return "";
-  // Med spots are mostly winter swell
-  if (spot.region === "Méditerranée") {
-    return "Surfable principalement de fin d'automne à début printemps, par tempête de SE ou SW selon le spot. Sessions rares mais marquantes.";
-  }
-  if (spot.region === "Corse") {
-    return "Fenêtres de surf en automne-hiver, par grosse houle d'ouest ou tempête méditerranéenne.";
-  }
-  if (spot.region === "Manche & Nord") {
-    return "Meilleure saison de septembre à mars, quand les grosses dépressions atlantiques envoient une houle qui entre dans la Manche.";
-  }
-  if (spot.region === "Bretagne") {
-    return "Fonctionne toute l'année, avec un sweet spot d'avril à novembre. Capricieux : la qualité dépend fortement de l'orientation de la houle.";
-  }
-  // Atlantique
-  return "Surfable toute l'année. L'automne (sept-nov) est la meilleure saison : houles puissantes, eau encore tiède, moins de monde.";
+function levelLabel(locale: Locale, level: Level): string {
+  return t(locale, level === "beginner" ? "filterLevelBeginner" : level === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced");
 }
 
-function accessTip(spot: ReturnType<typeof getSpotBySlug>): string {
-  if (!spot) return "";
-  if (spot.type.toLowerCase().includes("reef")) {
-    return "Accès direct par la plage, mais attention au fond rocheux. Combinaison + chaussons recommandés, ne pas surfer à marée basse.";
-  }
-  if (spot.type.toLowerCase().includes("galets")) {
-    return "Plage de galets — attention aux entrées/sorties de l'eau et aux chocs. Chaussons utiles.";
-  }
-  if (spot.type.toLowerCase().includes("jetée")) {
-    return "Spot à côté d'une jetée ou enrochement. Reste à distance des structures, surtout par grosse houle.";
-  }
-  return "Accès facile par la plage, parking généralement à proximité. Renseigne-toi en local sur les courants saisonniers.";
+function whenToSurf(locale: Locale, spot: NonNullable<ReturnType<typeof getSpotBySlug>>): string {
+  const key: TranslationKey =
+    spot.region === "Méditerranée" ? "spotWhenMediterranee"
+    : spot.region === "Corse" ? "spotWhenCorse"
+    : spot.region === "Manche & Nord" ? "spotWhenManche"
+    : spot.region === "Bretagne" ? "spotWhenBretagne"
+    : spot.region === "Canaries" ? "spotWhenCanaries"
+    : spot.region === "Portugal" ? "spotWhenPortugal"
+    : spot.region === "Maroc" ? "spotWhenMaroc"
+    : spot.region === "Royaume-Uni" ? "spotWhenUK"
+    : spot.region === "Irlande" ? "spotWhenIrlande"
+    : spot.region === "Espagne Atlantique" ? "spotWhenEspagne"
+    : "spotWhenAtlantique";
+  return t(locale, key);
+}
+
+function accessTip(locale: Locale, spot: NonNullable<ReturnType<typeof getSpotBySlug>>): string {
+  const type = spot.type.toLowerCase();
+  if (type.includes("reef")) return t(locale, "spotAccessReef");
+  if (type.includes("galets")) return t(locale, "spotAccessGalets");
+  if (type.includes("jetée")) return t(locale, "spotAccessJetee");
+  return t(locale, "spotAccessGeneric");
+}
+
+function levelAdvice(locale: Locale, level: Level): string {
+  return t(locale, level === "beginner" ? "spotLevelBeginner" : level === "intermediate" ? "spotLevelIntermediate" : "spotLevelAdvanced");
 }
 
 export default async function SpotPage({ params }: PageProps) {
@@ -93,7 +82,8 @@ export default async function SpotPage({ params }: PageProps) {
   if (!spot) notFound();
   const nearby = getNearbySpots(spot, 4);
   const levelKey = spot.level as Level;
-  const faqs = spotFaqs(spot, nearby.map((item) => item.spot));
+  const locale = await getServerLocale();
+  const faqs = spotFaqs(locale, spot, nearby.map((item) => item.spot));
 
   const pageUrl = absoluteUrl(`/spot/${spot.slug}`);
   const ld = {
@@ -164,7 +154,7 @@ export default async function SpotPage({ params }: PageProps) {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
         <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm text-white/60 hover:text-sand-200">
           <ArrowLeft className="h-4 w-4" />
-          Tous les spots
+          {t(locale, "spotBackToAll")}
         </Link>
 
         {/* Header */}
@@ -180,7 +170,7 @@ export default async function SpotPage({ params }: PageProps) {
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-white/70">{spot.type}</span>
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-white/70">
-            Niveau {LEVEL_LABEL[levelKey].toLowerCase()}
+            {tf(locale, "spotSectionLevel", { level: levelLabel(locale, levelKey).toLowerCase() })}
           </span>
         </div>
 
@@ -192,23 +182,23 @@ export default async function SpotPage({ params }: PageProps) {
 
             {/* SEO sections */}
             <section className="mt-10 grid gap-4 sm:grid-cols-2">
-              <SeoBlock icon={<Waves className="h-4 w-4" />} title="Quand surfer ici">
-                {whenToSurf(spot)}
+              <SeoBlock icon={<Waves className="h-4 w-4" />} title={t(locale, "spotSectionWhen")}>
+                {whenToSurf(locale, spot)}
               </SeoBlock>
-              <SeoBlock icon={<Compass className="h-4 w-4" />} title={`Niveau ${LEVEL_LABEL[levelKey].toLowerCase()}`}>
-                {LEVEL_ADVICE[levelKey]}
+              <SeoBlock icon={<Compass className="h-4 w-4" />} title={tf(locale, "spotSectionLevel", { level: levelLabel(locale, levelKey).toLowerCase() })}>
+                {levelAdvice(locale, levelKey)}
               </SeoBlock>
-              <SeoBlock icon={<MapPin className="h-4 w-4" />} title="Accès & repères">
-                {accessTip(spot)}
+              <SeoBlock icon={<MapPin className="h-4 w-4" />} title={t(locale, "spotSectionAccess")}>
+                {accessTip(locale, spot)}
               </SeoBlock>
-              <SeoBlock icon={<AlertTriangle className="h-4 w-4" />} title="Sécurité">
-                Surfe avec une combinaison adaptée. Repère les courants avant d'aller à l'eau. Respecte les locaux et la priorité. Vérifie la météo et la marée.
+              <SeoBlock icon={<AlertTriangle className="h-4 w-4" />} title={t(locale, "spotSectionSafety")}>
+                {t(locale, "spotSafetyText")}
               </SeoBlock>
             </section>
 
             <section className="mt-10" aria-labelledby="faq-spot">
               <h2 id="faq-spot" className="font-display text-2xl font-bold">
-                Questions fréquentes sur {spot.shortName}
+                {tf(locale, "spotSectionFaq", { name: spot.shortName })}
               </h2>
               <div className="mt-4 grid gap-3">
                 {faqs.map((faq) => (
@@ -235,7 +225,7 @@ export default async function SpotPage({ params }: PageProps) {
             {/* Nearby spots */}
             <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
               <h2 className="mb-3 text-xs uppercase tracking-widest text-white/45">
-                Spots à proximité
+                {t(locale, "spotSectionNearby")}
               </h2>
               <div className="space-y-2">
                 {nearby.map(({ spot: n, km }) => (
@@ -264,14 +254,14 @@ export default async function SpotPage({ params }: PageProps) {
             {/* Spot meta card */}
             <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
               <h2 className="mb-3 text-xs uppercase tracking-widest text-white/45">
-                Repères
+                {t(locale, "spotSectionMarkers")}
               </h2>
               <ul className="space-y-2 text-sm">
-                <Row icon={<Waves className="h-3.5 w-3.5" />} label="Type" value={spot.type} />
-                <Row icon={<Compass className="h-3.5 w-3.5" />} label="Niveau" value={LEVEL_LABEL[levelKey]} />
-                <Row icon={<MapPin className="h-3.5 w-3.5" />} label="Région" value={spot.region} />
-                <Row icon={<Wind className="h-3.5 w-3.5" />} label="Vent idéal" value={offshoreCardinal(spot.offshore)} />
-                <Row icon={<MapPin className="h-3.5 w-3.5" />} label="Coordonnées" value={`${spot.lat.toFixed(3)}, ${spot.lon.toFixed(3)}`} />
+                <Row icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "spotRowType")} value={spot.type} />
+                <Row icon={<Compass className="h-3.5 w-3.5" />} label={t(locale, "spotRowLevel")} value={levelLabel(locale, levelKey)} />
+                <Row icon={<MapPin className="h-3.5 w-3.5" />} label={t(locale, "spotRowRegion")} value={spot.region} />
+                <Row icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "spotRowWind")} value={offshoreCardinal(locale, spot.offshore)} />
+                <Row icon={<MapPin className="h-3.5 w-3.5" />} label={t(locale, "spotRowCoords")} value={`${spot.lat.toFixed(3)}, ${spot.lon.toFixed(3)}`} />
               </ul>
             </div>
           </aside>
@@ -305,36 +295,41 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
   );
 }
 
-function offshoreCardinal(deg: number): string {
-  const dirs = ["Nord", "Nord-Est", "Est", "Sud-Est", "Sud", "Sud-Ouest", "Ouest", "Nord-Ouest"];
-  return dirs[Math.round(deg / 45) % 8];
+function offshoreCardinal(locale: Locale, deg: number): string {
+  const keys: TranslationKey[] = ["cardN", "cardNE", "cardE", "cardSE", "cardS", "cardSW", "cardW", "cardNW"];
+  return t(locale, keys[Math.round(deg / 45) % 8]);
 }
 
-function spotFaqs(spot: NonNullable<ReturnType<typeof getSpotBySlug>>, nearby: NonNullable<ReturnType<typeof getSpotBySlug>>[]) {
-  const levelLabel = LEVEL_LABEL[spot.level as Level].toLowerCase();
+function spotFaqs(
+  locale: Locale,
+  spot: NonNullable<ReturnType<typeof getSpotBySlug>>,
+  nearby: NonNullable<ReturnType<typeof getSpotBySlug>>[]
+) {
+  const lvl = levelLabel(locale, spot.level as Level).toLowerCase();
   const nearbyNames = nearby.slice(0, 3).map((item) => item.shortName).join(", ");
 
   return [
     {
-      question: `Quand surfer à ${spot.shortName} ?`,
-      answer: whenToSurf(spot),
+      question: tf(locale, "faqWhenQ", { name: spot.shortName }),
+      answer: whenToSurf(locale, spot),
     },
     {
-      question: `${spot.shortName} est-il adapté aux débutants ?`,
+      question: tf(locale, "faqBeginnerQ", { name: spot.shortName }),
       answer:
         spot.level === "beginner"
-          ? `${spot.shortName} est plutôt accessible aux débutants quand les vagues restent petites et que le vent est faible. Vérifie tout de même les courants, la marée et les consignes locales avant d'entrer à l'eau.`
-          : `${spot.shortName} est plutôt conseillé aux surfeurs de niveau ${levelLabel}. Si tu débutes, privilégie une école de surf, une petite houle et une marée adaptée, ou cherche un spot plus abrité à proximité.`,
+          ? tf(locale, "faqBeginnerAYes", { name: spot.shortName })
+          : tf(locale, "faqBeginnerANo", { name: spot.shortName, level: lvl }),
     },
     {
-      question: `Quel vent est idéal pour ${spot.shortName} ?`,
-      answer: `Le vent idéal à ${spot.shortName} vient globalement de ${offshoreCardinal(spot.offshore)} : il est offshore, donc il aide à lisser et tenir les vagues. Un vent fort venant du large dégrade généralement les conditions.`,
+      question: tf(locale, "faqWindQ", { name: spot.shortName }),
+      answer: tf(locale, "faqWindA", { name: spot.shortName, dir: offshoreCardinal(locale, spot.offshore) }),
     },
     {
-      question: `Quels spots de surf sont proches de ${spot.shortName} ?`,
+      question: tf(locale, "faqNearbyQ", { name: spot.shortName }),
       answer: nearbyNames
-        ? `Autour de ${spot.shortName}, tu peux aussi regarder les conditions à ${nearbyNames}. Compare les scores, le vent et l'orientation de houle avant de choisir où surfer.`
-        : `Les spots proches de ${spot.shortName} sont listés sur la fiche avec leur distance. Compare toujours l'exposition à la houle et le vent avant de partir.`,
+        ? tf(locale, "faqNearbyAWith", { name: spot.shortName, nearby: nearbyNames })
+        : tf(locale, "faqNearbyAEmpty", { name: spot.shortName }),
     },
   ];
 }
+

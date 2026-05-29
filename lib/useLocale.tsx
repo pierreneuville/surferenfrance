@@ -48,6 +48,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     setLocaleState(next);
     try {
       localStorage.setItem(STORAGE_KEY, next);
+      // Set a cookie so Server Components can pick the right language on next nav
+      document.cookie = `yosurf-locale=${next}; path=/; max-age=31536000; SameSite=Lax`;
       if (typeof document !== "undefined") document.documentElement.lang = next;
       // Reflect in URL without full reload so deep links survive
       const url = new URL(window.location.href);

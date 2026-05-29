@@ -205,6 +205,67 @@ export const fr = {
   newsletterThanks: "Merci, on te tient au courant — check ta boîte 🌊",
   newsletterPlaceholder: "ton.email@exemple.fr",
   newsletterCta: "Je m'inscris",
+
+  // ===== Spot detail page =====
+  spotBackToAll: "Tous les spots",
+  spotSectionWhen: "Quand surfer ici",
+  spotSectionLevel: "Niveau {level}",
+  spotSectionAccess: "Accès & repères",
+  spotSectionSafety: "Sécurité",
+  spotSafetyText: "Surfe avec une combinaison adaptée. Repère les courants avant d'aller à l'eau. Respecte les locaux et la priorité. Vérifie la météo et la marée.",
+  spotSectionFaq: "Questions fréquentes sur {name}",
+  spotSectionNearby: "Spots à proximité",
+  spotSectionMarkers: "Repères",
+  spotRowType: "Type",
+  spotRowLevel: "Niveau",
+  spotRowRegion: "Région",
+  spotRowWind: "Vent idéal",
+  spotRowCoords: "Coordonnées",
+
+  // Region-specific "when to surf"
+  spotWhenMediterranee: "Surfable principalement de fin d'automne à début printemps, par tempête de SE ou SW selon le spot. Sessions rares mais marquantes.",
+  spotWhenCorse: "Fenêtres de surf en automne-hiver, par grosse houle d'ouest ou tempête méditerranéenne.",
+  spotWhenManche: "Meilleure saison de septembre à mars, quand les grosses dépressions atlantiques envoient une houle qui entre dans la Manche.",
+  spotWhenBretagne: "Fonctionne toute l'année, avec un sweet spot d'avril à novembre. Capricieux : la qualité dépend fortement de l'orientation de la houle.",
+  spotWhenAtlantique: "Surfable toute l'année. L'automne (sept-nov) est la meilleure saison : houles puissantes, eau encore tiède, moins de monde.",
+  spotWhenCanaries: "Saison reine d'octobre à mars. Trade winds réguliers, eau tiède toute l'année, houles consistantes.",
+  spotWhenPortugal: "L'automne est la saison reine. L'hiver apporte les grosses sessions, le printemps reste très qualitatif.",
+  spotWhenMaroc: "Octobre à avril est la saison idéale. Les houles NW envoient régulièrement, avec moins de pluie qu'en Europe.",
+  spotWhenUK: "L'automne et l'hiver donnent les meilleures houles, mais l'eau est froide. Été = vagues plus petites, fréquentation max.",
+  spotWhenIrlande: "L'automne et l'hiver concentrent toutes les grosses sessions. Eau froide, vent fort, mais récompense rare.",
+  spotWhenEspagne: "L'automne et l'hiver donnent les meilleures conditions, avec des houles longues et puissantes venues du nord.",
+
+  // Level advice
+  spotLevelBeginner: "Idéal pour démarrer ou pour le longboard. Vagues douces, peu de courant, école souvent sur place.",
+  spotLevelIntermediate: "Bon niveau requis. Tu sais déjà te lever, ramer et lire un peak. Quand ça envoie, mieux vaut savoir ce qu'on fait.",
+  spotLevelAdvanced: "Pour confirmés uniquement. Vagues puissantes, courants forts ou fond technique. Renseigne-toi sur place.",
+
+  // Access tips by spot type
+  spotAccessReef: "Accès direct par la plage, mais attention au fond rocheux. Combinaison + chaussons recommandés, ne pas surfer à marée basse.",
+  spotAccessGalets: "Plage de galets — attention aux entrées/sorties de l'eau et aux chocs. Chaussons utiles.",
+  spotAccessJetee: "Spot à côté d'une jetée ou enrochement. Reste à distance des structures, surtout par grosse houle.",
+  spotAccessGeneric: "Accès facile par la plage, parking généralement à proximité. Renseigne-toi en local sur les courants saisonniers.",
+
+  // FAQ templates
+  faqWhenQ: "Quand surfer à {name} ?",
+  faqBeginnerQ: "{name} est-il adapté aux débutants ?",
+  faqBeginnerAYes: "{name} est plutôt accessible aux débutants quand les vagues restent petites et que le vent est faible. Vérifie tout de même les courants, la marée et les consignes locales avant d'entrer à l'eau.",
+  faqBeginnerANo: "{name} est plutôt conseillé aux surfeurs de niveau {level}. Si tu débutes, privilégie une école de surf, une petite houle et une marée adaptée, ou cherche un spot plus abrité à proximité.",
+  faqWindQ: "Quel vent est idéal pour {name} ?",
+  faqWindA: "Le vent idéal à {name} vient globalement de {dir} : il est offshore, donc il aide à lisser et tenir les vagues. Un vent fort venant du large dégrade généralement les conditions.",
+  faqNearbyQ: "Quels spots de surf sont proches de {name} ?",
+  faqNearbyAWith: "Autour de {name}, tu peux aussi regarder les conditions à {nearby}. Compare les scores, le vent et l'orientation de houle avant de choisir où surfer.",
+  faqNearbyAEmpty: "Les spots proches de {name} sont listés sur la fiche avec leur distance. Compare toujours l'exposition à la houle et le vent avant de partir.",
+
+  // Cardinal directions (for offshore wind)
+  cardN: "Nord",
+  cardNE: "Nord-Est",
+  cardE: "Est",
+  cardSE: "Sud-Est",
+  cardS: "Sud",
+  cardSW: "Sud-Ouest",
+  cardW: "Ouest",
+  cardNW: "Nord-Ouest",
 };
 
 // Derive a string-valued type so EN/ES/PT can be checked structurally without
