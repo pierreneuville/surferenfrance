@@ -55,6 +55,9 @@ export function FilterSheet({
   if (!open) return null;
 
   const availableRegions = REGIONS.filter((r) => country === "all" || REGION_COUNTRY[r] === country);
+  // Hide region section when the selected country has ≤ 1 region (the region picker
+  // would be redundant — only "All" + the single region).
+  const hideRegionSection = country !== "all" && availableRegions.length <= 1;
 
   return (
     <div
@@ -105,28 +108,30 @@ export function FilterSheet({
             </div>
           </section>
 
-          {/* Region */}
-          <section>
-            <div className="mb-2 flex items-center gap-1.5 text-xs uppercase tracking-widest text-white/45">
-              <MapPin className="h-3 w-3" />
-              {t(locale, "filterSheetRegion")}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Chip
-                active={region === "all"}
-                onClick={() => onRegionChange("all")}
-                label={t(locale, "filterAllRegions")}
-              />
-              {availableRegions.map((r) => (
+          {/* Region — hidden when the selected country has only 1 region */}
+          {!hideRegionSection && (
+            <section>
+              <div className="mb-2 flex items-center gap-1.5 text-xs uppercase tracking-widest text-white/45">
+                <MapPin className="h-3 w-3" />
+                {t(locale, "filterSheetRegion")}
+              </div>
+              <div className="flex flex-wrap gap-2">
                 <Chip
-                  key={r}
-                  active={region === r}
-                  onClick={() => onRegionChange(r)}
-                  label={`${REGION_EMOJI[r]} ${r}`}
+                  active={region === "all"}
+                  onClick={() => onRegionChange("all")}
+                  label={t(locale, "filterAllRegions")}
                 />
-              ))}
-            </div>
-          </section>
+                {availableRegions.map((r) => (
+                  <Chip
+                    key={r}
+                    active={region === r}
+                    onClick={() => onRegionChange(r)}
+                    label={`${REGION_EMOJI[r]} ${r}`}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Level (segmented control) */}
           <section>

@@ -249,7 +249,12 @@ export function Filters(props: FiltersProps) {
           </div>
         </div>
 
-        {/* Region chips — bigger touch targets, emoji vivid */}
+        {/* Region chips — hidden when the selected country has ≤ 1 region (would be redundant) */}
+        {(() => {
+          const visibleRegions = REGIONS.filter((r) => country === "all" || REGION_COUNTRY[r] === country);
+          const hideRegionRow = country !== "all" && visibleRegions.length <= 1;
+          if (hideRegionRow && favoritesCount === 0) return null;
+          return (
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="scrollbar-hide flex snap-x snap-proximity gap-2 overflow-x-auto py-0.5">
           {favoritesCount > 0 && (
@@ -266,6 +271,7 @@ export function Filters(props: FiltersProps) {
               <span className="rounded-full bg-black/30 px-1.5 text-[10px] font-bold">{favoritesCount}</span>
             </button>
           )}
+          {!hideRegionRow && (
           <button
             onClick={() => onRegionChange("all")}
             className={`tap-target shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition active:scale-95 ${
@@ -276,7 +282,8 @@ export function Filters(props: FiltersProps) {
           >
             🌍 {t(locale, "filterAllRegions")}
           </button>
-          {REGIONS.filter((r) => country === "all" || REGION_COUNTRY[r] === country).map((r) => (
+          )}
+          {!hideRegionRow && visibleRegions.map((r) => (
             <button
               key={r}
               onClick={() => onRegionChange(r)}
@@ -294,6 +301,8 @@ export function Filters(props: FiltersProps) {
         {/* fade-out affordance */}
         <div className="pointer-events-none absolute bottom-0 right-0 top-0 w-8 bg-gradient-to-l from-depth-950 to-transparent" />
         </div>
+          );
+        })()}
 
         {/* Filters row : Search, NearMe, Sort */}
         <div className="flex flex-wrap items-center gap-2">
