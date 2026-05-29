@@ -3,6 +3,8 @@
 import { Flame, MapPin, Sparkles, Waves } from "lucide-react";
 import type { Level } from "@/lib/types";
 import type { SortKey } from "./Filters";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf } from "@/lib/i18n";
 
 interface Props {
   dayIdx: number;
@@ -21,6 +23,7 @@ function nextSaturdayOffset(): number {
 }
 
 export function QuickActions({ dayIdx, sort, nearMe, hasGeo, onApply, onToggleNearMe }: Props) {
+  const { locale } = useLocale();
   const satOffset = nextSaturdayOffset();
   const isTodayActive = dayIdx === 0 && sort === "score";
   const isWeekendActive = dayIdx === satOffset && sort === "score";
@@ -30,24 +33,24 @@ export function QuickActions({ dayIdx, sort, nearMe, hasGeo, onApply, onToggleNe
     <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
       <Action
         icon={<Flame className="h-4 w-4" />}
-        title="Top du jour"
-        subtitle="meilleurs scores"
+        title={t(locale, "quickTopToday")}
+        subtitle={t(locale, "quickTopTodaySub")}
         gradient="from-coral-500 to-sunset-500"
         active={isTodayActive}
         onClick={() => onApply({ dayIdx: 0, sort: "score" })}
       />
       <Action
         icon={<Sparkles className="h-4 w-4" />}
-        title="Ce week-end"
-        subtitle={satOffset === 0 ? "samedi (auj.)" : `samedi (J+${satOffset})`}
+        title={t(locale, "quickWeekend")}
+        subtitle={satOffset === 0 ? t(locale, "quickWeekendToday") : tf(locale, "quickWeekendSub", { n: satOffset })}
         gradient="from-sand-400 to-sunset-500"
         active={isWeekendActive}
         onClick={() => onApply({ dayIdx: satOffset, sort: "score" })}
       />
       <Action
         icon={<MapPin className="h-4 w-4" />}
-        title="Près de moi"
-        subtitle={nearMe ? "actif" : "géoloc"}
+        title={t(locale, "quickNearMe")}
+        subtitle={nearMe ? t(locale, "quickNearMeActive") : t(locale, "quickNearMeSub")}
         gradient="from-emerald-500 to-lagoon-500"
         active={nearMe}
         disabled={!hasGeo}
@@ -55,8 +58,8 @@ export function QuickActions({ dayIdx, sort, nearMe, hasGeo, onApply, onToggleNe
       />
       <Action
         icon={<Waves className="h-4 w-4" />}
-        title="Grosses vagues"
-        subtitle="tri par houle"
+        title={t(locale, "quickBigWaves")}
+        subtitle={t(locale, "quickBigWavesSub")}
         gradient="from-ocean-500 to-ocean-700"
         active={isWavesActive}
         onClick={() => onApply({ sort: "wave" })}
