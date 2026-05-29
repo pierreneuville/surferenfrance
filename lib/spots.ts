@@ -424,6 +424,31 @@ export const SPOTS: Spot[] = [
 
   // Hierro / Gomera (rares)
   s("la-restinga", "La Restinga (El Hierro)", "La Restinga", "Canaries", "El Hierro", 27.642, -17.973, 0, "intermediate", "Reef", "Pointe sud de l'archipel, vagues confidentielles."),
+
+  // ==================== 🇵🇹 PORTUGAL ====================
+  // Norte (Porto / Viana)
+  s("matosinhos", "Matosinhos", "Matosinhos", "Portugal", "Porto", 41.180, -8.703, 90, "beginner", "Beach break", "Plage urbaine de Porto, école active, vagues douces."),
+  s("espinho", "Espinho", "Espinho", "Portugal", "Aveiro", 41.005, -8.643, 90, "intermediate", "Beach break", "Étape WSL QS, plage longue exposée."),
+  s("furadouro", "Furadouro", "Furadouro", "Portugal", "Aveiro", 40.875, -8.660, 90, "intermediate", "Beach break", "Plage exposée du nord Portugal."),
+  s("praia-norte-viana", "Praia do Norte (Viana)", "Praia do Norte VC", "Portugal", "Viana do Castelo", 41.700, -8.844, 90, "intermediate", "Beach break", "Vagues puissantes du nord, ambiance windsurf."),
+  s("vila-cha", "Vila Chã", "Vila Chã", "Portugal", "Porto", 41.293, -8.741, 90, "intermediate", "Beach break", "Petit village de pêcheurs, vagues consistantes."),
+
+  // Centro (Figueira / Nazaré / Peniche)
+  s("buarcos", "Buarcos (Figueira da Foz)", "Buarcos", "Portugal", "Coimbra", 40.165, -8.879, 90, "intermediate", "Reef right", "Vague de droite la plus longue d'Europe quand elle marche."),
+  s("praia-da-mira", "Praia de Mira", "Praia de Mira", "Portugal", "Coimbra", 40.456, -8.802, 90, "intermediate", "Beach break", "Plage longue de la Costa de Prata."),
+  s("nazare-norte", "Nazaré - Praia do Norte", "Praia do Norte", "Portugal", "Leiria", 39.611, -9.082, 90, "advanced", "Big wave", "Vague la plus haute du monde (25m+). Spot de big wave réservé aux légendes."),
+  s("nazare-sul", "Nazaré - Praia do Sul", "Nazaré Sul", "Portugal", "Leiria", 39.598, -9.072, 90, "intermediate", "Beach break", "Côté ville de Nazaré, vagues plus accessibles."),
+  s("sao-pedro-moel", "São Pedro de Moel", "São Pedro", "Portugal", "Leiria", 39.762, -9.027, 90, "intermediate", "Beach break", "Pinède et plage paisible, vagues régulières."),
+
+  // Peniche / Ericeira (les capitales)
+  s("supertubos", "Peniche - Supertubos", "Supertubos", "Portugal", "Leiria", 39.358, -9.371, 0, "advanced", "Beach break", "Étape WSL CT. Vague tubante la plus puissante du Portugal."),
+  s("baleal-norte", "Baleal Norte", "Baleal Norte", "Portugal", "Leiria", 39.378, -9.342, 0, "intermediate", "Beach break", "École et bonnes vagues, ambiance surf town."),
+  s("baleal-sul", "Baleal Sul (Cantinho)", "Baleal Sul", "Portugal", "Leiria", 39.371, -9.341, 0, "beginner", "Beach break", "Plage abritée, idéale pour débuter."),
+  s("ribeira-d-ilhas", "Ericeira - Ribeira d'Ilhas", "Ribeira d'Ilhas", "Portugal", "Lisboa", 38.987, -9.422, 90, "intermediate", "Reef right", "Étape WSL CT. Vague de droite parfaite, World Surfing Reserve."),
+  s("coxos", "Ericeira - Coxos", "Coxos", "Portugal", "Lisboa", 38.987, -9.426, 90, "advanced", "Reef right", "Droite mythique, lourde et tubante. Pour confirmés."),
+  s("cave", "Ericeira - Cave", "Cave", "Portugal", "Lisboa", 38.978, -9.418, 90, "advanced", "Reef right", "Vague droite intense, très technique."),
+  s("pedra-branca", "Ericeira - Pedra Branca", "Pedra Branca", "Portugal", "Lisboa", 38.985, -9.420, 90, "intermediate", "Reef", "Reef rocky, vagues consistantes."),
+  s("foz-do-lizandro", "Ericeira - Foz do Lizandro", "Foz Lizandro", "Portugal", "Lisboa", 38.963, -9.418, 90, "intermediate", "Beach break", "Plage centrale d'Ericeira, école et plaisir."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
