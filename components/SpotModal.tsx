@@ -61,7 +61,30 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
     let cancelled = false;
     setHourlyLoading(true);
     fetchSpotForecastFromApi(lightForecast.spot.slug)
-      .then((full) => { if (!cancelled) { setForecast(full); setHourlyLoading(false); } })
+      .then((full) => {
+        if (cancelled) return;
+        // Preserve the scoresByLevel/bestWindowByLevel from the home payload so the
+        // modal shows EXACTLY the same numbers the user saw on the card. Without this,
+        // a fresher Open-Meteo refresh (cache miss between the two endpoints) would
+        // produce slightly different scores and confuse the user.
+        const merged: SpotForecast = {
+          ...full,
+          days: full.days.map((day, i) => {
+            const lightDay = lightForecast.days[i];
+            if (!lightDay) return day;
+            return {
+              ...day,
+              // Carry over precomputed level-specific values from the home payload
+              scoresByLevel: lightDay.scoresByLevel ?? day.scoresByLevel,
+              bestWindowByLevel: lightDay.bestWindowByLevel ?? day.bestWindowByLevel,
+              // Fallback intermediate score should also match
+              score: lightDay.scoresByLevel?.intermediate ?? lightDay.score ?? day.score,
+            };
+          }),
+        };
+        setForecast(merged);
+        setHourlyLoading(false);
+      })
       .catch(() => { if (!cancelled) setHourlyLoading(false); });
     return () => { cancelled = true; };
   }, [lightForecast.spot.slug]);
