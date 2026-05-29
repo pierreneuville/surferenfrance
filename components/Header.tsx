@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
 import { Logo, Wordmark } from "./Logo";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 import { StreakBadge } from "./StreakBadge";
 
 export function Header() {
@@ -53,6 +54,7 @@ export function Header() {
 
           <div className="flex items-center gap-2 sm:gap-4">
             <StreakBadge />
+            <LocaleSwitcher />
             {/* Desktop nav */}
             <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
               <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>

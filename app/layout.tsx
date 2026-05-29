@@ -9,6 +9,7 @@ import { MilestoneToast } from "@/components/MilestoneToast";
 import { OnboardingSheet } from "@/components/OnboardingSheet";
 import { VersionWatcher } from "@/components/VersionWatcher";
 import { JsonLd } from "@/components/JsonLd";
+import { LocaleProvider } from "@/lib/useLocale";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from "@/lib/seo";
 
 const sans = Inter({
@@ -127,15 +128,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="alternate" type="text/markdown" href="/llms-full.txt" title={`${SITE_NAME} full LLM context`} />
       </head>
       <body className="font-sans flex min-h-screen flex-col">
-        <JsonLd data={jsonLd} />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <AdSenseScript />
-        <CookieBanner />
-        <OnboardingSheet />
-        <MilestoneToast />
-        <VersionWatcher />
+        <LocaleProvider>
+          <JsonLd data={jsonLd} />
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <AdSenseScript />
+          <CookieBanner />
+          <OnboardingSheet />
+          <MilestoneToast />
+          <VersionWatcher />
+        </LocaleProvider>
       </body>
     </html>
   );
