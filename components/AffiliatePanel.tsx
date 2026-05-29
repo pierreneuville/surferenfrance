@@ -1,6 +1,9 @@
+"use client";
+
 import { ExternalLink, Home, MapPin, ShoppingBag, Waves } from "lucide-react";
 import type { Spot } from "@/lib/types";
 import { affiliatesFor } from "@/lib/affiliates";
+import { trackEvent } from "@/lib/analytics";
 
 interface Props {
   spot: Spot;
@@ -33,6 +36,7 @@ export function AffiliatePanel({ spot }: Props) {
               href={link.url}
               target="_blank"
               rel="noopener sponsored"
+              onClick={() => trackEvent("affiliate_click", { slug: spot.slug, kind })}
               className="group flex items-start gap-2.5 rounded-xl border border-white/[0.05] bg-white/[0.03] px-3 py-2.5 transition hover:border-coral-400/40 hover:bg-white/[0.05]"
             >
               <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-coral-500 to-sunset-500 text-white">

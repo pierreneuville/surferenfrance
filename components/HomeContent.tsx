@@ -7,6 +7,7 @@ import { HotToday } from "./HotToday";
 import { WeekHighlights } from "./WeekHighlights";
 import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
 import { getEngagement, recordExploredSpot, subscribeEngagement } from "@/lib/engagement";
+import { trackEvent } from "@/lib/analytics";
 import { SpotCard } from "./SpotCard";
 import { SpotModal } from "./SpotModal";
 import { AdSlot } from "./AdSlot";
@@ -67,7 +68,10 @@ export function HomeContent() {
 
   // Track spot exploration when a modal opens
   useEffect(() => {
-    if (openSlug) recordExploredSpot(openSlug);
+    if (openSlug) {
+      recordExploredSpot(openSlug);
+      trackEvent("spot_modal_open", { slug: openSlug });
+    }
   }, [openSlug]);
 
   useEffect(() => {
@@ -270,7 +274,11 @@ export function HomeContent() {
                   distanceKm={distanceKm}
                   isFavorite={favoritesSet.has(f.spot.slug)}
                   onClick={() => setOpenSlug(f.spot.slug)}
-                  onToggleFavorite={() => toggleFavorite(f.spot.slug)}
+                  onToggleFavorite={() => {
+                    const wasFav = favoritesSet.has(f.spot.slug);
+                    toggleFavorite(f.spot.slug);
+                    trackEvent(wasFav ? "spot_favorite_remove" : "spot_favorite_add", { slug: f.spot.slug });
+                  }}
                 />
               );
               if ((idx + 1) % 6 === 0) {

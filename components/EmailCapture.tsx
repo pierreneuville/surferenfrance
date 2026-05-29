@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Mail, Send } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 interface Props {
   intent: "newsletter" | "premium-waitlist";
@@ -46,6 +47,7 @@ export function EmailCapture({ intent, title, description, ctaLabel, className }
         localStorage.setItem(k, JSON.stringify([...prev, { email, at: new Date().toISOString() }]));
       } catch {}
     } catch { /* never block UX on network error */ }
+    trackEvent(intent === "premium-waitlist" ? "premium_waitlist_signup" : "newsletter_signup");
     setStatus("done");
   }
 
