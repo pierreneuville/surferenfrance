@@ -120,9 +120,11 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
             <ScoreGauge score={score} color={colors.hex} tone={tone} />
             <span
               className="rounded-full border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[8px] uppercase tracking-widest text-white/55"
-              title={`Score calibré pour le niveau ${level === "beginner" ? "débutant" : level === "intermediate" ? "intermédiaire" : "confirmé"}`}
+              title={t(locale, level === "beginner" ? "filterLevelBeginner" : level === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced")}
             >
-              {level === "beginner" ? "🌱 Déb." : level === "intermediate" ? "🤙 Inter." : "🔥 Conf."}
+              {level === "beginner" ? "🌱" : level === "intermediate" ? "🤙" : "🔥"}
+              {" "}
+              {t(locale, level === "beginner" ? "filterLevelBeginner" : level === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced").slice(0, 5)}.
             </span>
           </div>
         </div>

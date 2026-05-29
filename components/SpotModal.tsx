@@ -9,6 +9,8 @@ import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
 import { fetchSpotForecastFromApi } from "@/lib/clientApi";
 import { SCORE_COLORS, computeScore, scoreLabel, scoreTone } from "@/lib/score";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf } from "@/lib/i18n";
 import { degToCardinal, fmt, dayLongLabel, timeFromIso, dayShortLabel, dayDateNumber } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
 
@@ -30,6 +32,7 @@ interface Props {
 }
 
 export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, onClose }: Props) {
+  const { locale } = useLocale();
   const [forecast, setForecast] = useState<SpotForecast>(lightForecast);
   const [hourlyLoading, setHourlyLoading] = useState(true);
   const [dayIdx, setDayIdx] = useState(initialDay);
@@ -193,7 +196,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
               {/* Level reminder — score is calibrated for the user's level */}
               <div className="mt-1.5 flex items-center justify-center gap-1 border-t border-white/15 pt-1 text-[9px] text-white/65">
                 <span>{level === "beginner" ? "🌱" : level === "intermediate" ? "🤙" : "🔥"}</span>
-                <span className="font-medium">{level === "beginner" ? "Débutant" : level === "intermediate" ? "Interm." : "Confirmé"}</span>
+                <span className="font-medium">{t(locale, level === "beginner" ? "filterLevelBeginner" : level === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced")}</span>
               </div>
             </div>
           </div>
@@ -246,9 +249,9 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
 
           {/* Quick stats — 4 tiles */}
           <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Tile icon={<Waves />} label="Vague" value={`${fmt(d.waveHeight)} m`} sub={`${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`} accent={colors.hex} />
-            <Tile icon={<Wind />} label="Vent" value={`${fmt(d.windSpeed, 0)} km/h`} sub={`raf. ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
-            <Tile icon={<Thermometer />} label="Eau" value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `air ${fmt(airTempMax, 0)}°C` : ""} />
+            <Tile icon={<Waves />} label={t(locale, "cardWave")} value={`${fmt(d.waveHeight)} m`} sub={`${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`} accent={colors.hex} />
+            <Tile icon={<Wind />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
+            <Tile icon={<Thermometer />} label={t(locale, "tileWaterAir")} value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `${t(locale, "tileAir")} ${fmt(airTempMax, 0)}°C` : ""} />
             <Tile icon={<Sparkles />} label="Note" value={scoreLabel(score)} sub={`${score}/100`} />
           </div>
 
@@ -257,7 +260,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             <div className="mb-5 overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent p-4">
               <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-300/90">
                 <Sparkles className="h-3.5 w-3.5" />
-                Meilleur créneau du jour
+                {t(locale, "modalBestWindowTitle")}
               </div>
               {best?.top?.length ? (
                 <div className="flex flex-wrap gap-2">
@@ -281,7 +284,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
                   <strong className="font-display text-2xl text-emerald-200">
                     {String(fallbackBest.start).padStart(2, "0")}h <span className="text-emerald-400/60">→</span> {String(fallbackBest.end + 1).padStart(2, "0")}h
                   </strong>
-                  <span className="ml-2 text-sm text-white/55">score moyen {fallbackBest.avg}</span>
+                  <span className="ml-2 text-sm text-white/55">{tf(locale, "modalScoreAverage", { n: fallbackBest.avg })}</span>
                 </div>
               )}
             </div>
@@ -291,9 +294,9 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           <div className="mb-5">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs uppercase tracking-widest text-white/45">
-                Heure par heure
+                {t(locale, "modalHourly")}
               </span>
-              <span className="text-[10px] text-white/30">couleur = score · gris = nuit</span>
+              <span className="text-[10px] text-white/30">{t(locale, "modalHourlyHint")}</span>
             </div>
             {hourlyLoading && !hasHourly ? (
               <div className="grid gap-1 shimmer-wave rounded-md" style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}>
@@ -304,13 +307,13 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             ) : hasHourly ? (
               <HourGrid forecast={forecast} dayIdx={dayIdx} level={level} />
             ) : (
-              <p className="text-xs text-white/40">Détail horaire indisponible.</p>
+              <p className="text-xs text-white/40">{t(locale, "modalNoHourly")}</p>
             )}
           </div>
 
           {/* Description */}
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <div className="mb-1.5 font-script text-sm text-sand-200/80">À propos du spot</div>
+            <div className="mb-1.5 font-script text-sm text-sand-200/80">{t(locale, "modalAbout")}</div>
             <p className="text-pretty text-sm leading-relaxed text-white/75">{forecast.spot.description}</p>
           </div>
         </div>
@@ -334,7 +337,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             href={`/spot/${forecast.spot.slug}`}
             className="tap-target flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-coral-500 via-sunset-500 to-sand-400 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-coral-500/30 transition hover:scale-[1.01] active:scale-[0.98]"
           >
-            Fiche complète
+            {t(locale, "cardFullSheet")}
             <ExternalLink className="h-4 w-4" />
           </Link>
         </div>
