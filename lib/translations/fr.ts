@@ -149,6 +149,9 @@ export const fr = {
   levelBeginnerTitle: "Débutant",
   levelIntermediateTitle: "Intermédiaire",
   levelAdvancedTitle: "Confirmé",
-} as const;
+};
 
-export type Translations = typeof fr;
+// Derive a string-valued type so EN/ES/PT can be checked structurally without
+// being constrained to FR's exact literal values.
+export type Translations = { [K in keyof typeof fr]: string };
+
