@@ -2,9 +2,20 @@
 
 > _yo, ta vague est prête._
 
-Yosurf est la carte vivante des vagues françaises. 231 spots de la Côte d'Opale à la Corse, score de session quotidien, meilleur créneau du jour, vagues, houle et vent — gratuit, sans compte, sans pub intrusive.
+Yosurf est la carte vivante des vagues. **395 spots en France, Espagne, Portugal, Maroc, UK et Irlande**. Score de session quotidien, meilleur créneau du jour, vagues, houle et vent — gratuit, sans compte, sans pub intrusive.
 
 Stack : **Next.js 15 (App Router) + TypeScript + Tailwind CSS**. Données : **[Open-Meteo](https://open-meteo.com)** (gratuit, sans clé API).
+
+**Couverture v2** (mai 2026) :
+- 🇫🇷 France 285 spots (7 régions, Côte d'Opale → Corse)
+- 🇪🇸 Espagne 38 spots (Pays basque, Cantabrie, Asturies, Galice, Andalousie)
+- 🌋 Canaries 19 spots (Gran Canaria, Lanzarote, Fuerteventura, Tenerife)
+- 🇵🇹 Portugal 40 spots (Norte, Lisboa, Algarve, Açores, Madère)
+- 🇲🇦 Maroc 19 spots (Taghazout cluster, Imsouane, Casablanca, Safi)
+- 🇬🇧 UK 15 spots (Cornwall, Devon, Wales, Scotland)
+- 🇮🇪 Irlande 10 spots (Lahinch, Bundoran, Strandhill, Mullaghmore)
+
+**i18n prête** : dictionnaire FR / EN / ES / PT (160 clés × 4 langues), locale switcher dans le header.
 
 ---
 
