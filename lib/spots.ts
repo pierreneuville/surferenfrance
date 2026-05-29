@@ -510,6 +510,43 @@ export const SPOTS: Spot[] = [
   s("agadir-beach", "Agadir - Tagharte", "Agadir", "Maroc", "Souss-Massa", 30.421, -9.610, 90, "beginner", "Beach break", "Plage urbaine d'Agadir, ambiance tourisme."),
   s("sidi-ifni", "Sidi Ifni - Legzira", "Sidi Ifni", "Maroc", "Guelmim-Oued Noun", 29.378, -10.176, 90, "advanced", "Reef", "Arches rocheuses spectaculaires, vagues puissantes."),
   s("plage-blanche", "Plage Blanche", "Plage Blanche", "Maroc", "Guelmim-Oued Noun", 28.480, -11.330, 90, "advanced", "Beach break", "Le bout du monde marocain, 60km de plage déserte."),
+
+  // ==================== 🇬🇧 ROYAUME-UNI ====================
+  // Cornwall (THE surf area in UK)
+  s("fistral", "Fistral (Newquay)", "Fistral", "Royaume-Uni", "Cornwall", 50.418, -5.099, 90, "intermediate", "Beach break", "Plage star de Newquay, étape UK Pro Surf Tour. Vagues consistantes."),
+  s("watergate-bay", "Watergate Bay", "Watergate Bay", "Royaume-Uni", "Cornwall", 50.443, -5.038, 90, "intermediate", "Beach break", "Plage longue, hôtel surf iconique, vagues régulières."),
+  s("polzeath", "Polzeath", "Polzeath", "Royaume-Uni", "Cornwall", 50.575, -4.918, 270, "beginner", "Beach break", "Plage école d'Atlantique, vagues douces, ambiance famille."),
+  s("croyde", "Croyde", "Croyde", "Royaume-Uni", "Devon", 51.131, -4.225, 270, "intermediate", "Beach break", "L'un des meilleurs beach breaks du UK, vagues creuses."),
+  s("porthtowan", "Porthtowan", "Porthtowan", "Royaume-Uni", "Cornwall", 50.291, -5.249, 90, "intermediate", "Beach break", "Plage longue de Cornouailles, vagues plus puissantes."),
+  s("praa-sands", "Praa Sands", "Praa Sands", "Royaume-Uni", "Cornwall", 50.099, -5.396, 270, "intermediate", "Beach break", "Plage exposée sud Cornwall, peu de monde."),
+  s("sennen", "Sennen Cove", "Sennen", "Royaume-Uni", "Cornwall", 50.080, -5.703, 270, "intermediate", "Beach break", "Pointe ouest de l'Angleterre, vagues sauvages."),
+
+  // Devon
+  s("saunton", "Saunton Sands", "Saunton", "Royaume-Uni", "Devon", 51.111, -4.215, 270, "beginner", "Beach break", "Longue plage école, longboard paradise."),
+  s("bantham", "Bantham", "Bantham", "Royaume-Uni", "Devon", 50.279, -3.886, 180, "intermediate", "Beach break", "Vague rare mais qualité quand elle marche."),
+  s("putsborough", "Putsborough", "Putsborough", "Royaume-Uni", "Devon", 51.144, -4.215, 270, "intermediate", "Beach break", "À côté de Saunton, vagues plus puissantes."),
+
+  // Wales
+  s("rest-bay", "Rest Bay (Porthcawl)", "Rest Bay", "Royaume-Uni", "Wales", 51.502, -3.700, 180, "intermediate", "Beach break", "Spot star du sud Wales, vagues régulières."),
+  s("llangennith", "Llangennith (Gower)", "Llangennith", "Royaume-Uni", "Wales", 51.605, -4.272, 270, "intermediate", "Beach break", "Péninsule de Gower, longue plage exposée."),
+  s("whitesands-bay", "Whitesands Bay", "Whitesands", "Royaume-Uni", "Wales", 51.890, -5.300, 270, "intermediate", "Beach break", "Pembrokeshire, paysage de carte postale."),
+
+  // Scotland (cold but iconic)
+  s("thurso-east", "Thurso East", "Thurso East", "Royaume-Uni", "Scotland", 58.595, -3.515, 180, "advanced", "Reef right", "Vague de récif droite légendaire, étape WSL en 2010s. Eau glaciale."),
+  s("pease-bay", "Pease Bay", "Pease Bay", "Royaume-Uni", "Scotland", 55.927, -2.331, 0, "intermediate", "Beach break", "Plus accessible que Thurso, école écossaise."),
+
+  // ==================== 🇮🇪 IRLANDE ====================
+  // West Coast (the real deal)
+  s("lahinch", "Lahinch", "Lahinch", "Irlande", "Clare", 52.933, -9.348, 0, "intermediate", "Beach break", "Capitale du surf irlandais, vagues consistantes, école active."),
+  s("crab-island", "Crab Island (Doolin)", "Crab Island", "Irlande", "Clare", 52.964, -9.408, 0, "advanced", "Reef left", "Gauche puissante près des Cliffs of Moher."),
+  s("aileens", "Aileen's (Cliffs of Moher)", "Aileen's", "Irlande", "Clare", 52.971, -9.430, 0, "advanced", "Big wave", "Big wave sous les falaises mythiques, pour pros uniquement."),
+  s("bundoran", "Bundoran", "Bundoran", "Irlande", "Donegal", 54.479, -8.281, 180, "intermediate", "Beach break / reef", "Sud Donegal, étape historique, multiple spots dans la baie."),
+  s("strandhill", "Strandhill", "Strandhill", "Irlande", "Sligo", 54.270, -8.602, 270, "intermediate", "Beach break", "Plage de surf town irlandaise, vagues puissantes."),
+  s("easkey", "Easkey", "Easkey", "Irlande", "Sligo", 54.286, -9.001, 0, "intermediate", "Reef right / left", "Reef historique avec gauche ET droite, ambiance brute."),
+  s("mullaghmore", "Mullaghmore Head", "Mullaghmore", "Irlande", "Sligo", 54.466, -8.453, 180, "advanced", "Big wave", "Big wave irlandaise (10m+), pour légendes du tow-in uniquement."),
+  s("inch-strand", "Inch Strand", "Inch Strand", "Irlande", "Kerry", 52.144, -10.004, 270, "intermediate", "Beach break", "Péninsule de Dingle, plage de 5km exposée."),
+  s("brandon-bay", "Brandon Bay", "Brandon Bay", "Irlande", "Kerry", 52.281, -10.020, 0, "intermediate", "Beach break", "Baie sauvage du Kerry, vagues régulières."),
+  s("ballybunion", "Ballybunion", "Ballybunion", "Irlande", "Kerry", 52.512, -9.679, 270, "intermediate", "Beach break", "Plage et reef, ambiance village irlandais."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
