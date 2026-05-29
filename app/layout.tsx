@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Bricolage_Grotesque, Caveat } from "next/font/google";
 import "./globals.css";
 import { AdSenseScript } from "@/components/AdSenseScript";
+import { AnalyticsScripts } from "@/components/AnalyticsScripts";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -135,6 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="flex-1">{children}</main>
           <Footer />
           <AdSenseScript />
+          <AnalyticsScripts />
           <CookieBanner />
           <OnboardingSheet />
           <MilestoneToast />
