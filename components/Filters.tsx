@@ -4,6 +4,8 @@ import { Heart, MapPin, Search, Target, X } from "lucide-react";
 import type { Level } from "@/lib/types";
 import { REGIONS, REGION_EMOJI } from "@/lib/spots";
 import { dayShortLabel, dayDateNumber, dayIsWeekend } from "@/lib/utils";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 export type SortKey = "score" | "wave" | "distance" | "name";
 
@@ -26,11 +28,11 @@ interface FiltersProps {
   onFavoritesToggle: () => void;
 }
 
-const LEVELS: { value: Level; label: string; emoji: string }[] = [
-  { value: "beginner", label: "Débutant", emoji: "🌱" },
-  { value: "intermediate", label: "Intermédiaire", emoji: "🤙" },
-  { value: "advanced", label: "Confirmé", emoji: "🔥" },
-];
+const LEVEL_EMOJI: Record<Level, string> = {
+  beginner: "🌱",
+  intermediate: "🤙",
+  advanced: "🔥",
+};
 
 export function Filters(props: FiltersProps) {
   const {
@@ -38,6 +40,12 @@ export function Filters(props: FiltersProps) {
     favoritesOnly, favoritesCount,
     onDayChange, onRegionChange, onLevelChange, onSortChange, onSearchChange, onNearMeToggle, onFavoritesToggle,
   } = props;
+  const { locale } = useLocale();
+  const LEVELS: { value: Level; labelKey: "filterLevelBeginner" | "filterLevelIntermediate" | "filterLevelAdvanced"; emoji: string }[] = [
+    { value: "beginner", labelKey: "filterLevelBeginner", emoji: LEVEL_EMOJI.beginner },
+    { value: "intermediate", labelKey: "filterLevelIntermediate", emoji: LEVEL_EMOJI.intermediate },
+    { value: "advanced", labelKey: "filterLevelAdvanced", emoji: LEVEL_EMOJI.advanced },
+  ];
 
   return (
     <>
@@ -92,7 +100,7 @@ export function Filters(props: FiltersProps) {
               }`}
             >
               <Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-coral-300" : "fill-coral-400"}`} />
-              Mes favoris
+              {t(locale, "filterFavorites")}
               <span className="rounded-full bg-black/30 px-1.5 text-[10px] font-bold">{favoritesCount}</span>
             </button>
           )}
@@ -104,7 +112,7 @@ export function Filters(props: FiltersProps) {
                 : "border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10"
             }`}
           >
-            🌍 Toutes
+            🌍 {t(locale, "filterAllRegions")}
           </button>
           {REGIONS.map((r) => (
             <button
@@ -131,7 +139,7 @@ export function Filters(props: FiltersProps) {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
             <input
               type="text"
-              placeholder="Chercher un spot…"
+              placeholder={t(locale, "filterSearch")}
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               className="w-full rounded-full border border-white/10 bg-white/5 py-2 pl-9 pr-9 text-sm placeholder-white/40 outline-none focus:border-ocean-400"
@@ -156,7 +164,7 @@ export function Filters(props: FiltersProps) {
               }`}
             >
               <MapPin className="h-3.5 w-3.5" />
-              Près de moi
+              {t(locale, "filterNearMe")}
             </button>
           )}
 
@@ -165,10 +173,10 @@ export function Filters(props: FiltersProps) {
             onChange={(e) => onSortChange(e.target.value as SortKey)}
             className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm outline-none focus:border-ocean-400"
           >
-            <option value="score">Tri : meilleur score</option>
-            <option value="wave">Tri : hauteur vague</option>
-            {nearMe && <option value="distance">Tri : distance</option>}
-            <option value="name">Tri : A→Z</option>
+            <option value="score">{t(locale, "filterSortScore")}</option>
+            <option value="wave">{t(locale, "filterSortWave")}</option>
+            {nearMe && <option value="distance">{t(locale, "filterSortDistance")}</option>}
+            <option value="name">{t(locale, "filterSortName")}</option>
           </select>
         </div>
 
@@ -176,7 +184,7 @@ export function Filters(props: FiltersProps) {
         <div className="flex flex-wrap items-center gap-3 border-t border-dashed border-white/10 pt-3">
           <div className="flex items-center gap-2 text-sm text-white/70">
             <Target className="h-4 w-4 text-ocean-300" />
-            <span className="font-medium">Score adapté à mon niveau&nbsp;:</span>
+            <span className="font-medium">{t(locale, "filterLevel")}</span>
           </div>
           <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1">
             {LEVELS.map((lv) => (
@@ -191,12 +199,12 @@ export function Filters(props: FiltersProps) {
                 title={`Conditions idéales : ${lv.value === "beginner" ? "vagues 0,5-1,5 m, vent faible" : lv.value === "intermediate" ? "vagues 1-2,5 m, vent < 20 km/h" : "vagues 1,5 m+, conditions techniques"}`}
               >
                 <span className="mr-1">{lv.emoji}</span>
-                {lv.label}
+                {t(locale, lv.labelKey)}
               </button>
             ))}
           </div>
           <span className="text-[11px] italic text-white/40">
-            (ne filtre pas la liste, recalibre uniquement le score)
+            {t(locale, "filterLevelHint")}
           </span>
         </div>
       </div>
