@@ -480,6 +480,36 @@ export const SPOTS: Spot[] = [
   // Madère
   s("jardim-do-mar", "Jardim do Mar", "Jardim do Mar", "Portugal", "Madère", 32.733, -17.183, 0, "advanced", "Reef right", "Pointe mythique de Madère, big wave en hiver."),
   s("paul-do-mar", "Paúl do Mar", "Paúl do Mar", "Portugal", "Madère", 32.749, -17.226, 0, "advanced", "Reef left", "Gauche puissante de Madère, vagues longues."),
+
+  // ==================== 🇲🇦 MAROC ====================
+  // Taghazout area (the cluster)
+  s("anchor-point", "Anchor Point (Taghazout)", "Anchor Point", "Maroc", "Souss-Massa", 30.553, -9.715, 90, "advanced", "Point right", "Point break droit légendaire, vague longue qui peut durer 200m+ en grosse houle."),
+  s("hash-point", "Hash Point", "Hash Point", "Maroc", "Souss-Massa", 30.546, -9.711, 90, "intermediate", "Point right", "Vague de longboard parfaite, droite douce et longue."),
+  s("killers", "Killer Point", "Killers", "Maroc", "Souss-Massa", 30.559, -9.728, 90, "advanced", "Point right", "Big wave point break, ferme dur en grosse houle."),
+  s("boilers", "Boilers", "Boilers", "Maroc", "Souss-Massa", 30.581, -9.797, 90, "advanced", "Reef right", "Vague de récif technique, droite rapide."),
+  s("la-source", "La Source (Taghazout)", "La Source", "Maroc", "Souss-Massa", 30.552, -9.713, 90, "intermediate", "Point right", "Vague d'école de Taghazout, ambiance village."),
+  s("panoramas", "Panoramas", "Panoramas", "Maroc", "Souss-Massa", 30.548, -9.712, 90, "intermediate", "Point right", "Droite régulière au centre du village."),
+  s("devils-rock", "Devil's Rock", "Devil's Rock", "Maroc", "Souss-Massa", 30.560, -9.717, 90, "advanced", "Reef", "Reef intense, marche par grosse houle."),
+  s("mysteries", "Mysteries", "Mysteries", "Maroc", "Souss-Massa", 30.578, -9.792, 90, "advanced", "Reef right", "Spot reculé, secret bien gardé."),
+
+  // Imsouane / Cap Sim
+  s("imsouane-bay", "Imsouane - The Bay", "Imsouane Bay", "Maroc", "Souss-Massa", 30.838, -9.825, 0, "beginner", "Point right", "Vague droite la plus longue d'Afrique (jusqu'à 800m), école et longboard."),
+  s("imsouane-cathedral", "Imsouane - Cathedral", "Cathedral", "Maroc", "Souss-Massa", 30.840, -9.832, 90, "advanced", "Reef", "Reef break puissant à côté du port."),
+
+  // Casablanca area
+  s("dar-bouazza", "Dar Bouazza", "Dar Bouazza", "Maroc", "Casablanca-Settat", 33.523, -7.832, 90, "intermediate", "Beach break / reef", "Spot urbain au sud de Casablanca, vagues régulières."),
+  s("ain-diab", "Aïn Diab (Casablanca)", "Aïn Diab", "Maroc", "Casablanca-Settat", 33.591, -7.683, 90, "intermediate", "Beach break", "Plage urbaine de Casablanca."),
+
+  // Côte centrale
+  s("oualidia", "Oualidia", "Oualidia", "Maroc", "Casablanca-Settat", 32.738, -9.034, 90, "beginner", "Beach break", "Lagune sauvage, vagues douces, école surf-camp."),
+  s("safi", "Safi - Garden", "Safi", "Maroc", "Marrakech-Safi", 32.298, -9.255, 90, "advanced", "Point right", "Vague droite parmi les meilleures du monde quand elle marche. Très technique."),
+  s("essaouira", "Essaouira", "Essaouira", "Maroc", "Marrakech-Safi", 31.510, -9.770, 90, "intermediate", "Beach break", "Ville fortifiée, plage longue. Paradis kitesurf."),
+
+  // Sud
+  s("agadir-tamraght", "Tamraght", "Tamraght", "Maroc", "Souss-Massa", 30.510, -9.687, 90, "intermediate", "Beach break", "Beach break d'école, alternative à Taghazout."),
+  s("agadir-beach", "Agadir - Tagharte", "Agadir", "Maroc", "Souss-Massa", 30.421, -9.610, 90, "beginner", "Beach break", "Plage urbaine d'Agadir, ambiance tourisme."),
+  s("sidi-ifni", "Sidi Ifni - Legzira", "Sidi Ifni", "Maroc", "Guelmim-Oued Noun", 29.378, -10.176, 90, "advanced", "Reef", "Arches rocheuses spectaculaires, vagues puissantes."),
+  s("plage-blanche", "Plage Blanche", "Plage Blanche", "Maroc", "Guelmim-Oued Noun", 28.480, -11.330, 90, "advanced", "Beach break", "Le bout du monde marocain, 60km de plage déserte."),
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {
