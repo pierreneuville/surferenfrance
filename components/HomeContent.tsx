@@ -8,6 +8,7 @@ import { WeekHighlights } from "./WeekHighlights";
 import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
 import { getEngagement, recordExploredSpot, subscribeEngagement } from "@/lib/engagement";
 import { trackEvent } from "@/lib/analytics";
+import { REGION_COUNTRY } from "@/lib/countries";
 import { SpotCard } from "./SpotCard";
 import { SpotModal } from "./SpotModal";
 import { AdSlot } from "./AdSlot";
@@ -23,6 +24,7 @@ const PREFS_KEY = "surf-prefs-v2";
 
 interface Prefs {
   dayIdx: number;
+  country: string;
   region: string;
   level: Level;
   sort: SortKey;
@@ -30,6 +32,7 @@ interface Prefs {
 
 const DEFAULT_PREFS: Prefs = {
   dayIdx: 0,
+  country: "FR",
   region: "all",
   level: "intermediate",
   sort: "score",
@@ -134,6 +137,7 @@ export function HomeContent() {
       })
       .filter(({ f, distanceKm }) => {
         if (favoritesOnly && !favoritesSet.has(f.spot.slug)) return false;
+        if (!favoritesOnly && prefs.country !== "all" && REGION_COUNTRY[f.spot.region as keyof typeof REGION_COUNTRY] !== prefs.country) return false;
         if (!favoritesOnly && prefs.region !== "all" && f.spot.region !== prefs.region) return false;
         if (q && !f.spot.name.toLowerCase().includes(q) && !f.spot.shortName.toLowerCase().includes(q)) return false;
         if (nearMe && distanceKm != null && distanceKm > 200) return false;
@@ -194,6 +198,7 @@ export function HomeContent() {
       />
       <Filters
         dayIdx={prefs.dayIdx}
+        country={prefs.country}
         region={prefs.region}
         level={prefs.level}
         sort={prefs.sort}
@@ -203,6 +208,10 @@ export function HomeContent() {
         favoritesOnly={favoritesOnly}
         favoritesCount={favorites.length}
         onDayChange={(d) => setPrefs({ ...prefs, dayIdx: d })}
+        onCountryChange={(c) => {
+          setFavoritesOnly(false);
+          setPrefs({ ...prefs, country: c, region: "all" });
+        }}
         onRegionChange={(r) => {
           setFavoritesOnly(false);
           setPrefs({ ...prefs, region: r });

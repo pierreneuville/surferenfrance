@@ -3,6 +3,7 @@
 import { Heart, MapPin, Search, Target, X } from "lucide-react";
 import type { Level } from "@/lib/types";
 import { REGIONS, REGION_EMOJI } from "@/lib/spots";
+import { COUNTRIES, COUNTRY_FLAG, COUNTRY_LABEL, REGION_COUNTRY } from "@/lib/countries";
 import { dayShortLabel, dayDateNumber, dayIsWeekend } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t } from "@/lib/i18n";
@@ -11,6 +12,7 @@ export type SortKey = "score" | "wave" | "distance" | "name";
 
 interface FiltersProps {
   dayIdx: number;
+  country: string;
   region: string;
   level: Level;
   sort: SortKey;
@@ -20,6 +22,7 @@ interface FiltersProps {
   favoritesOnly: boolean;
   favoritesCount: number;
   onDayChange: (d: number) => void;
+  onCountryChange: (c: string) => void;
   onRegionChange: (r: string) => void;
   onLevelChange: (l: Level) => void;
   onSortChange: (s: SortKey) => void;
@@ -36,9 +39,9 @@ const LEVEL_EMOJI: Record<Level, string> = {
 
 export function Filters(props: FiltersProps) {
   const {
-    dayIdx, region, level, sort, search, nearMe, hasGeo,
+    dayIdx, country, region, level, sort, search, nearMe, hasGeo,
     favoritesOnly, favoritesCount,
-    onDayChange, onRegionChange, onLevelChange, onSortChange, onSearchChange, onNearMeToggle, onFavoritesToggle,
+    onDayChange, onCountryChange, onRegionChange, onLevelChange, onSortChange, onSearchChange, onNearMeToggle, onFavoritesToggle,
   } = props;
   const { locale } = useLocale();
   const LEVELS: { value: Level; labelKey: "filterLevelBeginner" | "filterLevelIntermediate" | "filterLevelAdvanced"; emoji: string }[] = [
@@ -87,6 +90,35 @@ export function Filters(props: FiltersProps) {
 
       {/* NON-STICKY filters — scrolls with content */}
       <div className="mx-auto max-w-6xl space-y-3 pt-3">
+        {/* Country chips */}
+        <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="scrollbar-hide flex snap-x snap-proximity gap-2 overflow-x-auto py-0.5">
+            <button
+              onClick={() => onCountryChange("all")}
+              className={`tap-target shrink-0 snap-start rounded-full border px-3 py-1.5 text-xs font-medium transition active:scale-95 ${
+                country === "all"
+                  ? "border-sand-300 bg-sand-400/15 text-sand-100"
+                  : "border-white/10 bg-white/5 text-white/65 hover:border-white/20"
+              }`}
+            >
+              🌍 Pays
+            </button>
+            {COUNTRIES.map((c) => (
+              <button
+                key={c}
+                onClick={() => onCountryChange(c)}
+                className={`tap-target shrink-0 snap-start rounded-full border px-3 py-1.5 text-xs font-medium transition active:scale-95 ${
+                  country === c
+                    ? "border-sand-300 bg-sand-400/15 text-sand-100"
+                    : "border-white/10 bg-white/5 text-white/65 hover:border-white/20"
+                }`}
+              >
+                {COUNTRY_FLAG[c]} {COUNTRY_LABEL[c]}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Region chips — bigger touch targets, emoji vivid */}
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="scrollbar-hide flex snap-x snap-proximity gap-2 overflow-x-auto py-0.5">
@@ -114,7 +146,7 @@ export function Filters(props: FiltersProps) {
           >
             🌍 {t(locale, "filterAllRegions")}
           </button>
-          {REGIONS.map((r) => (
+          {REGIONS.filter((r) => country === "all" || REGION_COUNTRY[r] === country).map((r) => (
             <button
               key={r}
               onClick={() => onRegionChange(r)}
