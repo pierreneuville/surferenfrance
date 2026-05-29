@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink, MapPin, Waves, Wind, AlertTriangle, Compass } 
 import type { Metadata } from "next";
 import { getSpotBySlug, getNearbySpots, SPOTS, REGION_EMOJI } from "@/lib/spots";
 import { SpotDetailClient } from "@/components/SpotDetailClient";
+import { AffiliatePanel } from "@/components/AffiliatePanel";
 import { JsonLd } from "@/components/JsonLd";
 import type { Level } from "@/lib/types";
 import { REGION_SLUGS, SITE_NAME, absoluteUrl, spotKeywords } from "@/lib/seo";
@@ -228,6 +229,9 @@ export default async function SpotPage({ params }: PageProps) {
 
           {/* Right: aside (key info, sticky on lg+) */}
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+            {/* Affiliate panel — revenue beyond ads */}
+            <AffiliatePanel spot={spot} />
+
             {/* Nearby spots */}
             <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
               <h2 className="mb-3 text-xs uppercase tracking-widest text-white/45">
