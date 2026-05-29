@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Check, Mail, Send } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 interface Props {
   intent: "newsletter" | "premium-waitlist";
@@ -23,6 +25,7 @@ interface Props {
  * (to be wired in production).
  */
 export function EmailCapture({ intent, title, description, ctaLabel, className }: Props) {
+  const { locale } = useLocale();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
 
@@ -64,7 +67,7 @@ export function EmailCapture({ intent, title, description, ctaLabel, className }
       {status === "done" ? (
         <div className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-200">
           <Check className="h-4 w-4" />
-          Merci, on te tient au courant — check ta boîte 🌊
+          {t(locale, "newsletterThanks")}
         </div>
       ) : (
         <form onSubmit={submit} className="flex gap-2">
@@ -73,7 +76,7 @@ export function EmailCapture({ intent, title, description, ctaLabel, className }
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="ton.email@exemple.fr"
+            placeholder={t(locale, "newsletterPlaceholder")}
             className="flex-1 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm placeholder-white/35 outline-none focus:border-ocean-400"
           />
           <button
@@ -82,7 +85,7 @@ export function EmailCapture({ intent, title, description, ctaLabel, className }
             className="tap-target inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-coral-500 via-sunset-500 to-sand-400 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Send className="h-3.5 w-3.5" />
-            {status === "submitting" ? "…" : ctaLabel ?? "Je m'inscris"}
+            {status === "submitting" ? "…" : ctaLabel ?? t(locale, "newsletterCta")}
           </button>
         </form>
       )}
