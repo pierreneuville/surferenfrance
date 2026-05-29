@@ -1,12 +1,14 @@
 "use client";
 
-import { Heart, MapPin, Search, Target, X } from "lucide-react";
+import { useState } from "react";
+import { Heart, MapPin, Search, SlidersHorizontal, Target, X } from "lucide-react";
 import type { Level } from "@/lib/types";
 import { REGIONS, REGION_EMOJI } from "@/lib/spots";
 import { COUNTRIES, COUNTRY_FLAG, COUNTRY_LABEL, REGION_COUNTRY } from "@/lib/countries";
 import { dayShortLabel, dayDateNumber, dayIsWeekend } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t } from "@/lib/i18n";
+import { FilterSheet } from "./FilterSheet";
 
 export type SortKey = "score" | "wave" | "distance" | "name";
 
@@ -50,6 +52,24 @@ export function Filters(props: FiltersProps) {
     { value: "advanced", labelKey: "filterLevelAdvanced", emoji: LEVEL_EMOJI.advanced },
   ];
 
+  // Mobile FilterSheet state
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  // Count "active" non-default filters to badge the Filtrer button
+  const activeCount =
+    (country !== "FR" && country !== "all" ? 1 : 0) +
+    (region !== "all" ? 1 : 0) +
+    (level !== "intermediate" ? 1 : 0) +
+    (sort !== "score" ? 1 : 0);
+
+  function resetFilters() {
+    onCountryChange("all");
+    onRegionChange("all");
+    onLevelChange("intermediate");
+    onSortChange("score");
+  }
+
   return (
     <>
       {/* STICKY day picker only — preserves vertical space on mobile */}
@@ -88,8 +108,118 @@ export function Filters(props: FiltersProps) {
         </div>
       </div>
 
-      {/* NON-STICKY filters — scrolls with content */}
-      <div className="mx-auto max-w-6xl space-y-3 pt-3">
+      {/* ===== MOBILE: compact action bar (md:hidden) ===== */}
+      <div className="mx-auto mt-3 max-w-6xl space-y-2 md:hidden">
+        <div className="flex items-center gap-2">
+          {/* Filters trigger (opens FilterSheet) */}
+          <button
+            onClick={() => setSheetOpen(true)}
+            className="tap-target relative inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-3.5 py-2 text-sm font-medium text-white/90 transition hover:bg-white/[0.08] active:scale-95"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            {t(locale, "filterSheetTrigger")}
+            {activeCount > 0 && (
+              <span className="grid h-5 w-5 place-items-center rounded-full bg-gradient-to-br from-coral-500 to-sunset-500 text-[10px] font-bold text-white">
+                {activeCount}
+              </span>
+            )}
+          </button>
+
+          {/* Search toggle */}
+          <button
+            onClick={() => setMobileSearchOpen((v) => !v)}
+            className={`tap-target grid h-9 w-9 place-items-center rounded-full border transition active:scale-95 ${
+              search || mobileSearchOpen
+                ? "border-ocean-400 bg-ocean-500/20 text-white"
+                : "border-white/10 bg-white/5 text-white/80 hover:bg-white/10"
+            }`}
+            aria-label={t(locale, "filterSearch")}
+          >
+            <Search className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Near me */}
+          {hasGeo && (
+            <button
+              onClick={onNearMeToggle}
+              className={`tap-target grid h-9 w-9 place-items-center rounded-full border transition active:scale-95 ${
+                nearMe
+                  ? "border-emerald-400 bg-emerald-500/20 text-emerald-100"
+                  : "border-white/10 bg-white/5 text-white/80 hover:bg-white/10"
+              }`}
+              aria-label={t(locale, "filterNearMe")}
+            >
+              <MapPin className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          {/* Favorites */}
+          {favoritesCount > 0 && (
+            <button
+              onClick={onFavoritesToggle}
+              className={`tap-target inline-flex items-center gap-1 rounded-full border px-2.5 py-2 text-xs font-medium transition active:scale-95 ${
+                favoritesOnly
+                  ? "border-coral-400 bg-coral-500/25 text-coral-100"
+                  : "border-coral-500/20 bg-coral-500/10 text-coral-200"
+              }`}
+              aria-label={t(locale, "filterFavorites")}
+            >
+              <Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-coral-300" : "fill-coral-400"}`} />
+              <span className="text-[10px] font-bold">{favoritesCount}</span>
+            </button>
+          )}
+
+          {/* Active filter pills (compact) shown to right when filters active */}
+          <div className="scrollbar-hide ml-auto flex shrink min-w-0 gap-1.5 overflow-x-auto">
+            {country !== "all" && country !== "FR" && (
+              <ActivePill onClear={() => onCountryChange("FR")}>{COUNTRY_FLAG[country as keyof typeof COUNTRY_FLAG]}</ActivePill>
+            )}
+            {region !== "all" && (
+              <ActivePill onClear={() => onRegionChange("all")}>{REGION_EMOJI[region]}</ActivePill>
+            )}
+          </div>
+        </div>
+
+        {/* Inline search input (toggled) */}
+        {mobileSearchOpen && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+            <input
+              type="text"
+              autoFocus
+              placeholder={t(locale, "filterSearch")}
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="w-full rounded-full border border-ocean-400/40 bg-white/[0.05] py-2 pl-9 pr-9 text-sm placeholder-white/40 outline-none"
+            />
+            {search && (
+              <button
+                onClick={() => onSearchChange("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/40 hover:bg-white/10 hover:text-white"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <FilterSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        country={country}
+        region={region}
+        level={level}
+        sort={sort}
+        onCountryChange={onCountryChange}
+        onRegionChange={onRegionChange}
+        onLevelChange={onLevelChange}
+        onSortChange={onSortChange}
+        onReset={resetFilters}
+      />
+
+      {/* ===== DESKTOP: expanded filters (hidden on mobile) ===== */}
+      <div className="mx-auto hidden max-w-6xl space-y-3 pt-3 md:block">
         {/* Country chips */}
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
           <div className="scrollbar-hide flex snap-x snap-proximity gap-2 overflow-x-auto py-0.5">
@@ -241,5 +371,17 @@ export function Filters(props: FiltersProps) {
         </div>
       </div>
     </>
+  );
+}
+
+function ActivePill({ children, onClear }: { children: React.ReactNode; onClear: () => void }) {
+  return (
+    <button
+      onClick={onClear}
+      className="tap-target inline-flex shrink-0 items-center gap-1 rounded-full border border-ocean-400/30 bg-ocean-500/15 px-2 py-1 text-xs"
+    >
+      {children}
+      <X className="h-3 w-3 text-white/50" />
+    </button>
   );
 }
