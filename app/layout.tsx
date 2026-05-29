@@ -3,6 +3,7 @@ import { Inter, Bricolage_Grotesque, Caveat } from "next/font/google";
 import "./globals.css";
 import { AdSenseScript } from "@/components/AdSenseScript";
 import { AnalyticsScripts } from "@/components/AnalyticsScripts";
+import { BackToTop } from "@/components/BackToTop";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -142,6 +143,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MilestoneToast />
           <VersionWatcher />
           <InstallPrompt />
+          <BackToTop />
         </LocaleProvider>
       </body>
     </html>
