@@ -4,6 +4,8 @@ import { ArrowRight, Flame, MapPin } from "lucide-react";
 import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreTone } from "@/lib/score";
 import { REGION_EMOJI } from "@/lib/spots";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf } from "@/lib/i18n";
 
 interface Props {
   forecasts: SpotForecast[];
@@ -18,6 +20,7 @@ interface Props {
  * Different each day → reason to return; surfeurs scrollent et "découvrent" leur prochaine session.
  */
 export function HotToday({ forecasts, dayIdx, level, onOpen }: Props) {
+  const { locale } = useLocale();
   if (!forecasts.length) return null;
 
   // Find the top scorer for the selected day
@@ -55,13 +58,13 @@ export function HotToday({ forecasts, dayIdx, level, onOpen }: Props) {
             <Flame className="h-5 w-5 text-white" />
           </span>
           <div className="text-[10px] uppercase tracking-[0.25em] text-coral-300/90 sm:hidden">
-            Hot today
+            {t(locale, "hotTodayLabel")}
           </div>
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="hidden text-[10px] uppercase tracking-[0.25em] text-coral-300/90 sm:block">
-            🔥 Hot today {dayIdx === 0 ? "" : `· J+${dayIdx}`}
+            {dayIdx === 0 ? t(locale, "hotTodayLabel") : tf(locale, "hotTodayDayLabel", { n: dayIdx })}
           </div>
           <h3 className="mt-1 font-display text-2xl font-bold leading-tight">
             <span className="text-gradient-sunset">{top.spot.shortName}</span>
@@ -74,16 +77,14 @@ export function HotToday({ forecasts, dayIdx, level, onOpen }: Props) {
             </span>
             {bestWin && (
               <span>
-                ⭐ Meilleur créneau{" "}
+                {t(locale, "hotBestWindow")}{" "}
                 <strong className="text-sand-200">
                   {String(bestWin.start).padStart(2, "0")}h–{String(bestWin.end + 1).padStart(2, "0")}h
                 </strong>
               </span>
             )}
             {otherGood > 0 && (
-              <span className="text-white/50">
-                · et {otherGood} autre{otherGood > 1 ? "s" : ""} spot{otherGood > 1 ? "s" : ""} ≥ 70
-              </span>
+              <span className="text-white/50">· {tf(locale, "hotMore", { n: otherGood, s: otherGood > 1 ? "s" : "" })}</span>
             )}
           </p>
         </div>
@@ -92,7 +93,7 @@ export function HotToday({ forecasts, dayIdx, level, onOpen }: Props) {
           onClick={() => onOpen(top!.spot.slug)}
           className="tap-target inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-coral-500 via-sunset-500 to-sand-400 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-coral-500/30 transition hover:scale-[1.02] active:scale-[0.98]"
         >
-          Voir
+          {t(locale, "hotTodayCta")}
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

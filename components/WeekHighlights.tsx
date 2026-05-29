@@ -6,6 +6,8 @@ import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreTone } from "@/lib/score";
 import { REGION_EMOJI } from "@/lib/spots";
 import { dayShortLabel, dayDateNumber, fmt } from "@/lib/utils";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf } from "@/lib/i18n";
 
 interface Props {
   forecasts: SpotForecast[];
@@ -23,6 +25,7 @@ interface Props {
  * - Variable reward : le contenu change chaque jour à mesure que le futur arrive
  */
 export function WeekHighlights({ forecasts, level, onOpen }: Props) {
+  const { locale } = useLocale();
   const sessions = useMemo(() => {
     if (!forecasts.length) return [];
     type Session = { spot: SpotForecast["spot"]; dayIdx: number; score: number; forecast: SpotForecast };
@@ -55,11 +58,11 @@ export function WeekHighlights({ forecasts, level, onOpen }: Props) {
       <div className="mb-3 flex items-center gap-2 px-1">
         <CalendarDays className="h-4 w-4 text-ocean-300" />
         <h2 className="font-display text-base font-bold tracking-tight">
-          <span className="text-gradient-ocean">Cette semaine</span>
-          <span className="ml-2 font-script text-lg text-sand-200/70">en mer</span>
+          <span className="text-gradient-ocean">{t(locale, "weekTitleA")}</span>
+          <span className="ml-2 font-script text-lg text-sand-200/70">{t(locale, "weekTitleB")}</span>
         </h2>
         <span className="ml-auto hidden text-[10px] uppercase tracking-widest text-white/35 sm:inline">
-          top {sessions.length} sessions à venir
+          {tf(locale, "weekUpcoming", { n: sessions.length })}
         </span>
       </div>
 

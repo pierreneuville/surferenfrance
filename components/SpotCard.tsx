@@ -7,6 +7,8 @@ import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
 import { bestHoursForDay } from "@/lib/api";
 import { degToCardinal, fmt, dayShortLabel } from "@/lib/utils";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf } from "@/lib/i18n";
 
 // A signature gradient per region — visual variety without 231 photos.
 const REGION_GRADIENT: Record<string, string> = {
@@ -30,6 +32,7 @@ interface Props {
 }
 
 export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onClick, onToggleFavorite }: Props) {
+  const { locale } = useLocale();
   const d = forecast.days[dayIdx];
   const score = d.scoresByLevel?.[level] ?? d.score;
   const bestWindow = d.bestWindowByLevel?.[level]
@@ -47,8 +50,8 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
     e.preventDefault();
     const url = `${window.location.origin}/spot/${forecast.spot.slug}`;
     const text = score >= 75
-      ? `🌊 ${forecast.spot.shortName} : ${score}/100 aujourd'hui. Tu viens ?`
-      : `${forecast.spot.shortName} — ${score}/100 sur Yosurf, la carte des vagues.`;
+      ? tf(locale, "modalShareScoreText", { name: forecast.spot.shortName, score })
+      : tf(locale, "modalShareNeutralText", { name: forecast.spot.shortName, score });
     try {
       const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
       if (nav.share) {
@@ -122,7 +125,7 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
             <div className="flex items-baseline justify-between gap-2">
               <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-emerald-300/80">
                 <Sparkles className="h-3 w-3" />
-                Meilleur créneau
+                {t(locale, "cardBestWindow").replace(/\s*:\s*$/, "")}
               </div>
               <span className="text-[10px] text-white/40">moy. {bestWindow.avg}</span>
             </div>
@@ -136,16 +139,16 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
           <div className="mb-4 rounded-2xl border border-white/[0.05] bg-white/[0.02] px-3 py-2.5 text-xs text-white/30">
             <span className="flex items-center gap-1.5">
               <Sparkles className="h-3 w-3" />
-              Pas de créneau favorable aujourd'hui
+              {t(locale, "cardNoWindow")}
             </span>
           </div>
         )}
 
         {/* Stats triplet */}
         <div className="mb-4 grid grid-cols-3 gap-2">
-          <Stat icon={<Waves className="h-3.5 w-3.5" />} label="Vague" value={`${fmt(d.waveHeight)} m`} sub={degToCardinal(d.waveDir)} />
-          <Stat icon={<Compass className="h-3.5 w-3.5" />} label="Période" value={`${fmt(d.wavePeriod, 0)} s`} sub={periodLabel(d.wavePeriod)} />
-          <Stat icon={<Wind className="h-3.5 w-3.5" />} label="Vent" value={`${fmt(d.windSpeed, 0)} km/h`} sub={degToCardinal(d.windDir)} />
+          <Stat icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "cardWave")} value={`${fmt(d.waveHeight)} m`} sub={degToCardinal(d.waveDir)} />
+          <Stat icon={<Compass className="h-3.5 w-3.5" />} label={t(locale, "cardPeriod")} value={`${fmt(d.wavePeriod, 0)} s`} sub={periodLabel(d.wavePeriod, locale)} />
+          <Stat icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={degToCardinal(d.windDir)} />
         </div>
 
         {/* 7-day mini-bars */}
@@ -186,17 +189,17 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
           onClick={(e) => e.stopPropagation()}
           className="flex flex-1 items-center justify-center gap-1.5 bg-white/[0.015] px-3 py-2.5 text-[11px] text-white/40 transition hover:bg-white/[0.04] hover:text-sand-200"
         >
-          Fiche complète
+          {t(locale, "cardFullSheet")}
           <ExternalLink className="h-3 w-3" />
         </Link>
         <button
           onClick={handleShare}
           className="tap-target flex items-center justify-center gap-1.5 border-l border-white/[0.05] bg-white/[0.015] px-4 py-2.5 text-[11px] text-white/40 transition hover:bg-white/[0.04] hover:text-sand-200"
-          aria-label="Partager ce spot"
-          title="Partager ce spot"
+          aria-label={t(locale, "cardShare")}
+          title={t(locale, "cardShare")}
         >
           {shared ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Share2 className="h-3.5 w-3.5" />}
-          {shared ? "Copié" : "Partager"}
+          {shared ? t(locale, "cardShareCopied") : t(locale, "cardShare")}
         </button>
       </div>
     </article>
@@ -216,11 +219,11 @@ function Stat({ icon, label, value, sub }: { icon: React.ReactNode; label: strin
   );
 }
 
-function periodLabel(period: number | null | undefined): string {
+function periodLabel(period: number | null | undefined, locale: import("@/lib/i18n").Locale = "fr"): string {
   if (period == null) return "—";
-  if (period >= 11) return "ground swell";
-  if (period >= 8) return "houle";
-  return "mer du vent";
+  if (period >= 11) return t(locale, "cardTopGood");
+  if (period >= 8) return t(locale, "cardTopMedium");
+  return t(locale, "cardTopLow");
 }
 
 function ScoreGauge({ score, color, tone }: { score: number; color: string; tone: string }) {
