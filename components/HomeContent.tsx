@@ -41,6 +41,8 @@ interface Prefs {
   region: string;
   level: Level;
   sort: SortKey;
+  /** "Près de moi" actif par défaut — l'utilisateur cherche d'abord ce qui marche autour. */
+  nearMe: boolean;
 }
 
 const DEFAULT_PREFS: Prefs = {
@@ -49,6 +51,7 @@ const DEFAULT_PREFS: Prefs = {
   region: "all",
   level: "intermediate",
   sort: "score",
+  nearMe: true,
 };
 
 export function HomeContent() {
@@ -62,7 +65,11 @@ export function HomeContent() {
   const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
   const [geoPrecise, setGeoPrecise] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
-  const [nearMe, setNearMe] = useState(false);
+  // nearMe lives on prefs (persisted) — derived getter/setter for compat with existing handlers
+  const nearMe = prefs.nearMe;
+  const setNearMe = (next: boolean | ((v: boolean) => boolean)) => {
+    setPrefs((p) => ({ ...p, nearMe: typeof next === "function" ? next(p.nearMe) : next }));
+  };
   const [hasGeo, setHasGeo] = useState(false);
   const [favorites, setFavoritesState] = useState<string[]>([]);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
