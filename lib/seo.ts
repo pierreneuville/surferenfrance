@@ -2,7 +2,9 @@ import type { Region, Spot } from "./types";
 
 export const SITE_NAME = "Yosurf";
 export const SITE_TAGLINE = "Prévisions surf, houle et meilleurs spots";
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yosurf.fr").replace(/\/$/, "");
+// Primary domain — currently yosurf.app (the one registered with AdSense, Search Console, etc.).
+// Override via NEXT_PUBLIC_SITE_URL in Vercel env when switching to a different primary.
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yosurf.app").replace(/\/$/, "");
 
 export const DEFAULT_DESCRIPTION =
   "Prévisions surf en France : scores de session, meilleur créneau, hauteur des vagues, période de houle, vent et spots proches sur tout le littoral.";
