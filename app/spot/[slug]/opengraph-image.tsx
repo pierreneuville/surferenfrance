@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { getSpotBySlug } from "@/lib/spots";
 import { fetchSpotForecast } from "@/lib/api";
 import { scoreLabel } from "@/lib/score";
+import { tideOptimalLabel } from "@/lib/tide";
 
 export const runtime = "nodejs";
 export const alt = "Surf prévision Yosurf";
@@ -13,10 +14,11 @@ const REGION_BG: Record<string, [string, string, string]> = {
   "Manche & Nord": ["#cbd5e1", "#36c4f7", "#0c5b80"],
   "Bretagne": ["#5eead4", "#066e9b", "#062c47"],
   "Atlantique Nord": ["#7ddafe", "#14b8a6", "#066e9b"],
-  "Côte d'Argent": ["#fcf0d0", "#f5a430", "#ea580c"],
+  "Aquitaine": ["#fcf0d0", "#f5a430", "#ea580c"],
   "Pays Basque": ["#fda4af", "#f97316", "#fbbf24"],
   "Méditerranée": ["#5eead4", "#14b8a6", "#0c5b80"],
   "Corse": ["#86efac", "#14b8a6", "#fbbf24"],
+  "Outre-Mer": ["#86efac", "#fb923c", "#dc2626"],
 };
 
 const SCORE_COLORS: Record<string, string> = {
@@ -41,12 +43,17 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   }
 
   let score = 0, waveHeight: number | null = null, wavePeriod: number | null = null, windSpeed: number | null = null;
+  let effectiveWaveHeight: number | null = null;
+  let wavePower: number | null = null;
   try {
     const forecast = await fetchSpotForecast(spot, "intermediate");
-    score = forecast.days[0].score;
-    waveHeight = forecast.days[0].waveHeight;
-    wavePeriod = forecast.days[0].wavePeriod;
-    windSpeed = forecast.days[0].windSpeed;
+    const d = forecast.days[0];
+    score = d.score;
+    waveHeight = d.waveHeight;
+    wavePeriod = d.wavePeriod;
+    windSpeed = d.windSpeed;
+    effectiveWaveHeight = d.effectiveWaveHeight ?? null;
+    wavePower = d.wavePower ?? null;
   } catch { /* ignore — fall back to spot-only display */ }
 
   const colors = REGION_BG[spot.region] ?? ["#36c4f7", "#066e9b", "#062c47"];
@@ -134,8 +141,18 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           >
             {spot.shortName}
           </div>
-          <div style={{ fontSize: 30, marginTop: 12, color: "rgba(255,255,255,0.85)", fontStyle: "italic", display: "flex" }}>
-            {spot.type}
+          <div style={{ fontSize: 30, marginTop: 12, color: "rgba(255,255,255,0.85)", fontStyle: "italic", display: "flex", gap: 18, alignItems: "center" }}>
+            <span>{spot.type}</span>
+            {spot.tideOptimal && spot.tideOptimal !== "any" && (
+              <span style={{ fontSize: 20, padding: "4px 14px", borderRadius: 999, background: "rgba(0,0,0,0.3)", color: "rgba(255,255,255,0.85)", fontStyle: "normal", letterSpacing: 1 }}>
+                {tideOptimalLabel(spot.tideOptimal)}
+              </span>
+            )}
+            {effectiveWaveHeight != null && waveHeight != null && effectiveWaveHeight > waveHeight + 0.1 && (
+              <span style={{ fontSize: 20, padding: "4px 14px", borderRadius: 999, background: "rgba(245,164,48,0.35)", color: "#fff7e0", fontStyle: "normal", letterSpacing: 1 }}>
+                sets ~{effectiveWaveHeight.toFixed(1)} m
+              </span>
+            )}
           </div>
         </div>
 
@@ -158,6 +175,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               <Condition label="Vague" value={waveHeight != null ? `${waveHeight.toFixed(1)} m` : "—"} />
               <Condition label="Période" value={wavePeriod != null ? `${wavePeriod.toFixed(0)} s` : "—"} />
               <Condition label="Vent" value={windSpeed != null ? `${windSpeed.toFixed(0)} km/h` : "—"} />
+              <Condition label="Puissance" value={wavePower != null ? `${wavePower.toFixed(1)} kW/m` : "—"} />
             </div>
           </div>
 

@@ -11,10 +11,12 @@ export const REGION_SLUGS: Record<Region, string> = {
   "Manche & Nord": "manche-nord",
   Bretagne: "bretagne",
   "Atlantique Nord": "atlantique-nord",
-  "Côte d'Argent": "cote-d-argent",
+  // Region label renamed to Aquitaine, but slug kept for SEO continuity & backlink preservation.
+  Aquitaine: "cote-d-argent",
   "Pays Basque": "pays-basque",
   Méditerranée: "mediterranee",
   Corse: "corse",
+  "Outre-Mer": "outre-mer",
   "Espagne Atlantique": "espagne-atlantique",
   Canaries: "canaries",
   Portugal: "portugal",
@@ -46,10 +48,10 @@ export const REGION_SEO_COPY: Record<Region, { title: string; intro: string; sea
       "Vendée, Loire-Atlantique, Ré et Oléron : l'Atlantique Nord mélange longues plages, îles exposées et spots accessibles pour progresser.",
     season: "Les houles d'automne et d'hiver apportent les sessions les plus régulières, avec de belles fenêtres au printemps.",
   },
-  "Côte d'Argent": {
-    title: "Prévisions surf Côte d'Argent",
+  Aquitaine: {
+    title: "Prévisions surf Aquitaine",
     intro:
-      "Du Médoc aux Landes, la Côte d'Argent concentre certains des beach breaks les plus réguliers d'Europe, avec bancs de sable, pinède et longues houles atlantiques.",
+      "Du Médoc aux Landes, l'Aquitaine (anciennement Côte d'Argent) concentre certains des beach breaks les plus réguliers d'Europe, avec bancs de sable, pinède et longues houles atlantiques.",
     season: "Septembre à novembre reste la période reine : eau encore douce, houles consistantes et vents plus favorables.",
   },
   "Pays Basque": {
@@ -69,6 +71,12 @@ export const REGION_SEO_COPY: Record<Region, { title: string; intro: string; sea
     intro:
       "La Corse offre des vagues plus confidentielles, entre plages exposées, caps rocheux et houles méditerranéennes ou d'ouest selon les secteurs.",
     season: "Les meilleures chances arrivent en automne-hiver, avec des houles plus solides et moins de monde à l'eau.",
+  },
+  "Outre-Mer": {
+    title: "Prévisions surf Outre-Mer (Réunion, Antilles, Tahiti)",
+    intro:
+      "De Saint-Leu à Teahupo'o en passant par Le Souffleur en Guadeloupe et Tartane en Martinique, les territoires d'outre-mer concentrent certaines des vagues les plus emblématiques du monde.",
+    season: "Réunion : houle australe d'avril à octobre. Antilles : swell nord novembre à mars. Tahiti : houle sud avril à octobre.",
   },
   "Espagne Atlantique": {
     title: "Prévisions surf Espagne Atlantique",

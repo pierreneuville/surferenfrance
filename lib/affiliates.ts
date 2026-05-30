@@ -43,7 +43,7 @@ export const REGION_AFFILIATES: Record<Region, AffiliateBundle> = {
   "Atlantique Nord": {
     surfCamp: { label: "Surf camps Vendée", description: "Camps Bretignolles & Sables", url: stub("surf camp Vendée"), cta: "Réserver" },
   },
-  "Côte d'Argent": {
+  "Aquitaine": {
     surfCamp: { label: "Surf camps Landes & Gironde", description: "Camps Hossegor, Lacanau, Seignosse", url: stub("surf camp Hossegor Lacanau"), cta: "Réserver" },
     hotel: { label: "Hôtels Hossegor / Capbreton", description: "Dormir au cœur des spots", url: stub("Hossegor hôtel"), cta: "Voir" },
   },
@@ -56,6 +56,10 @@ export const REGION_AFFILIATES: Record<Region, AffiliateBundle> = {
   },
   "Corse": {
     hotel: { label: "Hôtels Corse", description: "Calvi, Bonifacio, Porto-Vecchio", url: stub("Corse hôtel"), cta: "Voir" },
+  },
+  "Outre-Mer": {
+    hotel: { label: "Hôtels Outre-Mer", description: "Réunion, Antilles, Tahiti — proche des spots", url: stub("surf Outre-Mer hôtel"), cta: "Voir" },
+    surfCamp: { label: "Surf camps Outre-Mer", description: "Saint-Leu, Le Moule, Papenoo, Anse Bonneville", url: stub("surf camp outre mer"), cta: "Réserver" },
   },
   "Espagne Atlantique": {
     surfCamp: { label: "Surf camps Espagne", description: "Pays basque, Cantabrie, Galice", url: stub("surf camp Mundaka"), cta: "Reservar" },
