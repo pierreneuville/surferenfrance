@@ -39,13 +39,13 @@
 - Rename type, REGIONS, slugs URL, SEO copy, traductions 4 langues
 - **Effort** : 30 min
 
-### 1.2 5ème critère : puissance de la houle (kJ/m) ⏳
+### 1.2 5ème critère : puissance de la houle (kW/m) ✅
 - Calcul pur, dérivé de hauteur² × période (`P ≈ 0.49 × H² × T` kW/m)
 - Pas d'API supplémentaire
 - Pondéré dans `computeScore()` comme proxy de la « tenue » de la vague
 - **Effort** : 30 min
 
-### 1.3 Période > 9s = amplifier les sets ⏳
+### 1.3 Période > 9s = amplifier les sets ✅
 - Au-dessus de 9s, sets ~15-20% plus gros que la moyenne (insight expert)
 - Algorithme : `effectiveHeight = wave × (1 + 0.175 × (period - 9))` si period > 9
 - **Seuils hard caps** :
@@ -53,17 +53,19 @@
   - Intermédiaire : interdit > 1.5m + 12s (effective ~2.3m) → marker « surf engagé »
 - **Effort** : 1h
 
-### 1.4 Lock spots world-class ⏳
+### 1.4 Lock spots world-class ✅
 - Champ `worldClass: true` sur ~25 spots (La Gravière, Belharra, Mundaka, Coxos, Anchor Point, Teahupoo, etc.)
 - **Jamais affichés** quand level = débutant ou intermédiaire
 - Préserve la sécurité + le localisme
 - **Effort** : 1h
 
-### 1.5 Géoloc auto + Hot spot ≤ 50 km ⏳
+### 1.5 Géoloc auto + Hot spot ≤ 50 km 🔄
 - Prompt geo non-bloquant à la 1ère visite (post-scroll, comme onboarding)
 - Fallback Vercel `request.geo` (IP-based, gratuit, déjà disponible)
 - HotToday filtre les spots dans rayon 50 km du user avant de sélectionner le top
 - Un Français ne se voit JAMAIS proposer Mundaka comme « hot spot du jour »
+- ✅ fait : HotToday devient local dès que la géoloc utilisateur est disponible, WeekHighlights se localise à 120 km, et les spots world-class sont exclus hors niveau confirmé.
+- ⏳ reste : prompt géoloc automatique post-scroll + fallback IP Vercel.
 - **Effort** : 2h
 
 ### 1.6 DOM-TOM ⏳
@@ -109,7 +111,7 @@
 
 > **Insight expert clé** : Cet outil n'existe nulle part. Aujourd'hui, pour avoir les vraies données de bouées en France, il faut aller sur Data.Gouv.fr ou les sites SHOM/CANDHIS et cliquer bouée par bouée. Personne n'a fait l'**agrégation en un seul tableau**. C'est un vrai trou de marché.
 
-### 3.1 Source de données ⏳
+### 3.1 Source de données ✅
 
 **Plan A — Data.Gouv.fr / CANDHIS (FR uniquement, gratuit)**
 - CANDHIS = Centre d'Archivage National de Données de Houle In-Situ (CEREMA / SHOM)
@@ -128,7 +130,7 @@
 
 **Recommandation** : démarrer par CANDHIS (FR) + NOAA (atlantique large) → vraie data FR + cohérence avec le catalogue.
 
-### 3.2 Page `/bouees` — Tableau global ⏳
+### 3.2 Page `/bouees` — Tableau global ✅
 
 **LE produit qui n'existe pas** : tableau récap en direct, **toutes les bouées d'un coup**.
 
@@ -150,13 +152,13 @@ Filtrable par région française. Tri sur n'importe quelle colonne.
 
 **Effort** : 1-2 jours
 
-### 3.3 Module « bouées proches » sur la home ⏳
+### 3.3 Module « bouées proches » sur la home ✅
 - Si géoloc OK, top 2-3 bouées les plus proches affichées
 - Card compacte : hauteur moy / max / min / période / orientation / vent / dernier relevé
 - Lien vers `/bouees` pour tout voir
 - **Effort** : 4h
 
-### 3.4 Bouée associée à chaque spot ⏳
+### 3.4 Bouée associée à chaque spot ✅
 - Sur la fiche `/spot/[slug]`, dans l'aside : **« Bouée la plus proche : Anglet 62002 »** + données live
 - Permet de croiser **prévision modélisée** (Open-Meteo) vs **mesure réelle** (bouée)
 - **Effort** : 2h

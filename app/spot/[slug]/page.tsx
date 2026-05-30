@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { getSpotBySlug, getNearbySpots, SPOTS, REGION_EMOJI } from "@/lib/spots";
 import { SpotDetailClient } from "@/components/SpotDetailClient";
 import { AffiliatePanel } from "@/components/AffiliatePanel";
+import { BuoyMiniPanel } from "@/components/BuoyMiniPanel";
 import { JsonLd } from "@/components/JsonLd";
 import type { Level } from "@/lib/types";
 import { REGION_SLUGS, SITE_NAME, absoluteUrl, spotKeywords } from "@/lib/seo";
@@ -219,6 +220,14 @@ export default async function SpotPage({ params }: PageProps) {
 
           {/* Right: aside (key info, sticky on lg+) */}
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+            <BuoyMiniPanel
+              title="Bouée la plus proche"
+              lat={spot.lat}
+              lon={spot.lon}
+              limit={1}
+              compact
+            />
+
             {/* Affiliate panel — revenue beyond ads */}
             <AffiliatePanel spot={spot} />
 
@@ -332,4 +341,3 @@ function spotFaqs(
     },
   ];
 }
-
