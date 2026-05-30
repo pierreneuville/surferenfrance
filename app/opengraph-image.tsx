@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SPOTS } from "@/lib/spots";
+import { COUNTRIES } from "@/lib/countries";
 
 export const runtime = "edge";
 export const alt = "Yosurf — yo, ta vague est prête";
@@ -112,7 +113,7 @@ export default async function Image() {
           }}
         >
           <div style={{ display: "flex", gap: 40 }}>
-            <Stat number={SPOTS.length.toString()} label="spots · 6 pays" />
+            <Stat number={SPOTS.length.toString()} label={`spots · ${COUNTRIES.length} pays`} />
             <Stat number="7j" label="prévisions" />
             <Stat number="24h" label="détail horaire" />
           </div>

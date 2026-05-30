@@ -18,22 +18,22 @@ export const SHARE_COPY: Record<"fr" | "en" | "es" | "pt", { title: string; desc
   fr: {
     title: "Yosurf — trouve ta session du jour",
     tagline: "ta vague est prête",
-    description: "416 spots de France, Espagne, Portugal, Maroc, UK & Irlande. Score session, meilleur créneau, marée, bouées live. Trouve ta vague en 10 secondes.",
+    description: "Les spots de surf France, Espagne, Portugal, Maroc, UK & Irlande. Score session, meilleur créneau, marée, bouées live. Trouve ta vague en 10 secondes.",
   },
   en: {
     title: "Yosurf — find your session of the day",
     tagline: "your wave is ready",
-    description: "416 surf spots across France, Spain, Portugal, Morocco, UK & Ireland. Session score, best window, tide, live buoys. Pick your wave in 10 seconds.",
+    description: "Surf spots across France, Spain, Portugal, Morocco, UK & Ireland. Session score, best window, tide, live buoys. Pick your wave in 10 seconds.",
   },
   es: {
     title: "Yosurf — encuentra tu sesión del día",
     tagline: "tu ola está lista",
-    description: "416 spots en Francia, España, Portugal, Marruecos, Reino Unido e Irlanda. Score de sesión, mejor ventana, marea, boyas en directo. Tu ola en 10 segundos.",
+    description: "Spots de surf en Francia, España, Portugal, Marruecos, Reino Unido e Irlanda. Score de sesión, mejor ventana, marea, boyas en directo. Tu ola en 10 segundos.",
   },
   pt: {
     title: "Yosurf — encontra a tua sessão do dia",
     tagline: "a tua onda está pronta",
-    description: "416 spots em França, Espanha, Portugal, Marrocos, Reino Unido e Irlanda. Pontuação de sessão, melhor janela, maré, boias ao vivo. A tua onda em 10 segundos.",
+    description: "Spots de surf em França, Espanha, Portugal, Marrocos, Reino Unido e Irlanda. Pontuação de sessão, melhor janela, maré, boias ao vivo. A tua onda em 10 segundos.",
   },
 };
 
