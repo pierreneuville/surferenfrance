@@ -117,7 +117,7 @@ export default async function Image() {
             <Stat number="24h" label="détail horaire" />
           </div>
           <div style={{ fontSize: 22, color: "rgba(255,255,255,0.6)", display: "flex" }}>
-            yosurf.fr
+            yosurf.app
           </div>
         </div>
       </div>
