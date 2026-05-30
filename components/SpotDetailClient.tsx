@@ -35,7 +35,7 @@ export function SpotDetailClient({ spot }: Props) {
         {/* Day picker skeleton */}
         <div className="flex flex-wrap gap-2">
           {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="shimmer-wave h-[78px] w-[72px] rounded-2xl bg-white/[0.04]" />
+            <div key={i} className="shimmer-wave h-[78px] w-[72px] rounded-2xl border border-white/[0.06] bg-white/[0.04]" />
           ))}
         </div>
         {/* Level chips skeleton */}
@@ -124,7 +124,7 @@ export function SpotDetailClient({ spot }: Props) {
           icon={<Zap className="h-3.5 w-3.5" />}
           label="Puissance"
           value={forecast.days[dayIdx].wavePower != null ? `${fmt(forecast.days[dayIdx].wavePower, 1)} kW/m` : "—"}
-          sub={forecast.days[dayIdx].engagedSurf ? "surf engagé" : undefined}
+          sub={forecast.days[dayIdx].engagedSurf ? "costaud" : undefined}
         />
         <Tile
           icon={<Droplet className="h-3.5 w-3.5" />}

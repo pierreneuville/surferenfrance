@@ -55,10 +55,9 @@ export function Header() {
           <div className="flex items-center gap-2 sm:gap-4">
             <StreakBadge />
             <LocaleSwitcher />
-            {/* Desktop nav */}
+            {/* Desktop nav — "Bouées" is expert-level, moved out of primary nav (kept in mobile menu + footer) */}
             <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
               <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
-              <Link href="/bouees" className="transition hover:text-sand-200">Bouées</Link>
               <Link href="/spots" className="transition hover:text-sand-200">Index</Link>
               <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
             </nav>

@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles, Share2, Check, MapPin, Zap,
+  X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles, Share2, Check, MapPin, Zap, Radio,
 } from "lucide-react";
+import { BuoyMiniPanel } from "./BuoyMiniPanel";
 import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
 import { fetchSpotForecastFromApi } from "@/lib/clientApi";
@@ -39,17 +40,25 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
   const [hourlyLoading, setHourlyLoading] = useState(true);
   const [dayIdx, setDayIdx] = useState(initialDay);
   const [shared, setShared] = useState(false);
-  // Swipe-to-change-day on mobile
+  // Swipe-to-change-day on mobile. Only fire when horizontal delta dominates vertical (avoid
+  // hijacking vertical scrolls inside the modal body).
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  function onTouchStart(e: React.TouchEvent) { setTouchStartX(e.touches[0].clientX); }
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  function onTouchStart(e: React.TouchEvent) {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+  }
   function onTouchEnd(e: React.TouchEvent) {
-    if (touchStartX == null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(delta) > 60) {
-      if (delta < 0 && dayIdx < 6) setDayIdx(dayIdx + 1);
-      else if (delta > 0 && dayIdx > 0) setDayIdx(dayIdx - 1);
+    if (touchStartX == null || touchStartY == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    // Require horizontal dominance (1.5x) AND a minimum amplitude
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0 && dayIdx < 6) setDayIdx(dayIdx + 1);
+      else if (dx > 0 && dayIdx > 0) setDayIdx(dayIdx - 1);
     }
     setTouchStartX(null);
+    setTouchStartY(null);
   }
 
   useEffect(() => {
@@ -204,10 +213,11 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           </div>
         </div>
 
-        {/* === DAY PICKER (sticky inside modal) === */}
-        <div className="border-b border-white/[0.06] bg-depth-950 px-4 py-3 sm:px-6">
-          <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
-            {forecast.days.map((day, i) => {
+        {/* === DAY PICKER === Moved INSIDE the scrollable body with sticky top, so it stays in view as the user scrolls hourly + tide + buoy. */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="sticky top-0 z-10 border-b border-white/[0.06] bg-depth-950/95 px-4 py-3 backdrop-blur-md sm:px-6">
+            <div className="scrollbar-hide flex gap-2 overflow-x-auto py-0.5">
+              {forecast.days.map((day, i) => {
               const ds =
                 day.scoresByLevel?.[level]
                 ?? (day.waveHeight != null
@@ -235,11 +245,11 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
                 </button>
               );
             })}
+            </div>
           </div>
-        </div>
 
-        {/* === BODY (scrollable) === */}
-        <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+          {/* === BODY CONTENT === */}
+          <div className="px-4 py-5 sm:px-6">
           {/* Sun / day info */}
           <div className="mb-4 flex items-center justify-between gap-3 text-sm">
             <p className="font-script text-lg text-sand-200/90">{dayLongLabel(dayIdx)}</p>
@@ -249,24 +259,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             </div>
           </div>
 
-          {/* Quick stats */}
-          <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
-            <Tile
-              icon={<Waves />}
-              label={t(locale, "cardWave")}
-              value={`${fmt(d.waveHeight)} m`}
-              sub={d.effectiveWaveHeight != null && d.effectiveWaveHeight > (d.waveHeight ?? 0) + 0.1
-                ? `sets ~${fmt(d.effectiveWaveHeight)} m · ${fmt(d.wavePeriod, 0)}s`
-                : `${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`}
-              accent={colors.hex}
-            />
-            <Tile icon={<Wind />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
-            <Tile icon={<Zap />} label="Puissance" value={d.wavePower != null ? `${fmt(d.wavePower, 1)} kW/m` : "—"} sub={d.engagedSurf ? "surf engagé" : ""} />
-            <Tile icon={<Thermometer />} label={t(locale, "tileWaterAir")} value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `${t(locale, "tileAir")} ${fmt(airTempMax, 0)}°C` : ""} />
-            <Tile icon={<Sparkles />} label="Note" value={scoreLabel(score)} sub={`${score}/100`} />
-          </div>
-
-          {/* Best window — hero */}
+          {/* Best window FIRST — "quand vais-je à l'eau ?" is the question that matters most */}
           {(best?.best || fallbackBest) && (
             <div className="mb-5 overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent p-4">
               <div className="mb-2 flex items-center justify-between gap-2 text-xs uppercase tracking-widest text-emerald-300/90">
@@ -315,6 +308,23 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             </div>
           )}
 
+          {/* Quick stats — second: "à quoi ressemble la session ?" */}
+          <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
+            <Tile
+              icon={<Waves />}
+              label={t(locale, "cardWave")}
+              value={`${fmt(d.waveHeight)} m`}
+              sub={d.effectiveWaveHeight != null && d.effectiveWaveHeight > (d.waveHeight ?? 0) + 0.1
+                ? `sets ~${fmt(d.effectiveWaveHeight)} m · ${fmt(d.wavePeriod, 0)}s`
+                : `${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`}
+              accent={colors.hex}
+            />
+            <Tile icon={<Wind />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
+            <Tile icon={<Zap />} label="Puissance" value={d.wavePower != null ? `${fmt(d.wavePower, 1)} kW/m` : "—"} sub={d.engagedSurf ? "costaud" : ""} />
+            <Tile icon={<Thermometer />} label={t(locale, "tileWaterAir")} value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `${t(locale, "tileAir")} ${fmt(airTempMax, 0)}°C` : ""} />
+            <Tile icon={<Sparkles />} label="Note" value={scoreLabel(score)} sub={`${score}/100`} />
+          </div>
+
           {/* Hourly grid */}
           <div className="mb-5">
             <div className="mb-2 flex items-center justify-between">
@@ -340,6 +350,29 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
             <div className="mb-1.5 font-script text-sm text-sand-200/80">{t(locale, "modalAbout")}</div>
             <p className="text-pretty text-sm leading-relaxed text-white/75">{forecast.spot.description}</p>
+          </div>
+
+          {/* Live buoy reading — collapsed accordion at the very bottom.
+              Surfer's mental model: the forecast above is the decision; the buoy is a confirmation. */}
+          <details className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] open:bg-white/[0.04]">
+            <summary className="cursor-pointer list-none px-4 py-3 text-sm font-display font-bold text-white/85 marker:hidden">
+              <span className="inline-flex items-center gap-2">
+                <Radio className="h-3.5 w-3.5 text-ocean-300" />
+                {t(locale, "buoysMiniNearestSpot")}
+              </span>
+              <span className="float-right text-ocean-300/70">↓</span>
+            </summary>
+            <div className="border-t border-white/[0.04] p-2 pt-3">
+              <BuoyMiniPanel
+                title=""
+                lat={forecast.spot.lat}
+                lon={forecast.spot.lon}
+                limit={1}
+                compact
+                forecastWaveHeight={d.waveHeight}
+              />
+            </div>
+          </details>
           </div>
         </div>
 

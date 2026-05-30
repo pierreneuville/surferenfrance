@@ -81,13 +81,18 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
             e.preventDefault();
             onToggleFavorite();
           }}
-          className="tap-target absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-black/30 backdrop-blur transition hover:scale-110 hover:bg-black/50 active:scale-90"
+          className={`tap-target absolute right-2 top-2 z-10 grid h-10 w-10 place-items-center rounded-full backdrop-blur transition hover:scale-110 active:scale-90 ${
+            isFavorite
+              ? "bg-coral-500/25 ring-1 ring-coral-400/50"
+              : "bg-black/35 hover:bg-black/55"
+          }`}
           aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
         >
           <Heart
-            className={`h-4 w-4 transition ${
-              isFavorite ? "fill-coral-400 text-coral-400" : "text-white/60 hover:text-white"
+            className={`h-5 w-5 transition-all ${
+              isFavorite ? "fill-coral-400 text-coral-400 scale-110" : "text-white/70 hover:text-white"
             }`}
+            style={isFavorite ? { animation: "heart-pop 250ms ease-out" } : undefined}
           />
         </button>
       )}
@@ -167,11 +172,17 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
           <Stat icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={degToCardinal(d.windDir)} />
         </div>
 
+        {/* Badges, ordered by decision-impact: warnings first, then info, then power as a nerd stat */}
         {(d.wavePower != null || d.engagedSurf || forecast.spot.worldClass || (d.tideExtremes && d.tideExtremes.length)) && (
           <div className="mb-4 flex flex-wrap gap-1.5 text-[10px]">
-            {d.wavePower != null && (
-              <span className="rounded-full border border-ocean-300/20 bg-ocean-400/10 px-2 py-1 text-ocean-100/80">
-                puissance {fmt(d.wavePower, 1)} kW/m
+            {forecast.spot.worldClass && (
+              <span className="rounded-full border border-coral-400/40 bg-coral-500/15 px-2 py-1 font-semibold text-coral-100">
+                pour confirmés
+              </span>
+            )}
+            {d.engagedSurf && (
+              <span className="rounded-full border border-sand-300/30 bg-sand-300/12 px-2 py-1 text-sand-100">
+                costaud
               </span>
             )}
             {d.tideExtremes && d.tideExtremes.length > 0 && (
@@ -179,14 +190,9 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
                 {tideBadge(d.tideExtremes)}
               </span>
             )}
-            {d.engagedSurf && (
-              <span className="rounded-full border border-sand-300/25 bg-sand-300/10 px-2 py-1 text-sand-100">
-                surf engagé
-              </span>
-            )}
-            {forecast.spot.worldClass && (
-              <span className="rounded-full border border-coral-300/25 bg-coral-500/10 px-2 py-1 text-coral-100">
-                expert only
+            {d.wavePower != null && d.wavePower >= 5 && (
+              <span className="rounded-full border border-ocean-300/15 bg-ocean-400/8 px-2 py-1 text-ocean-100/70">
+                ⚡ {fmt(d.wavePower, 0)} kW/m
               </span>
             )}
           </div>
@@ -274,11 +280,12 @@ function setLabel(waveHeight: number | null | undefined, effective: number | nul
 
 function tideBadge(extremes: import("@/lib/types").TideExtreme[]): string {
   // Pick the next extreme from "now" if today, else the day's first extreme.
+  // Microcopy: "marée monte jusqu'à 14h32 ↑" / "marée descend jusqu'à 09h10 ↓"
   const now = new Date();
   const upcoming = extremes.find((e) => new Date(e.time) >= now) ?? extremes[0];
-  const label = upcoming.type === "high" ? "marée haute" : "marée basse";
+  const verbDir = upcoming.type === "high" ? "monte ↑" : "descend ↓";
   const t = new Date(upcoming.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  return `${label} ${t}`;
+  return `marée ${verbDir} jusqu'à ${t}`;
 }
 
 function ScoreGauge({ score, color, tone }: { score: number; color: string; tone: string }) {
@@ -286,6 +293,7 @@ function ScoreGauge({ score, color, tone }: { score: number; color: string; tone
   const radius = 22;
   const circumference = 2 * Math.PI * radius;
   const dash = (score / 100) * circumference;
+  // Mount ease-in: animate dashoffset from full (0% drawn) to (100% - score) using a CSS keyframe
   return (
     <div className="relative grid h-16 w-16 shrink-0 place-items-center sm:h-[68px] sm:w-[68px]">
       <svg className="absolute inset-0 -rotate-90" viewBox="0 0 50 50" aria-hidden>
@@ -305,11 +313,16 @@ function ScoreGauge({ score, color, tone }: { score: number; color: string; tone
           stroke={color}
           strokeWidth="4"
           strokeLinecap="round"
-          strokeDasharray={`${dash} ${circumference}`}
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference - dash}
+          className="score-anim"
           style={{
             filter: `drop-shadow(0 0 6px ${color}88)`,
-            transition: "stroke-dasharray 0.6s ease",
-          }}
+            transition: "stroke-dashoffset 0.6s cubic-bezier(.22,1,.36,1)",
+            // CSS custom props used by the keyframe (see globals.css)
+            ["--gauge-circ" as never]: `${circumference}`,
+            ["--gauge-offset" as never]: `${circumference - dash}`,
+          } as React.CSSProperties}
         />
       </svg>
       <div className="flex flex-col items-center leading-none">

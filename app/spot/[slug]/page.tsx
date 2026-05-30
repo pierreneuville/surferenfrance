@@ -260,16 +260,25 @@ export default async function SpotPage({ params }: PageProps) {
 
           {/* Right: aside (key info, sticky on lg+) */}
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            <BuoyMiniPanel
-              title={t(locale, "buoysMiniNearestSpot")}
-              lat={spot.lat}
-              lon={spot.lon}
-              limit={1}
-              compact
-            />
-
-            {/* Affiliate panel — revenue beyond ads */}
+            {/* Affiliate panel FIRST — surfer's logistical question once they've decided on the spot */}
             <AffiliatePanel spot={spot} />
+
+            {/* Live measurement = secondary / confirmation. Collapsed by default below the fold of interest. */}
+            <details className="rounded-2xl border border-white/[0.06] bg-white/[0.025] open:bg-white/[0.04]">
+              <summary className="cursor-pointer list-none px-4 py-3 text-sm font-display font-bold text-white/85 marker:hidden">
+                {t(locale, "buoysMiniNearestSpot")}
+                <span className="float-right text-ocean-300/70 transition group-open:rotate-180">↓</span>
+              </summary>
+              <div className="border-t border-white/[0.04] p-2 pt-3">
+                <BuoyMiniPanel
+                  title=""
+                  lat={spot.lat}
+                  lon={spot.lon}
+                  limit={1}
+                  compact
+                />
+              </div>
+            </details>
 
             {/* Nearby spots */}
             <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">

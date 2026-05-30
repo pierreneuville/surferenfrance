@@ -19,10 +19,14 @@ interface Props {
   lon?: number;
   limit?: number;
   compact?: boolean;
+  /** Forecast wave height for the spot at the current moment, for delta vs live comparison. */
+  forecastWaveHeight?: number | null;
 }
 
-export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false }: Props) {
+export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false, forecastWaveHeight }: Props) {
   const { locale } = useLocale();
+  // title === "" → caller is providing its own heading (e.g. accordion summary). Hide the inner header.
+  const showHeader = title !== "";
   const resolvedTitle = title ?? (lat != null && lon != null ? t(locale, "buoysMiniTitleNear") : t(locale, "buoysMiniTitleWatch"));
   const [observations, setObservations] = useState<BuoyObservation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,51 +77,73 @@ export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false }: P
   if (!visible.length) return null;
 
   return (
-    <section className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4" aria-label={resolvedTitle}>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-display text-lg font-bold">
-          <Radio className="h-4 w-4 text-ocean-300" />
-          {resolvedTitle}
-        </h2>
-        <Link href="/bouees" className="shrink-0 text-xs text-ocean-300 hover:text-sand-200">
-          {t(locale, "buoysMiniViewAll")}
-        </Link>
-      </div>
+    <section
+      className={showHeader ? "rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4" : ""}
+      aria-label={resolvedTitle || t(locale, "buoysMiniNearestSpot")}
+    >
+      {showHeader && (
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+            <Radio className="h-4 w-4 text-ocean-300" />
+            {resolvedTitle}
+          </h2>
+          <Link href="/bouees" className="shrink-0 text-xs text-ocean-300 hover:text-sand-200">
+            {t(locale, "buoysMiniViewAll")}
+          </Link>
+        </div>
+      )}
 
       <div className={`grid gap-2 ${compact ? "" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
-        {visible.map(({ observation, distanceKm }) => (
-          <Link
-            key={observation.station.id}
-            href="/bouees"
-            className="rounded-xl border border-white/[0.05] bg-white/[0.025] p-3 transition hover:border-ocean-400/40 hover:bg-white/[0.04]"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <div className="truncate font-display font-bold">{observation.station.shortName}</div>
-                <div className="text-[10px] uppercase tracking-widest text-white/35">
-                  {distanceKm != null ? `${Math.round(distanceKm)} km` : observation.station.area}
+        {visible.map(({ observation, distanceKm }) => {
+          // Forecast-vs-live delta: only when we have both numbers and a sensible buoy nearby (<200km offshore).
+          const delta = forecastWaveHeight != null && observation.waveHeight != null
+            ? observation.waveHeight - forecastWaveHeight
+            : null;
+          const deltaLabel = delta == null ? null
+            : Math.abs(delta) < 0.2 ? "✓ ça tient"
+            : delta > 0 ? `+${delta.toFixed(1)}m vs prévision`
+            : `${delta.toFixed(1)}m vs prévision`;
+          return (
+            <Link
+              key={observation.station.id}
+              href="/bouees"
+              className="rounded-xl border border-white/[0.05] bg-white/[0.025] p-3 transition hover:border-ocean-400/40 hover:bg-white/[0.04]"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="truncate font-display font-bold">{observation.station.shortName}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/35">
+                    {distanceKm != null ? `${Math.round(distanceKm)} km` : observation.station.area}
+                  </div>
                 </div>
+                <span className={`rounded-full px-2 py-0.5 text-[9px] uppercase tracking-widest ${
+                  observation.status === "live"
+                    ? "bg-emerald-500/15 text-emerald-200"
+                    : "bg-white/[0.05] text-white/42"
+                }`}>
+                  {observation.status === "live" ? "live" : observation.status}
+                </span>
               </div>
-              <span className={`rounded-full px-2 py-0.5 text-[9px] uppercase tracking-widest ${
-                observation.status === "live"
-                  ? "bg-emerald-500/15 text-emerald-200"
-                  : "bg-white/[0.05] text-white/42"
-              }`}>
-                {observation.status === "live" ? "live" : observation.status}
-              </span>
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-              <span className="flex items-center gap-1 text-white/70">
-                <Waves className="h-3 w-3 text-ocean-300" />
-                {fmt(observation.waveHeight)} m · {fmt(observation.dominantPeriod, 0)} s
-              </span>
-              <span className="flex items-center gap-1 text-white/70">
-                <Wind className="h-3 w-3 text-ocean-300" />
-                {fmt(observation.windSpeedKmh, 0)} km/h
-              </span>
-            </div>
-          </Link>
-        ))}
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                <span className="flex items-center gap-1 text-white/70">
+                  <Waves className="h-3 w-3 text-ocean-300" />
+                  {fmt(observation.waveHeight)} m · {fmt(observation.dominantPeriod, 0)} s
+                </span>
+                <span className="flex items-center gap-1 text-white/70">
+                  <Wind className="h-3 w-3 text-ocean-300" />
+                  {fmt(observation.windSpeedKmh, 0)} km/h
+                </span>
+              </div>
+              {deltaLabel && (
+                <div className={`mt-2 text-[10px] font-semibold ${
+                  delta != null && Math.abs(delta) < 0.2 ? "text-emerald-300" : "text-sand-200/80"
+                }`}>
+                  {deltaLabel}
+                </div>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

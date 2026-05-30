@@ -17,9 +17,17 @@ interface Props {
 }
 
 /**
- * Variable-reward "Hot today" banner.
- * Surfaces the best spot of the selected day if its score >= 75.
- * Different each day → reason to return; surfeurs scrollent et "découvrent" leur prochaine session.
+ * "Ça envoie maintenant" / "Hot today" banner.
+ *
+ * Goal: surface the most actionable spot, not just the best of the day.
+ *   - Day 0 + current hour inside a spot's best window  → "Ça envoie MAINTENANT à X"
+ *   - Day 0 + best window in next 3h                   → "X à l'eau dans Yh"
+ *   - Otherwise                                        → top spot of the selected day (current behavior)
+ *
+ * We score actionability:
+ *   - hits-now bonus +25
+ *   - starts-soon bonus +10
+ * so a 72 spot firing now wins over an 80 spot that fires tomorrow morning.
  */
 export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
   const { locale } = useLocale();
@@ -32,17 +40,47 @@ export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
     : localForecasts.filter((f) => !f.spot.worldClass);
   if (!candidates.length) return null;
 
-  // Find the top scorer for the selected day
+  const isToday = dayIdx === 0;
+  const currentHour = new Date().getHours();
+
+  // Pick the most actionable candidate
   let top: SpotForecast | null = null;
   let topScore = 0;
+  let topActionability = -1;
+  let nowMode: "firing" | "soon" | "later" = "later";
+  let hoursUntilStart: number | null = null;
+
   for (const f of candidates) {
-    const s = f.days[dayIdx]?.scoresByLevel?.[level] ?? f.days[dayIdx]?.score ?? 0;
-    if (s > topScore) {
-      topScore = s;
+    const day = f.days[dayIdx];
+    if (!day) continue;
+    const score = day.scoresByLevel?.[level] ?? day.score ?? 0;
+    const win = day.bestWindowByLevel?.[level];
+
+    // Build an actionability metric weighted by current-time relevance (day 0 only)
+    let actionability = score;
+    let mode: "firing" | "soon" | "later" = "later";
+    let hUntil: number | null = null;
+
+    if (isToday && win) {
+      if (currentHour >= win.start && currentHour <= win.end) {
+        actionability += 25;
+        mode = "firing";
+      } else if (win.start > currentHour && win.start - currentHour <= 3) {
+        actionability += 15;
+        mode = "soon";
+        hUntil = win.start - currentHour;
+      }
+    }
+
+    if (actionability > topActionability) {
+      topActionability = actionability;
+      topScore = score;
       top = f;
+      nowMode = mode;
+      hoursUntilStart = hUntil;
     }
   }
-  if (!top || topScore < 75) return null;
+  if (!top || topScore < 70) return null;
 
   const d = top.days[dayIdx];
   const tone = scoreTone(topScore);
@@ -73,7 +111,13 @@ export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
 
         <div className="flex-1 min-w-0">
           <div className="hidden text-[10px] uppercase tracking-[0.25em] text-coral-300/90 sm:block">
-            {dayIdx === 0 ? t(locale, "hotTodayLabel") : tf(locale, "hotTodayDayLabel", { n: dayIdx })}
+            {nowMode === "firing"
+              ? "ÇA ENVOIE MAINTENANT"
+              : nowMode === "soon"
+              ? "ÇA DÉMARRE BIENTÔT"
+              : dayIdx === 0
+              ? t(locale, "hotTodayLabel")
+              : tf(locale, "hotTodayDayLabel", { n: dayIdx })}
           </div>
           <h3 className="mt-1 font-display text-2xl font-bold leading-tight">
             <span className="text-gradient-sunset">{top.spot.shortName}</span>
@@ -84,14 +128,22 @@ export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
             <span className="inline-flex items-center gap-1">
               <MapPin className="h-3 w-3" /> {REGION_EMOJI[top.spot.region]} {top.spot.region}
             </span>
-            {bestWin && (
+            {nowMode === "firing" && bestWin ? (
+              <span className="font-semibold text-emerald-300">
+                ⏱ jusqu'à <strong className="text-emerald-200">{String(bestWin.end + 1).padStart(2, "0")}h</strong>
+              </span>
+            ) : nowMode === "soon" && hoursUntilStart != null ? (
+              <span className="font-semibold text-sand-200">
+                ⏱ à l'eau dans <strong>{hoursUntilStart}h</strong>
+              </span>
+            ) : bestWin ? (
               <span>
                 {t(locale, "hotBestWindow")}{" "}
                 <strong className="text-sand-200">
                   {String(bestWin.start).padStart(2, "0")}h–{String(bestWin.end + 1).padStart(2, "0")}h
                 </strong>
               </span>
-            )}
+            ) : null}
             {otherGood > 0 && (
               <span className="text-white/50">· {tf(locale, "hotMore", { n: otherGood, s: otherGood > 1 ? "s" : "" })}</span>
             )}

@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDownUp, Clock, ExternalLink, Waves, Wind } from "lucide-react";
+import { ArrowDownUp, Clock, ExternalLink, MapPin, Waves, Wind, X as XIcon } from "lucide-react";
 import type { BuoyArea, BuoyObservation, BuoyStatus } from "@/lib/buoys";
-import { fmt } from "@/lib/utils";
+import { SPOTS } from "@/lib/spots";
+import type { Spot } from "@/lib/types";
+import { fmt, haversineKm } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t, tf, type Locale } from "@/lib/i18n";
 
@@ -31,24 +33,87 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
   const [area, setArea] = useState<BuoyArea | "Toutes">("Toutes");
   const [sort, setSort] = useState<SortKey>("waveHeight");
   const [liveOnly, setLiveOnly] = useState(false);
+  const [spotQuery, setSpotQuery] = useState("");
+  const [pinnedSpot, setPinnedSpot] = useState<Spot | null>(null);
+
+  // Spot autocomplete suggestions (top 6 matches, name match insensitive)
+  const spotSuggestions = useMemo(() => {
+    const q = spotQuery.trim().toLowerCase();
+    if (q.length < 2 || pinnedSpot) return [];
+    return SPOTS
+      .filter((s) => s.shortName.toLowerCase().includes(q) || s.name.toLowerCase().includes(q))
+      .slice(0, 6);
+  }, [spotQuery, pinnedSpot]);
 
   const visible = useMemo(() => {
-    return observations
+    let base = observations
       .filter((observation) => area === "Toutes" || observation.station.area === area)
-      .filter((observation) => !liveOnly || observation.status === "live")
-      .sort((a, b) => compareBuoys(a, b, sort));
-  }, [area, liveOnly, observations, sort]);
+      .filter((observation) => !liveOnly || observation.status === "live");
+    // When a spot is pinned, sort by distance to that spot (overrides other sorts)
+    if (pinnedSpot) {
+      return base
+        .map((obs) => ({
+          obs,
+          distance: haversineKm(pinnedSpot.lat, pinnedSpot.lon, obs.station.lat, obs.station.lon),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .map(({ obs }) => obs);
+    }
+    return base.sort((a, b) => compareBuoys(a, b, sort));
+  }, [area, liveOnly, observations, sort, pinnedSpot]);
 
   return (
     <div className="space-y-5">
       <div className="rounded-3xl border border-white/[0.06] bg-white/[0.025] p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.25em] text-sand-200/60">{t(locale, "buoysDashboardKicker")}</p>
             <h2 className="mt-1 font-display text-2xl font-bold">{t(locale, "buoysDashboardTitle")}</h2>
             <p className="mt-1 text-sm text-white/55">
               {tf(locale, "buoysDashboardSync", { date: formatDate(updatedAt) })}
             </p>
+
+            {/* Spot-anchored search: surfer mental model — "trouve la bouée pour MON spot" */}
+            <div className="relative mt-3 max-w-md">
+              {pinnedSpot ? (
+                <div className="flex items-center gap-2 rounded-full border border-ocean-400/40 bg-ocean-500/15 px-3 py-2 text-sm text-ocean-100">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span className="font-display font-bold">{pinnedSpot.shortName}</span>
+                  <span className="text-ocean-200/60">— bouées les plus proches</span>
+                  <button
+                    onClick={() => { setPinnedSpot(null); setSpotQuery(""); }}
+                    className="ml-auto rounded-full p-1 transition hover:bg-ocean-500/25"
+                    aria-label="Retirer le spot"
+                  >
+                    <XIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    type="search"
+                    value={spotQuery}
+                    onChange={(e) => setSpotQuery(e.target.value)}
+                    placeholder="Pour quel spot ? (ex: Lacanau)"
+                    className="w-full rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-sm text-white placeholder-white/40 outline-none transition focus:border-ocean-400 focus:bg-white/[0.05]"
+                  />
+                  {spotSuggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-y-auto rounded-2xl border border-white/[0.08] bg-depth-950 p-1 shadow-2xl">
+                      {spotSuggestions.map((s) => (
+                        <button
+                          key={s.slug}
+                          onClick={() => { setPinnedSpot(s); setSpotQuery(""); }}
+                          className="block w-full rounded-xl px-3 py-2 text-left text-sm transition hover:bg-white/[0.05]"
+                        >
+                          <span className="font-display font-bold text-white">{s.shortName}</span>
+                          <span className="ml-2 text-xs text-white/45">{s.region} · {s.department}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto] lg:min-w-[760px]">
@@ -128,7 +193,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                     {observation.station.name}
                     <ExternalLink className="h-3 w-3 text-white/30 transition group-hover:text-ocean-200" />
                   </a>
-                  <div className="text-xs text-white/35">NOAA {observation.station.id}</div>
+                  <div className="text-xs text-white/35" title={`Station NOAA ${observation.station.id}`}>Mesure live · {observation.station.id}</div>
                 </td>
                 <td className="px-4 py-3 text-white/65">{areaLabel(observation.station.area, locale)}</td>
                 <td className="px-4 py-3 font-semibold">{fmt(observation.waveHeight)} m</td>
@@ -162,7 +227,7 @@ export function BuoyMobileCard({ observation, locale }: { observation: BuoyObser
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-white/35">
-            {areaLabel(observation.station.area, locale)} · NOAA {observation.station.id}
+            {areaLabel(observation.station.area, locale)} · Mesure live
           </div>
           <h3 className="mt-1 font-display text-xl font-bold">{observation.station.name}</h3>
           <p className="mt-1 text-xs text-white/45">{observation.station.note}</p>

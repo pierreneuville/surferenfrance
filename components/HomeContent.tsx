@@ -6,6 +6,8 @@ import { Filters, SortKey } from "./Filters";
 import { QuickActions } from "./QuickActions";
 import { HotToday } from "./HotToday";
 import { WeekHighlights } from "./WeekHighlights";
+import { MySpots } from "./MySpots";
+import { MobileBottomBar } from "./MobileBottomBar";
 
 // BuoyMiniPanel fetches /api/buoys on mount — keep it out of the initial bundle
 // since it's secondary to the spot grid. SSR off because it's purely client-driven.
@@ -57,6 +59,8 @@ export function HomeContent() {
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [openSlug, setOpenSlug] = useState<string | null>(null);
   const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
+  const [geoPrecise, setGeoPrecise] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
   const [nearMe, setNearMe] = useState(false);
   const [hasGeo, setHasGeo] = useState(false);
   const [favorites, setFavoritesState] = useState<string[]>([]);
@@ -138,14 +142,30 @@ export function HomeContent() {
   }, []);
 
   const requestGeo = () => {
-    if (!hasGeo) return;
-    if (userPos) { setNearMe((v) => !v); return; }
+    if (!hasGeo) {
+      setNearMe((v) => !v);
+      return;
+    }
+    // Already have precise browser geo → just toggle the filter
+    if (geoPrecise) {
+      setNearMe((v) => !v);
+      return;
+    }
+    // We may have IP-based geo (silent fallback); request precise to upgrade
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserPos({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setGeoPrecise(true);
         setNearMe(true);
+        setGeoError(null);
       },
-      () => alert("Géolocalisation refusée ou indisponible."),
+      () => {
+        // Browser geo denied/failed: keep IP position if we have one, still toggle the filter,
+        // surface a non-blocking hint instead of an alert dialog.
+        setNearMe((v) => !v);
+        setGeoError("Position approximative (IP). Active la géoloc pour plus de précision.");
+        setTimeout(() => setGeoError(null), 4500);
+      },
       { timeout: 8000 }
     );
   };
@@ -173,9 +193,21 @@ export function HomeContent() {
       .sort((a, b) => {
         if (prefs.sort === "name") return a.f.spot.shortName.localeCompare(b.f.spot.shortName);
         if (prefs.sort === "wave") return (b.f.days[prefs.dayIdx]?.waveHeight ?? 0) - (a.f.days[prefs.dayIdx]?.waveHeight ?? 0);
-        if (prefs.sort === "distance" && nearMe) return (a.distanceKm ?? 1e9) - (b.distanceKm ?? 1e9);
+        if (prefs.sort === "distance" && userPos) return (a.distanceKm ?? 1e9) - (b.distanceKm ?? 1e9);
+        // Score sort: when the user has a position, apply a distance-aware bonus so
+        // "good spots near me" surface above "perfect spots 800 km away".
         const sa = a.f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? a.f.days[prefs.dayIdx]?.score ?? 0;
         const sb = b.f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? b.f.days[prefs.dayIdx]?.score ?? 0;
+        if (userPos) {
+          const boost = (km: number | undefined) => {
+            if (km == null) return 0;
+            if (km < 30) return 20;
+            if (km < 100) return 10;
+            if (km < 300) return 0;
+            return -10;
+          };
+          return (sb + boost(b.distanceKm)) - (sa + boost(a.distanceKm));
+        }
         return sb - sa;
       });
   }, [forecasts, prefs, search, nearMe, userPos, favoritesOnly, favoritesSet]);
@@ -195,6 +227,23 @@ export function HomeContent() {
 
   return (
     <div id="spots" className="mx-auto max-w-6xl px-4 pt-4 sm:pt-6">
+      {geoError && (
+        <div className="mb-3 rounded-2xl border border-sand-300/30 bg-sand-300/10 px-4 py-2.5 text-sm text-sand-100">
+          {geoError}
+        </div>
+      )}
+
+      {/* "Mes spots" — personal context FIRST when user has favorites */}
+      {!loading && favorites.length > 0 && (
+        <MySpots
+          forecasts={forecasts}
+          favoritesSet={favoritesSet}
+          dayIdx={prefs.dayIdx}
+          level={prefs.level}
+          onOpen={(slug) => setOpenSlug(slug)}
+        />
+      )}
+
       {/* Hot today — variable reward, FOMO trigger (only when conditions warrant) */}
       {!loading && (
         <HotToday
@@ -228,14 +277,6 @@ export function HomeContent() {
         onApply={(patch) => setPrefs({ ...prefs, ...patch })}
         onToggleNearMe={requestGeo}
       />
-
-      <div className="mt-4">
-        <BuoyMiniPanel
-          lat={userPos?.lat}
-          lon={userPos?.lon}
-          limit={3}
-        />
-      </div>
 
       <Filters
         dayIdx={prefs.dayIdx}
@@ -348,6 +389,18 @@ export function HomeContent() {
         )}
       </div>
 
+      {/* Live buoy readings — secondary confirmation data, AFTER the main spot grid.
+          A surfer first picks a spot from the forecast, THEN checks if the live buoy confirms it. */}
+      {!loading && visible.length > 0 && (
+        <div className="mt-10">
+          <BuoyMiniPanel
+            lat={userPos?.lat}
+            lon={userPos?.lon}
+            limit={3}
+          />
+        </div>
+      )}
+
       <section id="a-propos" className="mt-20 overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-ocean-950/40 via-depth-950 to-depth-950 p-8 sm:p-10">
         <div className="mb-2 text-xs uppercase tracking-[0.3em] text-sand-200/70">À propos du score</div>
         <h2 className="font-display text-3xl font-bold leading-tight sm:text-4xl">
@@ -392,6 +445,18 @@ export function HomeContent() {
           onClose={() => setOpenSlug(null)}
         />
       )}
+
+      {/* Persistent mobile bottom bar — quick access to Filtres / Favoris / Près de moi */}
+      <MobileBottomBar
+        onFiltersOpen={() => window.dispatchEvent(new CustomEvent("yosurf:open-filters"))}
+        onFavoritesToggle={() => setFavoritesOnly((v) => !v)}
+        favoritesActive={favoritesOnly}
+        favoritesCount={favorites.length}
+        onNearMe={requestGeo}
+        nearMeActive={nearMe}
+      />
+      {/* Extra spacer so the page content can scroll past the fixed bottom bar */}
+      <div className="h-16 md:hidden" aria-hidden />
     </div>
   );
 }
