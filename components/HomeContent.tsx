@@ -8,6 +8,7 @@ import { HotToday } from "./HotToday";
 import { WeekHighlights } from "./WeekHighlights";
 import { MySpots } from "./MySpots";
 import { MobileBottomBar } from "./MobileBottomBar";
+import { captureException } from "@/lib/errorReporting";
 
 // BuoyMiniPanel fetches /api/buoys on mount — keep it out of the initial bundle
 // since it's secondary to the spot grid. SSR off because it's purely client-driven.
@@ -135,7 +136,7 @@ export function HomeContent() {
       })
       .catch((err) => {
         if (cancelled) return;
-        console.error("Failed to load forecasts:", err);
+        captureException(err, { area: "home/fetchForecasts" });
         setLoading(false);
       });
     return () => { cancelled = true; };

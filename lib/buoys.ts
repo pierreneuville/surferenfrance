@@ -143,7 +143,8 @@ async function fetchNoaaObservation(station: BuoyStation): Promise<BuoyObservati
   }
 }
 
-function parseNoaaRealtime(station: BuoyStation, text: string): BuoyObservation {
+// Exported for unit tests + potential future reuse.
+export function parseNoaaRealtime(station: BuoyStation, text: string): BuoyObservation {
   const line = text
     .split("\n")
     .map((item) => item.trim())
