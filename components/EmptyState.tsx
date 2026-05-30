@@ -1,4 +1,6 @@
 import { Compass, MapPin, Sparkles } from "lucide-react";
+import { t, tf } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 const PUNCHLINES = [
   "Ça plate par ici.",
@@ -9,17 +11,18 @@ const PUNCHLINES = [
   "Élargis le scan, ça envoie peut-être plus loin.",
 ];
 
-const SUGGESTIONS = [
-  "essaie une autre région ou un autre jour",
-  "change ton niveau pour ouvrir plus de spots",
-  "coupe le filtre 'près de moi'",
-  "regarde demain, ça change vite",
-  "switch de pays — l'Espagne marche peut-être",
-];
+const SUGGESTION_KEYS = [
+  "emptyTipRegionDay",
+  "emptyTipLevel",
+  "emptyTipNearMe",
+  "emptyTipTomorrow",
+  "emptyTipCountry",
+] as const;
 
 export function EmptyState({ message }: { message?: string }) {
+  const { locale } = useLocale();
   const punchline = message ?? PUNCHLINES[Math.floor(Math.random() * PUNCHLINES.length)];
-  const tip = SUGGESTIONS[Math.floor(Math.random() * SUGGESTIONS.length)];
+  const tip = t(locale, SUGGESTION_KEYS[Math.floor(Math.random() * SUGGESTION_KEYS.length)]);
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-ocean-950/40 via-depth-950 to-depth-950 px-6 py-16 text-center">
       {/* glow */}
@@ -54,7 +57,7 @@ export function EmptyState({ message }: { message?: string }) {
       </p>
       <p className="relative mt-1 inline-flex items-center gap-1.5 text-xs text-white/30">
         <Compass className="h-3 w-3" />
-        ou tape un nom de spot dans la recherche
+        {t(locale, "emptySearchHint")}
       </p>
     </div>
   );
@@ -62,14 +65,15 @@ export function EmptyState({ message }: { message?: string }) {
 
 /** Empty state for /spots filter or other list views. */
 export function EmptySpotsForRegion({ regionName }: { regionName: string }) {
+  const { locale } = useLocale();
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] px-6 py-12 text-center">
       <MapPin className="mx-auto mb-3 h-8 w-8 text-white/30" />
       <p className="font-script text-xl text-sand-200/90">
-        Aucun spot répertorié pour {regionName} pour l'instant.
+        {tf(locale, "emptyRegionNone", { region: regionName })}
       </p>
       <p className="mt-2 text-xs text-white/40">
-        On élargit le catalogue progressivement. Reviens bientôt.
+        {t(locale, "emptyRegionSoon")}
       </p>
     </div>
   );

@@ -9,6 +9,8 @@ import { WeekHighlights } from "./WeekHighlights";
 import { MySpots } from "./MySpots";
 import { MobileBottomBar } from "./MobileBottomBar";
 import { captureException } from "@/lib/errorReporting";
+import { t, tf } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 // BuoyMiniPanel fetches /api/buoys on mount — keep it out of the initial bundle
 // since it's secondary to the spot grid. SSR off because it's purely client-driven.
@@ -55,6 +57,7 @@ const DEFAULT_PREFS: Prefs = {
 };
 
 export function HomeContent() {
+  const { locale } = useLocale();
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [search, setSearch] = useState("");
   const [forecasts, setForecasts] = useState<SpotForecast[]>([]);
@@ -171,7 +174,7 @@ export function HomeContent() {
         // Browser geo denied/failed: keep IP position if we have one, still toggle the filter,
         // surface a non-blocking hint instead of an alert dialog.
         setNearMe((v) => !v);
-        setGeoError("Position approximative (IP). Active la géoloc pour plus de précision.");
+        setGeoError(t(locale, "geoApprox"));
         setTimeout(() => setGeoError(null), 4500);
       },
       { timeout: 8000 }
@@ -329,20 +332,20 @@ export function HomeContent() {
           className="mt-3 w-full rounded-2xl border border-coral-500/30 bg-gradient-to-r from-coral-500/10 via-sunset-500/8 to-transparent px-4 py-2.5 text-left text-sm transition hover:from-coral-500/15 hover:via-sunset-500/12"
         >
           <span className="font-script text-lg text-coral-200">
-            🔥 {favsInFire} de tes favoris {favsInFire > 1 ? "sont en feu" : "est en feu"}
+            🔥 {favsInFire} {t(locale, "filterFavorites").toLowerCase()} {favsInFire > 1 ? t(locale, "favoritesOnFirePlural") : t(locale, "favoritesOnFireSingular")}
           </span>
-          <span className="ml-2 text-xs text-white/50">— afficher mes favoris</span>
+          <span className="ml-2 text-xs text-white/50">— {t(locale, "favoritesShow")}</span>
         </button>
       )}
 
       <div className="mt-4 flex items-center justify-between gap-3 text-xs text-white/45">
         <span className="font-script text-base text-sand-200/80 sm:text-lg">
           {loading
-            ? `Lecture des marées… ${progress.done}/${progress.total}`
-            : `${visible.length} spot${visible.length > 1 ? "s" : ""} en vue 🤙`}
+            ? tf(locale, "countLoading", { done: progress.done, total: progress.total })
+            : tf(locale, "countShown", { n: visible.length, s: visible.length > 1 ? "s" : "" })}
           {updatedAt && !loading && (
             <span className="ml-2 font-sans text-[10px] uppercase tracking-widest text-white/35">
-              · maj {updatedAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+              {tf(locale, "countUpdated", { time: updatedAt.toLocaleTimeString(locale === "fr" ? "fr-FR" : locale === "es" ? "es-ES" : locale === "pt" ? "pt-PT" : "en-US", { hour: "2-digit", minute: "2-digit" }) })}
             </span>
           )}
         </span>
@@ -356,11 +359,11 @@ export function HomeContent() {
         ) : exploredCount > 0 && SPOTS.length > 0 ? (
           <span
             className="hidden items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.025] px-2.5 py-1 text-[10px] uppercase tracking-widest text-white/45 sm:inline-flex"
-            title="Spots que tu as ouverts au moins une fois"
+            title={t(locale, "exploredTitle")}
           >
             <span className="font-display text-xs font-bold text-sand-200">{exploredCount}</span>
             <span className="text-white/30">/</span>
-            <span>{SPOTS.length} explorés</span>
+            <span>{SPOTS.length} {t(locale, "countExplored")}</span>
           </span>
         ) : null}
       </div>
@@ -368,7 +371,7 @@ export function HomeContent() {
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visible.length === 0 && !loading ? (
           <div className="col-span-full">
-            <EmptyState message="Aucun spot ne correspond à tes filtres." />
+            <EmptyState message={t(locale, "stateNoResults")} />
           </div>
         ) : (
           <>
@@ -393,7 +396,7 @@ export function HomeContent() {
                 return [
                   card,
                   <div key={`ad-${idx}`} className="col-span-full">
-                    <AdSlot slot={ADSENSE_SLOT_IN_FEED} label="Publicité in-feed" className="my-2" />
+                    <AdSlot slot={ADSENSE_SLOT_IN_FEED} label={t(locale, "adInFeedLabel")} className="my-2" />
                   </div>,
                 ];
               }
@@ -419,38 +422,37 @@ export function HomeContent() {
       )}
 
       <section id="a-propos" className="mt-20 overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-ocean-950/40 via-depth-950 to-depth-950 p-8 sm:p-10">
-        <div className="mb-2 text-xs uppercase tracking-[0.3em] text-sand-200/70">À propos du score</div>
+        <div className="mb-2 text-xs uppercase tracking-[0.3em] text-sand-200/70">{t(locale, "homeAboutKicker")}</div>
         <h2 className="font-display text-3xl font-bold leading-tight sm:text-4xl">
-          <span className="text-gradient-ocean">Une note simple,</span>
+          <span className="text-gradient-ocean">{t(locale, "homeAboutTitleA")}</span>
           <br />
-          <span className="font-script text-4xl text-gradient-sunset sm:text-5xl">trois ingrédients.</span>
+          <span className="font-script text-4xl text-gradient-sunset sm:text-5xl">{t(locale, "homeAboutTitleB")}</span>
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Pillar
             icon="🌊"
-            title="La vague"
-            text="Sa hauteur réelle, puis sa hauteur ressentie quand la période allonge les sets. Trop petit = épuisant, trop gros = réservé."
+            title={t(locale, "homeAboutPillarWaveTitle")}
+            text={t(locale, "homeAboutPillarWaveText")}
           />
           <Pillar
             icon="⏱️"
-            title="La période"
-            text="Au-delà de 9 s, les séries peuvent être nettement plus grosses que la moyenne. Le score le prend en compte."
+            title={t(locale, "homeAboutPillarPeriodTitle")}
+            text={t(locale, "homeAboutPillarPeriodText")}
           />
           <Pillar
             icon="💨"
-            title="Le vent"
-            text="Idéalement faible. Bonus quand il vient de la terre (offshore) : il sculpte les vagues. Malus s'il vient du large (onshore)."
+            title={t(locale, "homeAboutPillarWindTitle")}
+            text={t(locale, "homeAboutPillarWindText")}
           />
           <Pillar
             icon="⚡"
-            title="La puissance"
-            text="Un proxy d'énergie de houle en kW/m évite de confondre une petite vague molle avec une vraie houle longue."
+            title={t(locale, "homeAboutPillarPowerTitle")}
+            text={t(locale, "homeAboutPillarPowerText")}
           />
         </div>
         <p className="mt-6 text-sm text-white/55">
-          Le score se recalcule selon ton niveau, pour que <em>Hossegor La Gravière</em> ne ressorte pas en débutant.
-          Données <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="underline hover:text-sand-200">Open-Meteo</a> rafraîchies toutes les 6 h,
-          modèle haute résolution 5 km sur les côtes françaises.
+          {t(locale, "homeAboutCopyA")} <em>Hossegor La Gravière</em> {t(locale, "homeAboutCopyB")}{" "}
+          {t(locale, "homeAboutCopyC")} <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="underline hover:text-sand-200">Open-Meteo</a> {t(locale, "homeAboutCopyD")}
         </p>
       </section>
 

@@ -22,9 +22,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function BuoysPage() {
+interface PageProps {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function BuoysPage({ searchParams }: PageProps) {
   const observations = await fetchBuoyObservations();
-  const locale = await getServerLocale();
+  const locale = await getServerLocale(searchParams);
   const liveCount = observations.filter((observation) => observation.status === "live").length;
   const waveCount = observations.filter((observation) => observation.waveHeight != null).length;
   const updatedAt = new Date().toISOString();

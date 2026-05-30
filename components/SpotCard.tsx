@@ -87,7 +87,7 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
               ? "bg-coral-500/25 ring-1 ring-coral-400/50"
               : "bg-black/35 hover:bg-black/55"
           }`}
-          aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          aria-label={isFavorite ? t(locale, "spotFavoriteRemove") : t(locale, "spotFavoriteAdd")}
         >
           <Heart
             className={`h-5 w-5 transition-all ${

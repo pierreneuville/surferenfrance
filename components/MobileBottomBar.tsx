@@ -1,6 +1,8 @@
 "use client";
 
 import { Filter, Heart, MapPin } from "lucide-react";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 interface Props {
   onFiltersOpen: () => void;
@@ -26,6 +28,8 @@ export function MobileBottomBar({
   onNearMe,
   nearMeActive,
 }: Props) {
+  const { locale } = useLocale();
+
   return (
     <div
       className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.08] bg-depth-950/95 backdrop-blur-md md:hidden"
@@ -34,31 +38,31 @@ export function MobileBottomBar({
       <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2">
         <button
           onClick={onFiltersOpen}
-          aria-label="Ouvrir les filtres"
+          aria-label={t(locale, "mobileAriaOpenFilters")}
           className="tap-target flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-[10px] uppercase tracking-widest text-white/65 transition active:bg-white/[0.05]"
         >
           <Filter className="h-4 w-4" />
-          Filtres
+          {t(locale, "filterSheetTrigger")}
         </button>
         <button
           onClick={onFavoritesToggle}
-          aria-label={favoritesActive ? "Voir tous les spots" : "Voir mes favoris"}
+          aria-label={favoritesActive ? t(locale, "mobileAriaAllSpots") : t(locale, "mobileAriaFavorites")}
           className={`tap-target flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-[10px] uppercase tracking-widest transition active:bg-white/[0.05] ${
             favoritesActive ? "text-coral-300" : "text-white/65"
           }`}
         >
           <Heart className={`h-4 w-4 ${favoritesActive ? "fill-coral-400 text-coral-400" : ""}`} />
-          Favoris{favoritesCount > 0 ? ` (${favoritesCount})` : ""}
+          {t(locale, "filterFavorites")}{favoritesCount > 0 ? ` (${favoritesCount})` : ""}
         </button>
         <button
           onClick={onNearMe}
-          aria-label={nearMeActive ? "Désactiver près de moi" : "Activer près de moi"}
+          aria-label={nearMeActive ? t(locale, "mobileAriaDisableNearMe") : t(locale, "mobileAriaEnableNearMe")}
           className={`tap-target flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-[10px] uppercase tracking-widest transition active:bg-white/[0.05] ${
             nearMeActive ? "text-ocean-300" : "text-white/65"
           }`}
         >
           <MapPin className="h-4 w-4" />
-          Près de moi
+          {t(locale, "filterNearMe")}
         </button>
       </div>
     </div>
