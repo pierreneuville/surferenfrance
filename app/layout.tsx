@@ -7,6 +7,7 @@ import { BackToTop } from "@/components/BackToTop";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { EnvBanner } from "@/components/EnvBanner";
 import { MilestoneToast } from "@/components/MilestoneToast";
 import { OnboardingSheet } from "@/components/OnboardingSheet";
 import { VersionWatcher } from "@/components/VersionWatcher";
@@ -173,6 +174,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager (noscript) */}
         <LocaleProvider>
           <JsonLd data={jsonLd} />
+          <EnvBanner />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
