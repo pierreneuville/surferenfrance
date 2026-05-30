@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Bricolage_Grotesque, Caveat } from "next/font/google";
 import "./globals.css";
-import { AdSenseScript } from "@/components/AdSenseScript";
-import { ADSENSE_PUBLISHER_ID } from "@/lib/adsense";
+import { ADSENSE_CLIENT, ADSENSE_PUBLISHER_ID } from "@/lib/adsense";
 import { AnalyticsScripts } from "@/components/AnalyticsScripts";
 import { BackToTop } from "@/components/BackToTop";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -165,6 +164,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {ADSENSE_PUBLISHER_ID && (
           <meta name="google-adsense-account" content={`ca-${ADSENSE_PUBLISHER_ID}`} />
         )}
+        {/* AdSense bootstrap — inlined directly in <head> (NOT via next/script) so the
+            verification crawler sees it on the exact location Google demands ("between
+            <head></head>"). next/script with afterInteractive often lands the tag in <body>,
+            which made AdSense fail to detect ownership. */}
+        {ADSENSE_CLIENT && (
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body className="font-sans flex min-h-screen flex-col">
         {/* Google Tag Manager (noscript) */}
@@ -184,7 +195,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
-          <AdSenseScript />
           <AnalyticsScripts />
           <CookieBanner />
           <OnboardingSheet />
