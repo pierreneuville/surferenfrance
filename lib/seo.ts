@@ -1,13 +1,44 @@
 import type { Region, Spot } from "./types";
 
 export const SITE_NAME = "Yosurf";
-export const SITE_TAGLINE = "Prévisions surf, houle et meilleurs spots";
 // Primary domain — currently yosurf.app (the one registered with AdSense, Search Console, etc.).
 // Override via NEXT_PUBLIC_SITE_URL in Vercel env when switching to a different primary.
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://yosurf.app").replace(/\/$/, "");
 
-export const DEFAULT_DESCRIPTION =
-  "Prévisions surf en France : scores de session, meilleur créneau, hauteur des vagues, période de houle, vent et spots proches sur tout le littoral.";
+/**
+ * Locale-aware share copy. Used by:
+ *   - app/layout.tsx generateMetadata for root <title>/<og:title>/<og:description>
+ *   - lib/i18n share helpers
+ * Each entry is the public "what does Yosurf do" pitch, optimised to:
+ *   - mention the 6-country scope (no longer France-only)
+ *   - punchy, action verb, surfer tone
+ *   - ≤ 65 chars for title, ≤ 160 chars for description (SEO + WhatsApp safe)
+ */
+export const SHARE_COPY: Record<"fr" | "en" | "es" | "pt", { title: string; description: string; tagline: string }> = {
+  fr: {
+    title: "Yosurf — trouve ta session du jour",
+    tagline: "ta vague est prête",
+    description: "416 spots de France, Espagne, Portugal, Maroc, UK & Irlande. Score session, meilleur créneau, marée, bouées live. Trouve ta vague en 10 secondes.",
+  },
+  en: {
+    title: "Yosurf — find your session of the day",
+    tagline: "your wave is ready",
+    description: "416 surf spots across France, Spain, Portugal, Morocco, UK & Ireland. Session score, best window, tide, live buoys. Pick your wave in 10 seconds.",
+  },
+  es: {
+    title: "Yosurf — encuentra tu sesión del día",
+    tagline: "tu ola está lista",
+    description: "416 spots en Francia, España, Portugal, Marruecos, Reino Unido e Irlanda. Score de sesión, mejor ventana, marea, boyas en directo. Tu ola en 10 segundos.",
+  },
+  pt: {
+    title: "Yosurf — encontra a tua sessão do dia",
+    tagline: "a tua onda está pronta",
+    description: "416 spots em França, Espanha, Portugal, Marrocos, Reino Unido e Irlanda. Pontuação de sessão, melhor janela, maré, boias ao vivo. A tua onda em 10 segundos.",
+  },
+};
+
+export const SITE_TAGLINE = SHARE_COPY.fr.tagline;
+export const DEFAULT_DESCRIPTION = SHARE_COPY.fr.description;
 
 export const REGION_SLUGS: Record<Region, string> = {
   "Manche & Nord": "manche-nord",
