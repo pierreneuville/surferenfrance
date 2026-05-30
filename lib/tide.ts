@@ -107,7 +107,10 @@ export function tideRangeForDay(heights: (number | null)[], startHour: number): 
   return round(Math.max(...slice) - Math.min(...slice), 2);
 }
 
-/** Friendly French label for a tide state. */
+/**
+ * Tide labels — FR default, kept for backward compat with non-i18n callers.
+ * For i18n, prefer tideStateKey / tideOptimalKey and use `t(locale, key)`.
+ */
 export function tideStateLabel(state: TideState): string {
   switch (state) {
     case "rising": return "marée monte ↑";
@@ -128,6 +131,33 @@ export function tideOptimalLabel(opt: TideOptimal): string {
     case "mid-low": return "mi-marée descendante ↘";
     case "mid": return "mi-marée";
     case "any": return "toutes marées";
+  }
+}
+
+/** Translation key for a tide state — pair with `t(locale, ...)`. */
+export function tideStateKey(state: TideState): "tideRising" | "tideFalling" | "tideHigh" | "tideLow" | "tideMid" {
+  switch (state) {
+    case "rising": return "tideRising";
+    case "falling": return "tideFalling";
+    case "high": return "tideHigh";
+    case "low": return "tideLow";
+    case "mid": return "tideMid";
+  }
+}
+
+/** Translation key for a tide preference — pair with `t(locale, ...)`. */
+export function tideOptimalKey(opt: TideOptimal):
+  | "tideOptimalRising" | "tideOptimalFalling" | "tideOptimalHigh" | "tideOptimalLow"
+  | "tideOptimalMidHigh" | "tideOptimalMidLow" | "tideOptimalMid" | "tideOptimalAny" {
+  switch (opt) {
+    case "rising": return "tideOptimalRising";
+    case "falling": return "tideOptimalFalling";
+    case "high": return "tideOptimalHigh";
+    case "low": return "tideOptimalLow";
+    case "mid-high": return "tideOptimalMidHigh";
+    case "mid-low": return "tideOptimalMidLow";
+    case "mid": return "tideOptimalMid";
+    case "any": return "tideOptimalAny";
   }
 }
 

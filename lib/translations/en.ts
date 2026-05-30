@@ -241,6 +241,49 @@ export const en: Translations = {
   // My spots
   mySpotsTitle: "My spots",
 
+  // Surf condition badges
+  badgeForExperts: "experts only",
+  badgeHeavy: "heavy",
+  badgePower: "power",
+  badgePowerUnit: "kW/m",
+  tileTide: "Tide",
+  tileScoreLabel: "Note",
+  tilePower: "Power",
+
+  // Tide microcopy
+  tideRising: "tide rising ↑",
+  tideFalling: "tide falling ↓",
+  tideHigh: "high tide",
+  tideLow: "low tide",
+  tideMid: "mid-tide",
+  tideUntil: "until",
+  tideIdealBadge: "ideal tide",
+  tideOptimalRising: "rising tide ↑",
+  tideOptimalFalling: "falling tide ↓",
+  tideOptimalHigh: "high tide",
+  tideOptimalLow: "low tide",
+  tideOptimalMidHigh: "mid-rising ↗",
+  tideOptimalMidLow: "mid-falling ↘",
+  tideOptimalMid: "mid-tide",
+  tideOptimalAny: "any tide",
+  tideOptimalLabel: "best {pref}",
+  tideRangePrefix: "range",
+
+  // HotToday banner states
+  hotFiringNow: "FIRING NOW",
+  hotStartingSoon: "STARTING SOON",
+  hotUntil: "until",
+  hotInHours: "in the water in {n}h",
+  hotOnTide: "on {state}",
+
+  // Score labels
+  scoreMagic: "Magic",
+  scorePlay: "Worth it",
+  scorePossible: "Doable",
+  scoreSoft: "Soft",
+  scoreFlat: "Flat",
+
+
   // Buoys
   buoysPageBreadcrumb: "← Back to the wave map",
   buoysKicker: "Live buoys",

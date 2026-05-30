@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Compass, Sparkles, Waves, Wind, ExternalLink, MapPin, Share2, Check, Heart } from "lucide-react";
 import Link from "next/link";
 import type { Level, SpotForecast } from "@/lib/types";
-import { SCORE_COLORS, scoreLabel, scoreTone } from "@/lib/score";
+import { SCORE_COLORS, scoreLabel, scoreLabelKey, scoreTone } from "@/lib/score";
 import { bestHoursForDay } from "@/lib/api";
 import { degToCardinal, fmt, dayShortLabel } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
@@ -123,7 +123,7 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
 
           {/* Circular gauge + level marker */}
           <div className="flex flex-col items-center gap-1">
-            <ScoreGauge score={score} color={colors.hex} tone={tone} />
+            <ScoreGauge score={score} color={colors.hex} tone={tone} locale={locale} />
             <span
               className="rounded-full border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[8px] uppercase tracking-widest text-white/55"
               title={t(locale, level === "beginner" ? "filterLevelBeginner" : level === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced")}
@@ -177,22 +177,22 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
           <div className="mb-4 flex flex-wrap gap-1.5 text-[10px]">
             {forecast.spot.worldClass && (
               <span className="rounded-full border border-coral-400/40 bg-coral-500/15 px-2 py-1 font-semibold text-coral-100">
-                pour confirmés
+                {t(locale, "badgeForExperts")}
               </span>
             )}
             {d.engagedSurf && (
               <span className="rounded-full border border-sand-300/30 bg-sand-300/12 px-2 py-1 text-sand-100">
-                costaud
+                {t(locale, "badgeHeavy")}
               </span>
             )}
             {d.tideExtremes && d.tideExtremes.length > 0 && (
               <span className="rounded-full border border-lagoon-300/25 bg-lagoon-400/10 px-2 py-1 text-lagoon-100">
-                {tideBadge(d.tideExtremes)}
+                {tideBadge(d.tideExtremes, locale)}
               </span>
             )}
             {d.wavePower != null && d.wavePower >= 5 && (
               <span className="rounded-full border border-ocean-300/15 bg-ocean-400/8 px-2 py-1 text-ocean-100/70">
-                ⚡ {fmt(d.wavePower, 0)} kW/m
+                ⚡ {fmt(d.wavePower, 0)} {t(locale, "badgePowerUnit")}
               </span>
             )}
           </div>
@@ -278,17 +278,17 @@ function setLabel(waveHeight: number | null | undefined, effective: number | nul
   return `sets ~${fmt(effective)} m`;
 }
 
-function tideBadge(extremes: import("@/lib/types").TideExtreme[]): string {
+function tideBadge(extremes: import("@/lib/types").TideExtreme[], locale: import("@/lib/i18n").Locale): string {
   // Pick the next extreme from "now" if today, else the day's first extreme.
-  // Microcopy: "marée monte jusqu'à 14h32 ↑" / "marée descend jusqu'à 09h10 ↓"
+  // Localized: "marée monte ↑ jusqu'à 14h32" / "tide rising ↑ until 02:32 PM"
   const now = new Date();
   const upcoming = extremes.find((e) => new Date(e.time) >= now) ?? extremes[0];
-  const verbDir = upcoming.type === "high" ? "monte ↑" : "descend ↓";
-  const t = new Date(upcoming.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  return `marée ${verbDir} jusqu'à ${t}`;
+  const stateKey = upcoming.type === "high" ? "tideRising" : "tideFalling";
+  const time = new Date(upcoming.time).toLocaleTimeString(locale === "en" ? "en-GB" : `${locale}-${locale.toUpperCase()}`, { hour: "2-digit", minute: "2-digit" });
+  return `${t(locale, stateKey)} ${t(locale, "tideUntil")} ${time}`;
 }
 
-function ScoreGauge({ score, color, tone }: { score: number; color: string; tone: string }) {
+function ScoreGauge({ score, color, tone, locale }: { score: number; color: string; tone: string; locale: import("@/lib/i18n").Locale }) {
   // Circular gauge — SVG arc proportional to score
   const radius = 22;
   const circumference = 2 * Math.PI * radius;
@@ -327,7 +327,7 @@ function ScoreGauge({ score, color, tone }: { score: number; color: string; tone
       </svg>
       <div className="flex flex-col items-center leading-none">
         <span className="font-display text-xl font-bold" style={{ color }}>{score}</span>
-        <span className="text-[8px] uppercase tracking-widest text-white/40">{scoreLabel(score).slice(0, 4)}</span>
+        <span className="text-[8px] uppercase tracking-widest text-white/40">{t(locale, scoreLabelKey(score)).slice(0, 4)}</span>
       </div>
       {tone === "excellent" && (
         <div className="pointer-events-none absolute -inset-2 rounded-full" style={{ boxShadow: `0 0 24px ${color}55` }} />

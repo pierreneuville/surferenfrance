@@ -112,9 +112,9 @@ export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
         <div className="flex-1 min-w-0">
           <div className="hidden text-[10px] uppercase tracking-[0.25em] text-coral-300/90 sm:block">
             {nowMode === "firing"
-              ? "ÇA ENVOIE MAINTENANT"
+              ? t(locale, "hotFiringNow")
               : nowMode === "soon"
-              ? "ÇA DÉMARRE BIENTÔT"
+              ? t(locale, "hotStartingSoon")
               : dayIdx === 0
               ? t(locale, "hotTodayLabel")
               : tf(locale, "hotTodayDayLabel", { n: dayIdx })}
@@ -130,11 +130,11 @@ export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
             </span>
             {nowMode === "firing" && bestWin ? (
               <span className="font-semibold text-emerald-300">
-                ⏱ jusqu'à <strong className="text-emerald-200">{String(bestWin.end + 1).padStart(2, "0")}h</strong>
+                ⏱ {t(locale, "hotUntil")} <strong className="text-emerald-200">{String(bestWin.end + 1).padStart(2, "0")}h</strong>
               </span>
             ) : nowMode === "soon" && hoursUntilStart != null ? (
               <span className="font-semibold text-sand-200">
-                ⏱ à l'eau dans <strong>{hoursUntilStart}h</strong>
+                ⏱ {tf(locale, "hotInHours", { n: hoursUntilStart })}
               </span>
             ) : bestWin ? (
               <span>

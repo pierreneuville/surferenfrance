@@ -8,7 +8,7 @@ import { SCORE_COLORS, scoreTone } from "@/lib/score";
 import { degToCardinal, fmt } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t } from "@/lib/i18n";
-import { tideStateAt, tideStateLabel } from "@/lib/tide";
+import { tideStateAt, tideStateKey } from "@/lib/tide";
 
 interface Props {
   forecast: SpotForecast;
@@ -166,7 +166,7 @@ function HourDetail({
           </span>
           {tideState && matchesSpotTide && (
             <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-emerald-200">
-              marée idéale
+              {t(locale, "tideIdealBadge")}
             </span>
           )}
         </div>
@@ -178,7 +178,7 @@ function HourDetail({
         <Metric icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "cardWave")} value={`${fmt(forecast.hourly.waveHeight[i])} m`} sub={degToCardinal(forecast.hourly.waveDir[i])} />
         <Metric icon={<Compass className="h-3.5 w-3.5" />} label={t(locale, "cardPeriod")} value={`${fmt(forecast.hourly.wavePeriod[i], 0)} s`} />
         <Metric icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(forecast.hourly.windSpeed[i], 0)} km/h`} sub={degToCardinal(forecast.hourly.windDir[i])} />
-        <Metric icon={<Droplet className="h-3.5 w-3.5" />} label="Marée" value={tideState ? tideStateLabel(tideState) : "—"} sub={tideHeights[i] != null ? `${fmt(tideHeights[i], 1)} m` : undefined} />
+        <Metric icon={<Droplet className="h-3.5 w-3.5" />} label={t(locale, "tileTide")} value={tideState ? t(locale, tideStateKey(tideState)) : "—"} sub={tideHeights[i] != null ? `${fmt(tideHeights[i], 1)} m` : undefined} />
         <Metric icon={<Thermometer className="h-3.5 w-3.5" />} label={t(locale, "tileWaterAir").split(" ")[0]} value={forecast.hourly.seaTemp[i] != null ? `${fmt(forecast.hourly.seaTemp[i], 0)}°C` : "—"} />
       </div>
     </div>

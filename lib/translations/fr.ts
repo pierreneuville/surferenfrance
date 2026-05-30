@@ -270,6 +270,49 @@ export const fr = {
   // My spots
   mySpotsTitle: "Mes spots",
 
+  // Surf condition badges (cards / modal / detail)
+  badgeForExperts: "pour confirmés",
+  badgeHeavy: "costaud",
+  badgePower: "puissance",
+  badgePowerUnit: "kW/m",
+  tileTide: "Marée",
+  tileScoreLabel: "Note",
+  tilePower: "Puissance",
+
+  // Tide microcopy (with arrows)
+  tideRising: "marée monte ↑",
+  tideFalling: "marée descend ↓",
+  tideHigh: "marée haute",
+  tideLow: "marée basse",
+  tideMid: "mi-marée",
+  tideUntil: "jusqu'à",
+  tideIdealBadge: "marée idéale",
+  tideOptimalRising: "marée montante ↑",
+  tideOptimalFalling: "marée descendante ↓",
+  tideOptimalHigh: "marée haute",
+  tideOptimalLow: "marée basse",
+  tideOptimalMidHigh: "mi-marée montante ↗",
+  tideOptimalMidLow: "mi-marée descendante ↘",
+  tideOptimalMid: "mi-marée",
+  tideOptimalAny: "toutes marées",
+  tideOptimalLabel: "idéale {pref}",
+  tideRangePrefix: "amplitude",
+
+  // HotToday banner states
+  hotFiringNow: "ÇA ENVOIE MAINTENANT",
+  hotStartingSoon: "ÇA DÉMARRE BIENTÔT",
+  hotUntil: "jusqu'à",
+  hotInHours: "à l'eau dans {n}h",
+  hotOnTide: "sur {state}",
+
+  // Score labels (surfer tone)
+  scoreMagic: "Magique",
+  scorePlay: "Joue-la",
+  scorePossible: "Possible",
+  scoreSoft: "Mou",
+  scoreFlat: "Plat",
+
+
   // Buoys
   buoysPageBreadcrumb: "← Retour à la carte des vagues",
   buoysKicker: "Bouées live",

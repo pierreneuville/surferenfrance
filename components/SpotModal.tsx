@@ -9,11 +9,11 @@ import { BuoyMiniPanel } from "./BuoyMiniPanel";
 import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
 import { fetchSpotForecastFromApi } from "@/lib/clientApi";
-import { SCORE_COLORS, computeScore, scoreLabel, scoreTone } from "@/lib/score";
+import { SCORE_COLORS, computeScore, scoreLabel, scoreLabelKey, scoreTone } from "@/lib/score";
 import { useLocale } from "@/lib/useLocale";
 import { t, tf } from "@/lib/i18n";
 import { degToCardinal, fmt, dayLongLabel, timeFromIso, dayShortLabel, dayDateNumber } from "@/lib/utils";
-import { tideStateAt, tideStateLabel } from "@/lib/tide";
+import { tideStateAt, tideStateKey } from "@/lib/tide";
 import { HourGrid } from "./HourGrid";
 
 const REGION_GRADIENT: Record<string, string> = {
@@ -155,8 +155,9 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* === HERO === */}
-        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-20 pt-3 sm:px-6 sm:pb-20 sm:pt-5`}>
+        {/* === HERO === shrink-0 so flex-1 below cannot crush it; reduced pb-20 → pb-6
+            since the day picker is now sticky and doesn't need clearance from the hero. */}
+        <div className={`relative shrink-0 overflow-hidden bg-gradient-to-br ${gradient} px-5 pb-6 pt-3 sm:px-6 sm:pb-7 sm:pt-5`}>
           {/* Decorative wave SVG — smaller, lower opacity, pushed down so it stays a thin lip at the bottom */}
           <svg
             className="pointer-events-none absolute -bottom-1 left-0 right-0 z-0 h-4 w-full text-depth-950 sm:h-5"
@@ -187,7 +188,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           </div>
 
           {/* Spot name + score chip */}
-          <div className="relative z-10 mt-3 flex items-end justify-between gap-3">
+          <div className="relative z-20 mt-3 flex items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
               <h2 className="font-display text-2xl font-bold leading-[1.05] text-white drop-shadow-md sm:text-3xl">
                 {forecast.spot.shortName}
@@ -197,12 +198,12 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
               </p>
             </div>
             {/* Score chip — opaque + visible border to stand out from any background */}
-            <div className="shrink-0 rounded-2xl border border-white/25 bg-depth-950/85 px-3.5 py-2 text-center shadow-lg shadow-black/30 backdrop-blur">
+            <div className="relative z-20 shrink-0 rounded-2xl border border-white/25 bg-depth-950/85 px-3.5 py-2 text-center shadow-lg shadow-black/30 backdrop-blur">
               <div className="font-display text-3xl font-extrabold leading-none text-white drop-shadow sm:text-4xl">
                 {score}
               </div>
               <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/85">
-                {scoreLabel(score)}
+                {t(locale, scoreLabelKey(score))}
               </div>
               {/* Level reminder — score is calibrated for the user's level */}
               <div className="mt-1.5 flex items-center justify-center gap-1 border-t border-white/15 pt-1 text-[9px] text-white/65">
@@ -275,7 +276,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
                   const state = tideStateAt(tideHeights, i);
                   return (
                     <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] tracking-normal text-emerald-100">
-                      sur {tideStateLabel(state)}
+                      {tf(locale, "hotOnTide", { state: t(locale, tideStateKey(state)) })}
                     </span>
                   );
                 })()}
@@ -320,9 +321,9 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
               accent={colors.hex}
             />
             <Tile icon={<Wind />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
-            <Tile icon={<Zap />} label="Puissance" value={d.wavePower != null ? `${fmt(d.wavePower, 1)} kW/m` : "—"} sub={d.engagedSurf ? "costaud" : ""} />
+            <Tile icon={<Zap />} label={t(locale, "tilePower")} value={d.wavePower != null ? `${fmt(d.wavePower, 1)} ${t(locale, "badgePowerUnit")}` : "—"} sub={d.engagedSurf ? t(locale, "badgeHeavy") : ""} />
             <Tile icon={<Thermometer />} label={t(locale, "tileWaterAir")} value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `${t(locale, "tileAir")} ${fmt(airTempMax, 0)}°C` : ""} />
-            <Tile icon={<Sparkles />} label="Note" value={scoreLabel(score)} sub={`${score}/100`} />
+            <Tile icon={<Sparkles />} label={t(locale, "tileScoreLabel")} value={t(locale, scoreLabelKey(score))} sub={`${score}/100`} />
           </div>
 
           {/* Hourly grid */}
@@ -351,6 +352,18 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             <div className="mb-1.5 font-script text-sm text-sand-200/80">{t(locale, "modalAbout")}</div>
             <p className="text-pretty text-sm leading-relaxed text-white/75">{forecast.spot.description}</p>
           </div>
+
+          {/* Compare CTA — surfer's natural question: "comment ça se compare aux autres ?" */}
+          <Link
+            href={`/compare?spots=${forecast.spot.slug}`}
+            className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3 transition hover:border-ocean-400/40 hover:bg-white/[0.05]"
+          >
+            <span className="flex items-center gap-2 text-sm text-white/80">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-ocean-500/15 text-ocean-300">⇄</span>
+              Comparer avec d'autres spots
+            </span>
+            <span className="text-ocean-300/60">→</span>
+          </Link>
 
           {/* Live buoy reading — collapsed accordion at the very bottom.
               Surfer's mental model: the forecast above is the decision; the buoy is a confirmation. */}

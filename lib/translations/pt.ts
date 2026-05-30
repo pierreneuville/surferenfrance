@@ -241,6 +241,49 @@ export const pt: Translations = {
   // My spots
   mySpotsTitle: "Os meus spots",
 
+  // Surf condition badges
+  badgeForExperts: "só experientes",
+  badgeHeavy: "puxado",
+  badgePower: "potência",
+  badgePowerUnit: "kW/m",
+  tileTide: "Maré",
+  tileScoreLabel: "Nota",
+  tilePower: "Potência",
+
+  // Tide microcopy
+  tideRising: "maré sobe ↑",
+  tideFalling: "maré desce ↓",
+  tideHigh: "maré cheia",
+  tideLow: "maré vazia",
+  tideMid: "meia-maré",
+  tideUntil: "até",
+  tideIdealBadge: "maré ideal",
+  tideOptimalRising: "maré a subir ↑",
+  tideOptimalFalling: "maré a descer ↓",
+  tideOptimalHigh: "maré cheia",
+  tideOptimalLow: "maré vazia",
+  tideOptimalMidHigh: "meia-subida ↗",
+  tideOptimalMidLow: "meia-descida ↘",
+  tideOptimalMid: "meia-maré",
+  tideOptimalAny: "qualquer maré",
+  tideOptimalLabel: "ideal {pref}",
+  tideRangePrefix: "amplitude",
+
+  // HotToday banner states
+  hotFiringNow: "ESTÁ A BOMBAR",
+  hotStartingSoon: "VAI BOMBAR EM BREVE",
+  hotUntil: "até",
+  hotInHours: "à água em {n}h",
+  hotOnTide: "com {state}",
+
+  // Score labels
+  scoreMagic: "Mágico",
+  scorePlay: "Vai dar",
+  scorePossible: "Possível",
+  scoreSoft: "Mole",
+  scoreFlat: "Liso",
+
+
   // Buoys
   buoysPageBreadcrumb: "← Voltar ao mapa das ondas",
   buoysKicker: "Boias ao vivo",

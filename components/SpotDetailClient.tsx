@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { Spot, SpotForecast, Level } from "@/lib/types";
 import { fetchSpotForecastFromApi } from "@/lib/clientApi";
 import { ADSENSE_SLOT_SPOT_DETAIL } from "@/lib/adsense";
-import { SCORE_COLORS, scoreLabel, scoreTone, computeScore } from "@/lib/score";
+import { SCORE_COLORS, scoreLabel, scoreLabelKey, scoreTone, computeScore } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
 import { Waves, Wind, Compass, Sunrise, Zap, Droplet } from "lucide-react";
@@ -73,7 +73,7 @@ export function SpotDetailClient({ spot }: Props) {
           // Prefer server-precomputed scoresByLevel; else recompute from raw values.
           const ds = day.scoresByLevel?.[level]
             ?? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, spot.offshore, level, { worldClass: spot.worldClass });
-          const t = scoreTone(ds);
+          const tone = scoreTone(ds);
           return (
             <button
               key={i}
@@ -85,10 +85,10 @@ export function SpotDetailClient({ spot }: Props) {
               }`}
             >
               <div className="text-xs text-white/50 capitalize">{dayLongLabel(i)}</div>
-              <div className="mt-1 font-display text-xl font-bold" style={{ color: SCORE_COLORS[t].hex }}>
+              <div className="mt-1 font-display text-xl font-bold" style={{ color: SCORE_COLORS[tone].hex }}>
                 {ds}
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-white/40">{scoreLabel(ds)}</div>
+              <div className="text-[10px] uppercase tracking-wider text-white/40">{t(locale, scoreLabelKey(ds))}</div>
             </button>
           );
         })}
@@ -122,15 +122,15 @@ export function SpotDetailClient({ spot }: Props) {
         <Tile icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(forecast.days[dayIdx].windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(forecast.days[dayIdx].windGusts, 0)}`} />
         <Tile
           icon={<Zap className="h-3.5 w-3.5" />}
-          label="Puissance"
-          value={forecast.days[dayIdx].wavePower != null ? `${fmt(forecast.days[dayIdx].wavePower, 1)} kW/m` : "—"}
-          sub={forecast.days[dayIdx].engagedSurf ? "costaud" : undefined}
+          label={t(locale, "tilePower")}
+          value={forecast.days[dayIdx].wavePower != null ? `${fmt(forecast.days[dayIdx].wavePower, 1)} ${t(locale, "badgePowerUnit")}` : "—"}
+          sub={forecast.days[dayIdx].engagedSurf ? t(locale, "badgeHeavy") : undefined}
         />
         <Tile
           icon={<Droplet className="h-3.5 w-3.5" />}
-          label="Marée"
+          label={t(locale, "tileTide")}
           value={tideTileValue(forecast.days[dayIdx].tideExtremes)}
-          sub={spot.tideOptimal ? `idéale ${tideOptimalLabel(spot.tideOptimal)}` : forecast.days[dayIdx].tideRange != null ? `amplitude ${fmt(forecast.days[dayIdx].tideRange, 1)} m` : undefined}
+          sub={spot.tideOptimal ? `${t(locale, "tideOptimalLabel").replace("{pref}", tideOptimalLabel(spot.tideOptimal))}` : forecast.days[dayIdx].tideRange != null ? `${t(locale, "tideRangePrefix")} ${fmt(forecast.days[dayIdx].tideRange, 1)} m` : undefined}
         />
         <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="☀" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
       </div>
