@@ -15,6 +15,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { LocaleProvider } from "@/lib/useLocale";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from "@/lib/seo";
 
+const GTM_ID = "GTM-MN3B6ZBR";
+
 const sans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -136,6 +138,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" data-scroll-behavior="smooth" className={`${sans.variable} ${display.variable} ${script.variable}`}>
       <head>
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');`,
+          }}
+        />
+        {/* End Google Tag Manager */}
         <link rel="alternate" type="text/markdown" href="/llms.txt" title={`${SITE_NAME} LLM summary`} />
         <link rel="alternate" type="text/markdown" href="/llms-full.txt" title={`${SITE_NAME} full LLM context`} />
         {/* Preconnect to critical 3rd-party origins for faster first paint */}
@@ -147,6 +160,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
       </head>
       <body className="font-sans flex min-h-screen flex-col">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <LocaleProvider>
           <JsonLd data={jsonLd} />
           <Header />

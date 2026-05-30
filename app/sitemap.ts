@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { REGIONS, SPOTS } from "@/lib/spots";
 import { REGION_SLUGS, SITE_URL } from "@/lib/seo";
+import { GUIDES } from "@/lib/guides";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -34,6 +35,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.2,
+    })),
+    // Editorial guides — high authority pages targeting long-tail queries
+    ...GUIDES.map((g) => ({
+      url: `${SITE_URL}/guide/${g.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
   ];
 }
