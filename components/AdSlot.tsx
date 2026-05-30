@@ -33,6 +33,10 @@ export function AdSlot({ slot, format = "auto", className, label = "Publicité" 
   }, [isConfigured, slot]);
 
   if (!isConfigured) {
+    // En production : on n'affiche RIEN tant que le slot AdSense n'est pas
+    // configuré — évite la honte d'un "emplacement réservé" visible aux users.
+    // En dev : on garde le placeholder pour debug l'emplacement visuel.
+    if (process.env.NODE_ENV === "production") return null;
     return (
       <div
         ref={ref}
@@ -40,7 +44,7 @@ export function AdSlot({ slot, format = "auto", className, label = "Publicité" 
         role="complementary"
         aria-label={label}
       >
-        {label} · emplacement réservé
+        {label} · slot non configuré (dev only)
       </div>
     );
   }
