@@ -299,16 +299,25 @@ export function HomeContent() {
         favoritesCount={favorites.length}
         onDayChange={(d) => setPrefs({ ...prefs, dayIdx: d })}
         onCountryChange={(c) => {
+          // Picking a specific country = the user wants to BROWSE that area, not what's
+          // around them. Auto-uncheck "Près de moi" (and clear favoritesOnly) so the
+          // filters don't combine into an empty grid.
           setFavoritesOnly(false);
-          setPrefs({ ...prefs, country: c, region: "all" });
+          setPrefs({ ...prefs, country: c, region: "all", nearMe: c === "all" ? prefs.nearMe : false });
         }}
         onRegionChange={(r) => {
+          // Same reasoning for region picks.
           setFavoritesOnly(false);
-          setPrefs({ ...prefs, region: r });
+          setPrefs({ ...prefs, region: r, nearMe: r === "all" ? prefs.nearMe : false });
         }}
         onLevelChange={(l) => setPrefs({ ...prefs, level: l })}
         onSortChange={(s) => setPrefs({ ...prefs, sort: s })}
-        onSearchChange={setSearch}
+        onSearchChange={(q) => {
+          // Typing a spot name = explicit intent → drop near-me too (otherwise searching
+          // "Hossegor" from Paris returns 0 results).
+          setSearch(q);
+          if (q.trim().length >= 2 && prefs.nearMe) setPrefs((p) => ({ ...p, nearMe: false }));
+        }}
         onNearMeToggle={requestGeo}
         onFavoritesToggle={() => setFavoritesOnly((v) => !v)}
       />
