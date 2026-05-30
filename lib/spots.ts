@@ -74,9 +74,44 @@ export const WORLD_CLASS_SPOT_SLUGS = new Set([
  *   "mid-high"   rising through high — sand banks that need depth
  *   "rising"     loose preference for incoming tide
  *   "falling"    loose preference for outgoing tide
- *   "any"        not tide-sensitive
- * Default when unset: "any" — no boost/penalty.
+ *   "any"        not tide-sensitive (Med, Corse, low-tidal-range zones)
+ *
+ * Lookup order:
+ *   1) Per-spot override in TIDE_PREFERENCES (below) — for spots where we
+ *      have local knowledge (Gravière, Mundaka, Belharra, etc.)
+ *   2) Region-level default in TIDE_BY_REGION — sane fallback driven by the
+ *      tidal range of the basin (Med ≈ 30 cm → "any"; Manche ≈ 10 m → "mid")
+ *   3) undefined — no tide weighting in computeScore
  */
+const TIDE_BY_REGION: Partial<Record<Spot["region"], Spot["tideOptimal"]>> = {
+  // Channel / North Sea: massive tidal range; most beach breaks need a window around mid.
+  "Manche & Nord": "mid",
+  // Bretagne: large range, varied reefs/beaches → mid by default, overrides for specifics.
+  Bretagne: "mid",
+  // Vendée / Loire-Atlantique / islands: large range, sand banks wake up on the drop.
+  "Atlantique Nord": "mid-low",
+  // Gironde + Landes beach breaks: sand banks favoured by falling tide.
+  Aquitaine: "mid-low",
+  // Basque coast: large range, mostly mid-tide for beach + reefs.
+  "Pays Basque": "mid",
+  // Mediterranean: tidal range ≈ 30 cm → tide doesn't really matter.
+  Méditerranée: "any",
+  Corse: "any",
+  // DOM-TOM: most reefs in low-range zones; tide secondary.
+  "Outre-Mer": "any",
+  // Spain Atlantic: meaningful range, mid-tide as a safe default.
+  "Espagne Atlantique": "mid",
+  // Canaries: small range, reef breaks care more about swell direction.
+  Canaries: "any",
+  // Portugal: large range, beach breaks like mid-low.
+  Portugal: "mid-low",
+  // Morocco: large range; the famous points (Anchor, Killers) want mid → mid-high water.
+  Maroc: "mid",
+  // UK / Ireland: massive range, slabs and reefs typically want depth → mid to high.
+  "Royaume-Uni": "mid",
+  Irlande: "mid",
+};
+
 const TIDE_PREFERENCES: Record<string, Spot["tideOptimal"]> = {
   // France — Manche / Bretagne reefs (mostly tide-driven)
   "siouville": "mid",
@@ -127,6 +162,74 @@ const TIDE_PREFERENCES: Record<string, Spot["tideOptimal"]> = {
   "aileens": "mid-high",
   "mullaghmore": "mid-high",
   "thurso-east": "mid",
+
+  // ===== Extra per-spot knowledge added when filling defaults =====
+  // Manche & Nord: most beach breaks are mid by default; refine the iconic ones.
+  "etretat": "mid-high",        // sous les falaises, besoin d'eau
+  "le-havre": "mid-high",
+  "audresselles": "mid-high",   // rochers, besoin d'eau
+  // Bretagne reefs vs beaches
+  "le-loch": "mid-low",
+  "pors-carn": "mid-low",
+  "anse-du-cabestan": "mid",
+  "le-corsen": "mid-high",
+  "kerlouan": "mid",
+  // Atlantique Nord: île de Ré / Oléron / Vendée beach breaks
+  "sauveterre": "mid-low",
+  "les-conches": "mid-low",
+  "bud-bud": "mid-high",        // banc qui aime de l'eau
+  "vert-bois": "mid-low",
+  "la-cotiniere": "mid",
+  // Aquitaine extras
+  "biscarrosse-vivier": "mid-low",
+  "contis": "mid-low",
+  "cap-de-l-homy": "mid-low",
+  "saint-girons-plage": "mid-low",
+  "soustons-plage": "mid-low",
+  "seignosse": "mid-low",
+  "seignosse-estagnots": "mid-low",
+  "seignosse-penon": "mid-low",
+  "hossegor-sud": "mid-low",
+  "capbreton-piste": "mid",
+  "capbreton-prevent": "mid",
+  "labenne": "mid-low",
+  "ondres": "mid-low",
+  "tarnos": "mid",
+  // Pays Basque points (mostly want depth)
+  "saint-jean-de-luz-erromardie": "mid-high",
+  "ciboure": "mid-high",
+  // Spain Atlantic — Cantabria / Galicia reefs
+  "sopelana": "mid",
+  "bakio": "mid-low",
+  "plentzia": "mid",
+  "la-salvaje": "mid-low",
+  "playa-de-laga": "mid",
+  "pantin": "mid",
+  "rodiles": "mid-low",
+  "salinas": "mid",
+  // Portugal
+  "nazare-norte": "mid-low",    // Praia do Norte
+  "matosinhos": "mid-low",
+  "espinho": "mid-low",
+  "figueira-da-foz": "mid-low",
+  "praia-do-amado": "mid-low",
+  "arrifana": "mid",
+  // Morocco famous points
+  "imsouane": "mid-high",
+  "tamri": "mid",
+  "draculas": "mid",
+  // UK reefs
+  "fistral": "mid-low",         // Cornwall beach break
+  "watergate-bay": "mid-low",
+  "polzeath": "mid",
+  "saunton": "mid-low",
+  "porthleven": "mid",
+  // Ireland classics
+  "lahinch": "mid-low",
+  "easkey-left": "mid",
+  "easkey-right": "mid",
+  "strandhill": "mid-low",
+  "bundoran-the-peak": "mid",
 };
 
 // Helper to keep entries compact
@@ -134,7 +237,8 @@ function s(slug: string, name: string, shortName: string, region: Spot["region"]
   return {
     slug, name, shortName, region, department, lat, lon, offshore, level, type, description,
     worldClass: WORLD_CLASS_SPOT_SLUGS.has(slug) || undefined,
-    tideOptimal: TIDE_PREFERENCES[slug],
+    // Per-spot override beats region default; both are honest signals — only "undefined" disables tide weighting.
+    tideOptimal: TIDE_PREFERENCES[slug] ?? TIDE_BY_REGION[region],
   };
 }
 
