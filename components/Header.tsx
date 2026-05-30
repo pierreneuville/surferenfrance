@@ -7,8 +7,11 @@ import { Menu, X } from "lucide-react";
 import { Logo, Wordmark } from "./Logo";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { StreakBadge } from "./StreakBadge";
+import { t, type Locale } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 export function Header() {
+  const { locale } = useLocale();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -32,7 +35,7 @@ export function Header() {
   // Portal to document.body to escape that stacking context entirely.
   const drawer =
     menuOpen && mounted
-      ? createPortal(<MobileDrawer onClose={() => setMenuOpen(false)} />, document.body)
+      ? createPortal(<MobileDrawer locale={locale} onClose={() => setMenuOpen(false)} />, document.body)
       : null;
 
   return (
@@ -47,7 +50,7 @@ export function Header() {
             <span className="flex min-w-0 flex-col leading-none">
               <Wordmark className="text-xl sm:text-2xl" />
               <span className="hidden font-script text-sm leading-none text-sand-200/70 sm:block">
-                ta vague est prête
+                {t(locale, "tagline")}
               </span>
             </span>
           </Link>
@@ -57,20 +60,20 @@ export function Header() {
             <LocaleSwitcher />
             {/* Desktop nav — "Bouées" is expert-level, moved out of primary nav (kept in mobile menu + footer) */}
             <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
-              <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
-              <Link href="/spots" className="transition hover:text-sand-200">Index</Link>
-              <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
+              <Link href="/#spots" className="transition hover:text-sand-200">{t(locale, "navSpots")}</Link>
+              <Link href="/spots" className="transition hover:text-sand-200">{t(locale, "navIndex")}</Link>
+              <Link href="/#a-propos" className="transition hover:text-sand-200">{t(locale, "navAbout")}</Link>
             </nav>
             {/* Mobile: quick Spots link + burger */}
             <Link
               href="/#spots"
               className="tap-target inline-flex items-center rounded-full bg-white/5 px-3 py-1.5 text-sm font-medium text-white/85 transition hover:bg-white/10 md:hidden"
             >
-              Spots
+              {t(locale, "navSpots")}
             </Link>
             <button
               onClick={() => setMenuOpen(true)}
-              aria-label="Ouvrir le menu"
+              aria-label={t(locale, "navMenuOpen")}
               className="tap-target grid h-9 w-9 place-items-center rounded-full bg-white/5 transition hover:bg-white/10 md:hidden"
             >
               <Menu className="h-4 w-4" />
@@ -85,7 +88,7 @@ export function Header() {
 }
 
 /** Mobile drawer rendered via createPortal directly into <body> — bypasses any ancestor stacking context. */
-function MobileDrawer({ onClose }: { onClose: () => void }) {
+function MobileDrawer({ locale, onClose }: { locale: Locale; onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-[80] md:hidden"
@@ -113,22 +116,22 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
           </div>
           <button
             onClick={onClose}
-            aria-label="Fermer le menu"
+            aria-label={t(locale, "navMenuClose")}
             className="tap-target grid h-9 w-9 place-items-center rounded-full bg-white/10"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-4 text-base">
-          <MobileLink href="/#spots" onClick={onClose}>🏄 Tous les spots</MobileLink>
-          <MobileLink href="/bouees" onClick={onClose}>🌊 Bouées live</MobileLink>
-          <MobileLink href="/spots" onClick={onClose}>🗺️ Index des spots</MobileLink>
-          <MobileLink href="/#a-propos" onClick={onClose}>ℹ️ À propos du score</MobileLink>
-          <MobileLink href="/mentions-legales" onClick={onClose}>Mentions légales</MobileLink>
-          <MobileLink href="/politique-confidentialite" onClick={onClose}>Confidentialité</MobileLink>
+          <MobileLink href="/#spots" onClick={onClose}>🏄 {t(locale, "navAllSpots")}</MobileLink>
+          <MobileLink href="/bouees" onClick={onClose}>🌊 {t(locale, "navLiveBuoys")}</MobileLink>
+          <MobileLink href="/spots" onClick={onClose}>🗺️ {t(locale, "navSpotIndex")}</MobileLink>
+          <MobileLink href="/#a-propos" onClick={onClose}>ℹ️ {t(locale, "navScoreAbout")}</MobileLink>
+          <MobileLink href="/mentions-legales" onClick={onClose}>{t(locale, "navLegal")}</MobileLink>
+          <MobileLink href="/politique-confidentialite" onClick={onClose}>{t(locale, "navPrivacy")}</MobileLink>
         </nav>
         <p className="px-4 pb-6 text-center font-script text-sm text-sand-200/70">
-          yo, ta vague est prête.
+          {t(locale, "taglineHero")}
         </p>
       </div>
     </div>

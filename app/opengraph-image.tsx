@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SPOTS } from "@/lib/spots";
+import { COUNTRIES } from "@/lib/countries";
 
 export const runtime = "edge";
 export const alt = "Yosurf — yo, ta vague est prête";
@@ -112,12 +113,17 @@ export default async function Image() {
           }}
         >
           <div style={{ display: "flex", gap: 40 }}>
-            <Stat number={SPOTS.length.toString()} label="spots français" />
+            <Stat number={SPOTS.length.toString()} label={`spots · ${COUNTRIES.length} pays`} />
             <Stat number="7j" label="prévisions" />
             <Stat number="24h" label="détail horaire" />
           </div>
-          <div style={{ fontSize: 22, color: "rgba(255,255,255,0.6)", display: "flex" }}>
-            yosurf.app
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <div style={{ fontSize: 18, color: "rgba(255,255,255,0.55)", letterSpacing: 1, display: "flex" }}>
+              🇫🇷 🇪🇸 🇵🇹 🇲🇦 🇬🇧 🇮🇪
+            </div>
+            <div style={{ fontSize: 22, color: "rgba(255,255,255,0.7)", display: "flex", marginTop: 4 }}>
+              yosurf.app
+            </div>
           </div>
         </div>
       </div>

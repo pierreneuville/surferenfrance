@@ -6,7 +6,7 @@ import { Radio, Waves, Wind } from "lucide-react";
 import type { BuoyObservation } from "@/lib/buoys";
 import { fmt, haversineKm } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
-import { t } from "@/lib/i18n";
+import { t, tf, type Locale } from "@/lib/i18n";
 
 interface ApiResponse {
   observations: BuoyObservation[];
@@ -100,9 +100,9 @@ export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false, for
             ? observation.waveHeight - forecastWaveHeight
             : null;
           const deltaLabel = delta == null ? null
-            : Math.abs(delta) < 0.2 ? "✓ ça tient"
-            : delta > 0 ? `+${delta.toFixed(1)}m vs prévision`
-            : `${delta.toFixed(1)}m vs prévision`;
+            : Math.abs(delta) < 0.2 ? t(locale, "buoysDeltaOk")
+            : delta > 0 ? tf(locale, "buoysDeltaAbove", { n: delta.toFixed(1) })
+            : tf(locale, "buoysDeltaBelow", { n: delta.toFixed(1) });
           return (
             <Link
               key={observation.station.id}
@@ -121,7 +121,7 @@ export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false, for
                     ? "bg-emerald-500/15 text-emerald-200"
                     : "bg-white/[0.05] text-white/42"
                 }`}>
-                  {observation.status === "live" ? "live" : observation.status}
+                  {buoyStatusLabel(observation.status, locale)}
                 </span>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
@@ -147,4 +147,13 @@ export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false, for
       </div>
     </section>
   );
+}
+
+function buoyStatusLabel(status: BuoyObservation["status"], locale: Locale): string {
+  switch (status) {
+    case "live": return t(locale, "buoysStatusLive");
+    case "partial": return t(locale, "buoysStatusPartial");
+    case "stale": return t(locale, "buoysStatusStale");
+    case "offline": return t(locale, "buoysStatusOffline");
+  }
 }

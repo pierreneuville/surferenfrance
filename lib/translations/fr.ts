@@ -11,6 +11,9 @@ export const fr = {
   navMenuOpen: "Ouvrir le menu",
   navMenuClose: "Fermer le menu",
   navAllSpots: "Tous les spots",
+  navCompare: "Comparer",
+  navGuides: "Guides",
+  navLiveBuoys: "Bouées live",
   navSpotIndex: "Index des spots",
   navScoreAbout: "À propos du score",
   navLegal: "Mentions légales",
@@ -100,6 +103,7 @@ export const fr = {
   modalFullSheet: "Fiche complète",
   modalLoadingTides: "Lecture des marées…",
   modalNoHourly: "Détail horaire indisponible.",
+  modalCompareOther: "Comparer avec d'autres spots",
 
   // Tiles
   tileScore: "Score",
@@ -117,6 +121,14 @@ export const fr = {
 
   // States
   stateNoResults: "Aucun spot ne correspond à tes filtres.",
+  emptyTipRegionDay: "essaie une autre région ou un autre jour",
+  emptyTipLevel: "change ton niveau pour ouvrir plus de spots",
+  emptyTipNearMe: "coupe le filtre 'près de moi'",
+  emptyTipTomorrow: "regarde demain, ça change vite",
+  emptyTipCountry: "switch de pays — l'Espagne marche peut-être",
+  emptySearchHint: "ou tape un nom de spot dans la recherche",
+  emptyRegionNone: "Aucun spot répertorié pour {region} pour l'instant.",
+  emptyRegionSoon: "On élargit le catalogue progressivement. Reviens bientôt.",
 
   // Onboarding
   onboardingWelcome: "yo, bienvenue 🤙",
@@ -140,6 +152,38 @@ export const fr = {
   footerMadeWith: "Fait avec",
   footerMadeIn: "en France · données",
   footerFooterTip: "· surfe à ton niveau et respecte les locaux 🤙",
+  footerCode: "Code",
+  footerRegionsAria: "Prévisions surf par région",
+
+  // Mobile bottom bar
+  mobileAriaOpenFilters: "Ouvrir les filtres",
+  mobileAriaAllSpots: "Voir tous les spots",
+  mobileAriaFavorites: "Voir mes favoris",
+  mobileAriaDisableNearMe: "Désactiver près de moi",
+  mobileAriaEnableNearMe: "Activer près de moi",
+
+  // Home
+  geoApprox: "Position approximative (IP). Active la géoloc pour plus de précision.",
+  favoritesOnFireSingular: "est en feu",
+  favoritesOnFirePlural: "sont en feu",
+  favoritesShow: "afficher mes favoris",
+  exploredTitle: "Spots que tu as ouverts au moins une fois",
+  adInFeedLabel: "Publicité in-feed",
+  homeAboutKicker: "À propos du score",
+  homeAboutTitleA: "Une note simple,",
+  homeAboutTitleB: "trois ingrédients.",
+  homeAboutPillarWaveTitle: "La vague",
+  homeAboutPillarWaveText: "Sa hauteur réelle, puis sa hauteur ressentie quand la période allonge les sets. Trop petit = épuisant, trop gros = réservé.",
+  homeAboutPillarPeriodTitle: "La période",
+  homeAboutPillarPeriodText: "Au-delà de 9 s, les séries peuvent être nettement plus grosses que la moyenne. Le score le prend en compte.",
+  homeAboutPillarWindTitle: "Le vent",
+  homeAboutPillarWindText: "Idéalement faible. Bonus quand il vient de la terre (offshore) : il sculpte les vagues. Malus s'il vient du large (onshore).",
+  homeAboutPillarPowerTitle: "La puissance",
+  homeAboutPillarPowerText: "Un proxy d'énergie de houle en kW/m évite de confondre une petite vague molle avec une vraie houle longue.",
+  homeAboutCopyA: "Le score se recalcule selon ton niveau, pour que",
+  homeAboutCopyB: "ne ressorte pas en débutant.",
+  homeAboutCopyC: "Données",
+  homeAboutCopyD: "rafraîchies toutes les 6 h, modèle haute résolution 5 km sur les côtes françaises.",
 
   // Version watcher
   versionNew: "Nouvelle version disponible",
@@ -159,6 +203,8 @@ export const fr = {
   cardTopGood: "groundswell",
   cardTopMedium: "houle",
   cardTopLow: "mer du vent",
+  spotFavoriteRemove: "Retirer des favoris",
+  spotFavoriteAdd: "Ajouter aux favoris",
 
   // Modal
   modalRegionLabel: "{region} · {dep}",
@@ -312,6 +358,31 @@ export const fr = {
   scoreSoft: "Mou",
   scoreFlat: "Plat",
 
+  // Compare
+  compareBack: "Retour à la carte",
+  compareKicker: "Comparer",
+  compareTitle: "Trois spots, un choix",
+  compareIntro: "Mets jusqu'à trois spots côte à côte. Score, conditions, marée, distance — tout au même endroit pour décider où poser ta voiture.",
+  compareShareCopied: "Lien copié",
+  compareShare: "Partager",
+  compareLevel: "Mon niveau",
+  compareDay: "Jour",
+  compareToday: "Aujourd'hui",
+  compareTomorrow: "Demain",
+  compareDistanceTitle: "Distance entre spots",
+  compareSearchPlaceholder: "Cherche un spot (ex: Lacanau)…",
+  compareClose: "Fermer",
+  compareTypeMinChars: "Tape au moins 2 lettres.",
+  compareNoSpot: "Aucun spot trouvé.",
+  compareAddSpot: "Ajouter un spot",
+  compareSlot: "Emplacement {n}/{total}",
+  compareRemoveSpot: "Retirer ce spot",
+  compareLoading: "Chargement",
+  compareDirection: "Direction",
+  compareBestWindow: "Meilleur créneau",
+  compareBestOnTide: "Créneau sur {state}",
+  compareFullSheet: "Voir la fiche complète →",
+
 
   // Buoys
   buoysPageBreadcrumb: "← Retour à la carte des vagues",
@@ -358,15 +429,22 @@ export const fr = {
   buoysAreaManche: "Manche",
   buoysAreaMed: "Méditerranée",
   buoysAreaIntl: "International",
+  buoysPinnedNearest: "bouées les plus proches",
+  buoysRemovePinnedSpot: "Retirer le spot",
+  buoysSpotSearchPlaceholder: "Pour quel spot ? (ex: Lacanau)",
+  buoysLiveMeasure: "Mesure live",
+  buoysMaxShort: "max",
 
   // Mini panel
   buoysMiniTitleNear: "Bouées live près de toi",
   buoysMiniTitleWatch: "Bouées live à surveiller",
   buoysMiniViewAll: "Tout voir →",
   buoysMiniNearestSpot: "Bouée la plus proche",
+  buoysDeltaOk: "✓ ça tient",
+  buoysDeltaAbove: "+{n}m vs prévision",
+  buoysDeltaBelow: "{n}m vs prévision",
 };
 
 // Derive a string-valued type so EN/ES/PT can be checked structurally without
 // being constrained to FR's exact literal values.
 export type Translations = { [K in keyof typeof fr]: string };
-

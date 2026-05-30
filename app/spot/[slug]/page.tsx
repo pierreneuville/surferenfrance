@@ -12,7 +12,10 @@ import { REGION_SLUGS, SITE_NAME, absoluteUrl, spotKeywords } from "@/lib/seo";
 import { getServerLocale } from "@/lib/serverLocale";
 import { t, tf, type Locale, type TranslationKey } from "@/lib/i18n";
 
-interface PageProps { params: Promise<{ slug: string }> }
+interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
 
 export function generateStaticParams() {
   return SPOTS.map((s) => ({ slug: s.slug }));
@@ -77,13 +80,13 @@ function levelAdvice(locale: Locale, level: Level): string {
   return t(locale, level === "beginner" ? "spotLevelBeginner" : level === "intermediate" ? "spotLevelIntermediate" : "spotLevelAdvanced");
 }
 
-export default async function SpotPage({ params }: PageProps) {
+export default async function SpotPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
   const spot = getSpotBySlug(slug);
   if (!spot) notFound();
   const nearby = getNearbySpots(spot, 4);
   const levelKey = spot.level as Level;
-  const locale = await getServerLocale();
+  const locale = await getServerLocale(searchParams);
   const faqs = spotFaqs(locale, spot, nearby.map((item) => item.spot));
 
   const pageUrl = absoluteUrl(`/spot/${spot.slug}`);

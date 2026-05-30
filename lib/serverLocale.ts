@@ -6,13 +6,23 @@ const COOKIE_NAME = "yosurf-locale";
 /**
  * Reads the user's locale on server components.
  * Order of resolution:
- *   1. cookie 'yosurf-locale' (set by LocaleSwitcher when user picks a language)
- *   2. Accept-Language header (browser default)
- *   3. default FR
+ *   1. optional ?lang= search param, when a page passes searchParams
+ *   2. cookie 'yosurf-locale' (set by LocaleSwitcher when user picks a language)
+ *   3. Accept-Language header (browser default)
+ *   4. default FR
  *
- * Use in any RSC: `const locale = await getServerLocale();`
+ * Use in any RSC: `const locale = await getServerLocale(searchParams);`
  */
-export async function getServerLocale(): Promise<Locale> {
+export async function getServerLocale(
+  searchParams?: Promise<Record<string, string | string[] | undefined>> | Record<string, string | string[] | undefined>
+): Promise<Locale> {
+  try {
+    const params = searchParams ? await searchParams : null;
+    const raw = params?.lang;
+    const fromQuery = Array.isArray(raw) ? raw[0] : raw;
+    if (fromQuery && isLocale(fromQuery)) return fromQuery;
+  } catch { /* ignore */ }
+
   try {
     const cookieStore = await cookies();
     const fromCookie = cookieStore.get(COOKIE_NAME)?.value;

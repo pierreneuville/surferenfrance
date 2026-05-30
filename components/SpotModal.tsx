@@ -358,9 +358,9 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             href={`/compare?spots=${forecast.spot.slug}`}
             className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3 transition hover:border-ocean-400/40 hover:bg-white/[0.05]"
           >
-            <span className="flex items-center gap-2 text-sm text-white/80">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-ocean-500/15 text-ocean-300">⇄</span>
-              Comparer avec d'autres spots
+              <span className="flex items-center gap-2 text-sm text-white/80">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-ocean-500/15 text-ocean-300">⇄</span>
+              {t(locale, "modalCompareOther")}
             </span>
             <span className="text-ocean-300/60">→</span>
           </Link>
@@ -402,7 +402,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             className="tap-target flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium transition hover:bg-white/10 active:scale-[0.98]"
           >
             {shared ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
-            {shared ? "Lien copié !" : "Partager"}
+            {shared ? t(locale, "modalLinkCopied") : t(locale, "modalShare")}
           </button>
           <Link
             href={`/spot/${forecast.spot.slug}`}

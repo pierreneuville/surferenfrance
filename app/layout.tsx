@@ -14,7 +14,8 @@ import { VersionWatcher } from "@/components/VersionWatcher";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { JsonLd } from "@/components/JsonLd";
 import { LocaleProvider } from "@/lib/useLocale";
-import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from "@/lib/seo";
+import { DEFAULT_DESCRIPTION, SHARE_COPY, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from "@/lib/seo";
+import { getServerLocale } from "@/lib/serverLocale";
 
 const GTM_ID = "GTM-MN3B6ZBR";
 
@@ -37,60 +38,72 @@ const script = Caveat({
   weight: ["500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
-    template: `%s · ${SITE_NAME}`,
-  },
-  description: DEFAULT_DESCRIPTION,
-  applicationName: SITE_NAME,
-  category: "weather",
-  keywords: [
-    SITE_NAME,
-    "surf France",
-    "prévisions surf",
-    "houle France",
-    "météo surf",
-    "score surf",
-    "vagues",
-    "Hossegor",
-    "Biarritz",
-    "Lacanau",
-    "La Torche",
-    "spots de surf",
-  ],
-  authors: [{ name: SITE_NAME, url: SITE_URL }],
-  creator: SITE_NAME,
-  publisher: SITE_NAME,
-  openGraph: {
-    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
-    description: DEFAULT_DESCRIPTION,
-    type: "website",
-    locale: "fr_FR",
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE_NAME} - ${SITE_TAGLINE}` }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE_NAME} — prévisions surf`,
-    description: DEFAULT_DESCRIPTION,
-    images: ["/opengraph-image"],
-  },
-  alternates: {
-    canonical: SITE_URL,
-    languages: {
-      "fr-FR": SITE_URL,
-      "en": `${SITE_URL}?lang=en`,
-      "es-ES": `${SITE_URL}?lang=es`,
-      "pt-PT": `${SITE_URL}?lang=pt`,
-      "x-default": SITE_URL,
+/**
+ * Locale-aware root metadata. Resolution order :
+ *   1. cookie 'yosurf-locale' (set when user picks a language)
+ *   2. Accept-Language header
+ *   3. fallback fr
+ *
+ * Why generateMetadata vs static `metadata`:
+ *   - A user with EN cookie sharing the home should ship EN title/description
+ *   - WhatsApp / Slack / iMessage scrapers don't send cookies → they get FR (primary market)
+ *   - Search engines crawling from EN locales (rare on us-east-1 crawlers) get FR too,
+ *     which is fine since alternates.languages still flags the EN variant at ?lang=en
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getServerLocale();
+  const copy = SHARE_COPY[locale] ?? SHARE_COPY.fr;
+  const ogLocale = ({ fr: "fr_FR", en: "en_US", es: "es_ES", pt: "pt_PT" } as const)[locale] ?? "fr_FR";
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: copy.title,
+      template: `%s · ${SITE_NAME}`,
     },
-  },
-  robots: { index: true, follow: true },
-  icons: { icon: "/icon.svg" },
-};
+    description: copy.description,
+    applicationName: SITE_NAME,
+    category: "weather",
+    keywords: [
+      SITE_NAME,
+      "surf forecast", "prévisions surf", "pronóstico surf", "previsão surf",
+      "surf France", "surf España", "surf Portugal", "surf Morocco", "surf UK", "surf Ireland",
+      "houle", "vagues", "marée", "tide",
+      "Hossegor", "Biarritz", "Lacanau", "La Torche", "Mundaka", "Ericeira", "Taghazout",
+      "spots de surf",
+    ],
+    authors: [{ name: SITE_NAME, url: SITE_URL }],
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    openGraph: {
+      title: copy.title,
+      description: copy.description,
+      type: "website",
+      locale: ogLocale,
+      url: SITE_URL,
+      siteName: SITE_NAME,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE_NAME} — ${copy.tagline}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: copy.title,
+      description: copy.description,
+      images: ["/opengraph-image"],
+    },
+    alternates: {
+      canonical: SITE_URL,
+      languages: {
+        "fr-FR": SITE_URL,
+        "en": `${SITE_URL}?lang=en`,
+        "es-ES": `${SITE_URL}?lang=es`,
+        "pt-PT": `${SITE_URL}?lang=pt`,
+        "x-default": SITE_URL,
+      },
+    },
+    robots: { index: true, follow: true },
+    icons: { icon: "/icon.svg" },
+  };
+}
 
 // viewport-fit=cover is REQUIRED for env(safe-area-inset-*) to populate on iOS notched devices.
 export const viewport: Viewport = {

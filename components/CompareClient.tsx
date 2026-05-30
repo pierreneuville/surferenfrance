@@ -8,7 +8,7 @@ import type { Level, Spot, SpotForecast } from "@/lib/types";
 import { fetchHomeForecasts } from "@/lib/clientApi";
 import { SCORE_COLORS, scoreLabelKey, scoreTone } from "@/lib/score";
 import { useLocale } from "@/lib/useLocale";
-import { t } from "@/lib/i18n";
+import { t, tf } from "@/lib/i18n";
 import { degToCardinal, fmt, haversineKm } from "@/lib/utils";
 import { tideStateAt, tideStateKey } from "@/lib/tide";
 
@@ -96,15 +96,15 @@ export function CompareClient() {
     <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
       <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/55 transition hover:text-sand-200">
         <ArrowLeft className="h-3.5 w-3.5" />
-        Retour à la carte
+        {t(locale, "compareBack")}
       </Link>
 
       <header className="mt-6 flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-sand-200/70">Comparer</p>
-          <h1 className="mt-2 font-display text-4xl font-bold sm:text-5xl">Trois spots, un choix</h1>
+          <p className="text-xs uppercase tracking-[0.3em] text-sand-200/70">{t(locale, "compareKicker")}</p>
+          <h1 className="mt-2 font-display text-4xl font-bold sm:text-5xl">{t(locale, "compareTitle")}</h1>
           <p className="mt-3 max-w-2xl text-pretty text-white/65">
-            Mets jusqu'à trois spots côte à côte. Score, conditions, marée, distance — tout au même endroit pour décider où poser ta voiture.
+            {t(locale, "compareIntro")}
           </p>
         </div>
         {hasAny && (
@@ -113,14 +113,14 @@ export function CompareClient() {
             className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-sm text-white/80 transition hover:border-white/20 hover:text-white"
           >
             {shared ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
-            {shared ? "Lien copié" : "Partager"}
+            {shared ? t(locale, "compareShareCopied") : t(locale, "compareShare")}
           </button>
         )}
       </header>
 
       {/* Level + day selector */}
       <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3">
-        <span className="text-xs uppercase tracking-widest text-white/45">Mon niveau</span>
+        <span className="text-xs uppercase tracking-widest text-white/45">{t(locale, "compareLevel")}</span>
         {(["beginner", "intermediate", "advanced"] as Level[]).map((l) => (
           <button
             key={l}
@@ -132,7 +132,7 @@ export function CompareClient() {
             {t(locale, l === "beginner" ? "filterLevelBeginner" : l === "intermediate" ? "filterLevelIntermediate" : "filterLevelAdvanced")}
           </button>
         ))}
-        <span className="ml-auto text-xs uppercase tracking-widest text-white/45">Jour</span>
+        <span className="ml-auto text-xs uppercase tracking-widest text-white/45">{t(locale, "compareDay")}</span>
         <select
           value={dayIdx}
           onChange={(e) => setDayIdx(Number(e.target.value))}
@@ -140,7 +140,7 @@ export function CompareClient() {
         >
           {Array.from({ length: 7 }, (_, i) => (
             <option key={i} value={i}>
-              {i === 0 ? "Aujourd'hui" : i === 1 ? "Demain" : `J+${i}`}
+              {i === 0 ? t(locale, "compareToday") : i === 1 ? t(locale, "compareTomorrow") : `J+${i}`}
             </option>
           ))}
         </select>
@@ -156,6 +156,7 @@ export function CompareClient() {
             forecast={activeForecasts[idx]}
             dayIdx={dayIdx}
             level={level}
+            locale={locale}
             onAdd={() => { setAdding(idx); setQuery(""); }}
             onClear={() => clearSlot(idx)}
           />
@@ -165,7 +166,7 @@ export function CompareClient() {
       {/* Distance matrix when 2+ spots picked */}
       {activeSpots.length >= 2 && (
         <section className="mt-8 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
-          <h2 className="mb-3 text-xs uppercase tracking-[0.25em] text-sand-200/70">Distance entre spots</h2>
+          <h2 className="mb-3 text-xs uppercase tracking-[0.25em] text-sand-200/70">{t(locale, "compareDistanceTitle")}</h2>
           <div className="flex flex-wrap gap-3 text-sm text-white/75">
             {activeSpots.map((a, i) =>
               activeSpots.slice(i + 1).map((b) => {
@@ -195,17 +196,17 @@ export function CompareClient() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Cherche un spot (ex: Lacanau)…"
+                placeholder={t(locale, "compareSearchPlaceholder")}
                 className="flex-1 bg-transparent text-white outline-none placeholder-white/40"
               />
-              <button onClick={() => setAdding(null)} aria-label="Fermer" className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10">
+              <button onClick={() => setAdding(null)} aria-label={t(locale, "compareClose")} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10">
                 <X className="h-4 w-4" />
               </button>
             </div>
             <div className="max-h-80 overflow-y-auto p-2">
               {suggestions.length === 0 ? (
                 <p className="px-3 py-6 text-center text-sm text-white/45">
-                  {query.length < 2 ? "Tape au moins 2 lettres." : "Aucun spot trouvé."}
+                  {query.length < 2 ? t(locale, "compareTypeMinChars") : t(locale, "compareNoSpot")}
                 </p>
               ) : (
                 suggestions.map((s) => (
@@ -233,6 +234,7 @@ function CompareSlot({
   forecast,
   dayIdx,
   level,
+  locale,
   onAdd,
   onClear,
 }: {
@@ -241,11 +243,10 @@ function CompareSlot({
   forecast: SpotForecast | null;
   dayIdx: number;
   level: Level;
+  locale: import("@/lib/i18n").Locale;
   onAdd: () => void;
   onClear: () => void;
 }) {
-  const { locale } = useLocale();
-
   if (!spot) {
     return (
       <button
@@ -255,8 +256,8 @@ function CompareSlot({
         <span className="grid h-12 w-12 place-items-center rounded-full bg-white/[0.04]">
           <Plus className="h-5 w-5" />
         </span>
-        <span className="text-sm">Ajouter un spot</span>
-        <span className="text-xs text-white/35">Emplacement {slotIdx + 1}/{MAX_SLOTS}</span>
+        <span className="text-sm">{t(locale, "compareAddSpot")}</span>
+        <span className="text-xs text-white/35">{tf(locale, "compareSlot", { n: slotIdx + 1, total: MAX_SLOTS })}</span>
       </button>
     );
   }
@@ -275,7 +276,7 @@ function CompareSlot({
     <article className="relative flex flex-col rounded-3xl border border-white/[0.06] bg-white/[0.025] p-5">
       <button
         onClick={onClear}
-        aria-label="Retirer ce spot"
+        aria-label={t(locale, "compareRemoveSpot")}
         className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-black/30 text-white/60 transition hover:bg-black/50 hover:text-white"
       >
         <X className="h-3.5 w-3.5" />
@@ -294,9 +295,9 @@ function CompareSlot({
           {forecast ? score : "…"}
         </div>
         <div className="flex-1 pb-1">
-          <div className="text-xs uppercase tracking-widest text-white/45">Note</div>
+          <div className="text-xs uppercase tracking-widest text-white/45">{t(locale, "tileScoreLabel")}</div>
           <div className="font-display text-lg font-bold" style={{ color: colors.hex }}>
-            {forecast ? t(locale, scoreLabelKey(score)) : "Chargement"}
+            {forecast ? t(locale, scoreLabelKey(score)) : t(locale, "compareLoading")}
           </div>
         </div>
       </div>
@@ -306,10 +307,10 @@ function CompareSlot({
         <Row label={t(locale, "cardWave")} value={day?.waveHeight != null ? `${fmt(day.waveHeight)} m` : "—"} />
         <Row label={t(locale, "cardPeriod")} value={day?.wavePeriod != null ? `${fmt(day.wavePeriod, 0)} s` : "—"} />
         <Row label={t(locale, "cardWind")} value={day?.windSpeed != null ? `${fmt(day.windSpeed, 0)} km/h` : "—"} />
-        <Row label="Direction" value={degToCardinal(day?.waveDir) || "—"} />
+        <Row label={t(locale, "compareDirection")} value={degToCardinal(day?.waveDir) || "—"} />
         <Row label={t(locale, "tilePower")} value={day?.wavePower != null ? `${fmt(day.wavePower, 0)} ${t(locale, "badgePowerUnit")}` : "—"} />
         <Row
-          label="Meilleur créneau"
+          label={t(locale, "compareBestWindow")}
           value={bestWin ? `${String(bestWin.start).padStart(2, "0")}h–${String(bestWin.end + 1).padStart(2, "0")}h` : "—"}
         />
       </dl>
@@ -317,7 +318,7 @@ function CompareSlot({
       {/* Tide */}
       {tideAtBest && (
         <div className="mt-4 rounded-xl border border-lagoon-300/20 bg-lagoon-400/8 px-3 py-2 text-xs text-lagoon-100">
-          Créneau sur {t(locale, tideStateKey(tideAtBest))}
+          {tf(locale, "compareBestOnTide", { state: t(locale, tideStateKey(tideAtBest)) })}
         </div>
       )}
 
@@ -339,7 +340,7 @@ function CompareSlot({
         href={`/spot/${spot.slug}`}
         className="mt-auto mt-5 inline-flex items-center justify-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-sm text-white/80 transition hover:border-white/20 hover:text-white"
       >
-        Voir la fiche complète →
+        {t(locale, "compareFullSheet")}
       </Link>
     </article>
   );

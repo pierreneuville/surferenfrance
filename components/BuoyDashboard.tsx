@@ -79,11 +79,11 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                 <div className="flex items-center gap-2 rounded-full border border-ocean-400/40 bg-ocean-500/15 px-3 py-2 text-sm text-ocean-100">
                   <MapPin className="h-3.5 w-3.5" />
                   <span className="font-display font-bold">{pinnedSpot.shortName}</span>
-                  <span className="text-ocean-200/60">— bouées les plus proches</span>
+                  <span className="text-ocean-200/60">— {t(locale, "buoysPinnedNearest")}</span>
                   <button
                     onClick={() => { setPinnedSpot(null); setSpotQuery(""); }}
                     className="ml-auto rounded-full p-1 transition hover:bg-ocean-500/25"
-                    aria-label="Retirer le spot"
+                    aria-label={t(locale, "buoysRemovePinnedSpot")}
                   >
                     <XIcon className="h-3.5 w-3.5" />
                   </button>
@@ -94,7 +94,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                     type="search"
                     value={spotQuery}
                     onChange={(e) => setSpotQuery(e.target.value)}
-                    placeholder="Pour quel spot ? (ex: Lacanau)"
+                    placeholder={t(locale, "buoysSpotSearchPlaceholder")}
                     className="w-full rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-sm text-white placeholder-white/40 outline-none transition focus:border-ocean-400 focus:bg-white/[0.05]"
                   />
                   {spotSuggestions.length > 0 && (
@@ -193,7 +193,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                     {observation.station.name}
                     <ExternalLink className="h-3 w-3 text-white/30 transition group-hover:text-ocean-200" />
                   </a>
-                  <div className="text-xs text-white/35" title={`Station NOAA ${observation.station.id}`}>Mesure live · {observation.station.id}</div>
+                  <div className="text-xs text-white/35" title={`Station NOAA ${observation.station.id}`}>{t(locale, "buoysLiveMeasure")} · {observation.station.id}</div>
                 </td>
                 <td className="px-4 py-3 text-white/65">{areaLabel(observation.station.area, locale)}</td>
                 <td className="px-4 py-3 font-semibold">{fmt(observation.waveHeight)} m</td>
@@ -227,7 +227,7 @@ export function BuoyMobileCard({ observation, locale }: { observation: BuoyObser
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-white/35">
-            {areaLabel(observation.station.area, locale)} · Mesure live
+            {areaLabel(observation.station.area, locale)} · {t(locale, "buoysLiveMeasure")}
           </div>
           <h3 className="mt-1 font-display text-xl font-bold">{observation.station.name}</h3>
           <p className="mt-1 text-xs text-white/45">{observation.station.note}</p>
@@ -236,7 +236,7 @@ export function BuoyMobileCard({ observation, locale }: { observation: BuoyObser
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <Metric icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileSwell")} value={`${fmt(observation.waveHeight)} m`} sub={`max ${fmt(observation.waveMax)} m`} />
+        <Metric icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileSwell")} value={`${fmt(observation.waveHeight)} m`} sub={`${t(locale, "buoysMaxShort")} ${fmt(observation.waveMax)} m`} />
         <Metric icon={<ArrowDownUp className="h-3.5 w-3.5" />} label={t(locale, "buoysMobilePeriod")} value={`${fmt(observation.dominantPeriod, 0)} s`} sub={observation.waveDirectionCardinal || "—"} />
         <Metric icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileWind")} value={`${fmt(observation.windSpeedKmh, 0)} km/h`} sub={observation.windDirectionCardinal || "—"} />
         <Metric icon={<Clock className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileReading")} value={formatAge(observation.ageMinutes)} sub={formatDate(observation.observedAt)} />

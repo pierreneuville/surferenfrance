@@ -9,6 +9,7 @@ import { bestHoursForDay } from "@/lib/api";
 import { degToCardinal, fmt, dayShortLabel } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t, tf } from "@/lib/i18n";
+import { tideOptimalLabel } from "@/lib/tide";
 
 // A signature gradient per region — visual variety without 231 photos.
 const REGION_GRADIENT: Record<string, string> = {
@@ -86,7 +87,7 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
               ? "bg-coral-500/25 ring-1 ring-coral-400/50"
               : "bg-black/35 hover:bg-black/55"
           }`}
-          aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          aria-label={isFavorite ? t(locale, "spotFavoriteRemove") : t(locale, "spotFavoriteAdd")}
         >
           <Heart
             className={`h-5 w-5 transition-all ${
@@ -150,6 +151,12 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
               <span className="mx-1.5 text-emerald-400/60">→</span>
               {String(bestWindow.end + 1).padStart(2, "0")}h
             </div>
+            {/* Tide subtitle — makes it clear that the score factored in the tide. */}
+            {forecast.spot.tideOptimal && forecast.spot.tideOptimal !== "any" && (
+              <div className="mt-1.5 text-[10px] text-emerald-200/70">
+                aligné sur {tideOptimalLabel(forecast.spot.tideOptimal)}
+              </div>
+            )}
           </div>
         ) : (
           <div className="mb-4 rounded-2xl border border-white/[0.05] bg-white/[0.02] px-3 py-2.5 text-xs text-white/30">

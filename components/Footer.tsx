@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Github, Heart } from "lucide-react";
 import { Logo, Wordmark } from "./Logo";
 import { PremiumTeaser } from "./PremiumTeaser";
 import { REGION_EMOJI, REGIONS } from "@/lib/spots";
 import { REGION_SLUGS } from "@/lib/seo";
+import { t } from "@/lib/i18n";
+import { useLocale } from "@/lib/useLocale";
 
 const QUOTES = [
   { text: "La meilleure planche est celle que tu prends.", author: "proverbe surfeur" },
@@ -15,6 +19,7 @@ const QUOTES = [
 ];
 
 export function Footer() {
+  const { locale } = useLocale();
   const quote = QUOTES[new Date().getDate() % QUOTES.length];
 
   return (
@@ -40,17 +45,17 @@ export function Footer() {
             <Logo size={40} />
             <div>
               <Wordmark className="text-lg" />
-              <div className="font-script text-sm text-sand-200/70">la carte des vagues</div>
+              <div className="font-script text-sm text-sand-200/70">{t(locale, "taglineMap")}</div>
             </div>
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/60">
-            <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
-            <Link href="/compare" className="transition hover:text-sand-200">Comparer</Link>
-            <Link href="/spots" className="transition hover:text-sand-200">Index des spots</Link>
-            <Link href="/guide/la-torche" className="transition hover:text-sand-200">Guides</Link>
-            <Link href="/bouees" className="transition hover:text-sand-200">Bouées live</Link>
-            <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
+            <Link href="/#spots" className="transition hover:text-sand-200">{t(locale, "navSpots")}</Link>
+            <Link href="/compare" className="transition hover:text-sand-200">{t(locale, "navCompare")}</Link>
+            <Link href="/spots" className="transition hover:text-sand-200">{t(locale, "navSpotIndex")}</Link>
+            <Link href="/guide/la-torche" className="transition hover:text-sand-200">{t(locale, "navGuides")}</Link>
+            <Link href="/bouees" className="transition hover:text-sand-200">{t(locale, "navLiveBuoys")}</Link>
+            <Link href="/#a-propos" className="transition hover:text-sand-200">{t(locale, "navAbout")}</Link>
             <PremiumTeaser
               trigger={
                 <span className="cursor-pointer transition hover:text-sand-200">
@@ -58,8 +63,8 @@ export function Footer() {
                 </span>
               }
             />
-            <Link href="/mentions-legales" className="transition hover:text-sand-200">Mentions légales</Link>
-            <Link href="/politique-confidentialite" className="transition hover:text-sand-200">Confidentialité</Link>
+            <Link href="/mentions-legales" className="transition hover:text-sand-200">{t(locale, "navLegal")}</Link>
+            <Link href="/politique-confidentialite" className="transition hover:text-sand-200">{t(locale, "navPrivacy")}</Link>
             <a
               href="https://github.com/pierreneuville/surferenfrance"
               target="_blank"
@@ -67,21 +72,21 @@ export function Footer() {
               className="inline-flex items-center gap-1 transition hover:text-sand-200"
             >
               <Github className="h-3.5 w-3.5" />
-              Code
+              {t(locale, "footerCode")}
             </a>
           </nav>
         </div>
 
         <p className="mt-8 text-center text-xs text-white/35">
-          Fait avec <Heart className="inline h-3 w-3 fill-coral-400 text-coral-400" /> en France · données{" "}
+          {t(locale, "footerMadeWith")} <Heart className="inline h-3 w-3 fill-coral-400 text-coral-400" /> {t(locale, "footerMadeIn")}{" "}
           <a href="https://open-meteo.com" target="_blank" rel="noreferrer" className="underline hover:text-sand-200">
             Open-Meteo
           </a>
-          {" "}· surfe à ton niveau et respecte les locaux 🤙
+          {" "}{t(locale, "footerFooterTip")}
         </p>
 
         <nav
-          aria-label="Prévisions surf par région"
+          aria-label={t(locale, "footerRegionsAria")}
           className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-white/45"
         >
           {REGIONS.map((region) => (
