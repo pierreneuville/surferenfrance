@@ -5,12 +5,15 @@ import Link from "next/link";
 import { Radio, Waves, Wind } from "lucide-react";
 import type { BuoyObservation } from "@/lib/buoys";
 import { fmt, haversineKm } from "@/lib/utils";
+import { useLocale } from "@/lib/useLocale";
+import { t } from "@/lib/i18n";
 
 interface ApiResponse {
   observations: BuoyObservation[];
 }
 
 interface Props {
+  /** When omitted, the component falls back to a locale-aware default. */
   title?: string;
   lat?: number;
   lon?: number;
@@ -18,7 +21,9 @@ interface Props {
   compact?: boolean;
 }
 
-export function BuoyMiniPanel({ title = "Bouées live proches", lat, lon, limit = 3, compact = false }: Props) {
+export function BuoyMiniPanel({ title, lat, lon, limit = 3, compact = false }: Props) {
+  const { locale } = useLocale();
+  const resolvedTitle = title ?? (lat != null && lon != null ? t(locale, "buoysMiniTitleNear") : t(locale, "buoysMiniTitleWatch"));
   const [observations, setObservations] = useState<BuoyObservation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,14 +73,14 @@ export function BuoyMiniPanel({ title = "Bouées live proches", lat, lon, limit 
   if (!visible.length) return null;
 
   return (
-    <section className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4" aria-label={title}>
+    <section className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4" aria-label={resolvedTitle}>
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 font-display text-lg font-bold">
           <Radio className="h-4 w-4 text-ocean-300" />
-          {title}
+          {resolvedTitle}
         </h2>
         <Link href="/bouees" className="shrink-0 text-xs text-ocean-300 hover:text-sand-200">
-          Tout voir →
+          {t(locale, "buoysMiniViewAll")}
         </Link>
       </div>
 

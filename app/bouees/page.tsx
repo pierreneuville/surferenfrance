@@ -5,6 +5,8 @@ import { BuoyDashboard } from "@/components/BuoyDashboard";
 import { JsonLd } from "@/components/JsonLd";
 import { CANDHIS_NOTE, fetchBuoyObservations } from "@/lib/buoys";
 import { SITE_NAME, absoluteUrl } from "@/lib/seo";
+import { getServerLocale } from "@/lib/serverLocale";
+import { t } from "@/lib/i18n";
 
 export const revalidate = 900;
 
@@ -22,6 +24,7 @@ export const metadata: Metadata = {
 
 export default async function BuoysPage() {
   const observations = await fetchBuoyObservations();
+  const locale = await getServerLocale();
   const liveCount = observations.filter((observation) => observation.status === "live").length;
   const waveCount = observations.filter((observation) => observation.waveHeight != null).length;
   const updatedAt = new Date().toISOString();
@@ -72,22 +75,21 @@ export default async function BuoysPage() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
         <div className="mb-8">
           <Link href="/" className="text-sm text-white/55 transition hover:text-sand-200">
-            ← Retour à la carte des vagues
+            {t(locale, "buoysPageBreadcrumb")}
           </Link>
-          <p className="mt-6 text-xs uppercase tracking-[0.3em] text-sand-200/60">Bouées live</p>
+          <p className="mt-6 text-xs uppercase tracking-[0.3em] text-sand-200/60">{t(locale, "buoysKicker")}</p>
           <h1 className="mt-2 font-display text-4xl font-bold leading-tight sm:text-5xl">
-            Mesures de houle en direct
+            {t(locale, "buoysPageTitle")}
           </h1>
           <p className="mt-4 max-w-3xl text-pretty text-white/65">
-            Un tableau lisible pour comparer les bouées utiles au surf : hauteur moyenne,
-            hauteur estimée des plus gros sets, période, direction, vent et fraîcheur du relevé.
+            {t(locale, "buoysPageIntro")}
           </p>
         </div>
 
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <InfoCard icon={<Radio className="h-4 w-4" />} label="Stations suivies" value={`${observations.length}`} />
-          <InfoCard icon={<Activity className="h-4 w-4" />} label="Stations live" value={`${liveCount}`} />
-          <InfoCard icon={<Waves className="h-4 w-4" />} label="Avec mesure houle" value={`${waveCount}`} />
+          <InfoCard icon={<Radio className="h-4 w-4" />} label={t(locale, "buoysStatStations")} value={`${observations.length}`} />
+          <InfoCard icon={<Activity className="h-4 w-4" />} label={t(locale, "buoysStatLive")} value={`${liveCount}`} />
+          <InfoCard icon={<Waves className="h-4 w-4" />} label={t(locale, "buoysStatWave")} value={`${waveCount}`} />
         </div>
 
         <BuoyDashboard observations={observations} updatedAt={updatedAt} />
@@ -96,14 +98,12 @@ export default async function BuoysPage() {
           <div className="flex items-start gap-3">
             <Database className="mt-1 h-5 w-5 shrink-0 text-ocean-300" />
             <div>
-              <h2 className="font-display text-xl font-bold">Source des données</h2>
+              <h2 className="font-display text-xl font-bold">{t(locale, "buoysSourceTitle")}</h2>
               <p className="mt-2 text-sm leading-relaxed text-white/60">
-                Les relevés live affichés ici proviennent de NOAA NDBC, qui publie des fichiers temps réel
-                gratuits pour chaque station. {CANDHIS_NOTE}
+                {t(locale, "buoysSourceBody")} {CANDHIS_NOTE}
               </p>
               <p className="mt-2 text-xs text-white/38">
-                Les hauteurs max/min sont des estimations à partir de la hauteur significative quand la bouée
-                ne publie pas directement ces champs. Elles servent à lire la tendance, pas à remplacer le jugement local.
+                {t(locale, "buoysSourceCaveat")}
               </p>
             </div>
           </div>

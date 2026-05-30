@@ -145,6 +145,46 @@ export default async function SpotPage({ params }: PageProps) {
           },
         })),
       },
+      // Dataset descriptor — surf forecast feed produced by the app for this spot.
+      // Helps AI search understand the page is updated programmatically and what variables it exposes.
+      {
+        "@type": "Dataset",
+        "@id": `${pageUrl}#dataset`,
+        name: `Prévisions surf 7 jours — ${spot.name}`,
+        description: `Hauteur de houle, période dominante, direction, puissance (kW/m), vent, rafales, marée et score session 0-100 pour ${spot.name}.`,
+        url: pageUrl,
+        temporalCoverage: "P7D",
+        creator: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+        keywords: spotKeywords(spot).join(", "),
+        variableMeasured: [
+          "wave height",
+          "effective set height",
+          "wave power",
+          "swell period",
+          "wave direction",
+          "wind speed",
+          "wind direction",
+          "wind gusts",
+          "tide state",
+          "surf session score (0-100)",
+        ],
+        distribution: [
+          {
+            "@type": "DataDownload",
+            encodingFormat: "application/json",
+            contentUrl: absoluteUrl(`/api/forecast/${spot.slug}`),
+          },
+          {
+            "@type": "DataDownload",
+            encodingFormat: "text/markdown",
+            contentUrl: absoluteUrl(`/spot/${spot.slug}/llms.txt`),
+          },
+        ],
+        spatialCoverage: {
+          "@type": "Place",
+          geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
+        },
+      },
     ],
   };
 
@@ -221,7 +261,7 @@ export default async function SpotPage({ params }: PageProps) {
           {/* Right: aside (key info, sticky on lg+) */}
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <BuoyMiniPanel
-              title="Bouée la plus proche"
+              title={t(locale, "buoysMiniNearestSpot")}
               lat={spot.lat}
               lon={spot.lon}
               limit={1}

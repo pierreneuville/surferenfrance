@@ -1,11 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { Filters, SortKey } from "./Filters";
 import { QuickActions } from "./QuickActions";
 import { HotToday } from "./HotToday";
 import { WeekHighlights } from "./WeekHighlights";
-import { BuoyMiniPanel } from "./BuoyMiniPanel";
+
+// BuoyMiniPanel fetches /api/buoys on mount — keep it out of the initial bundle
+// since it's secondary to the spot grid. SSR off because it's purely client-driven.
+const BuoyMiniPanel = dynamic(() => import("./BuoyMiniPanel").then((m) => m.BuoyMiniPanel), {
+  ssr: false,
+  loading: () => (
+    <div className="shimmer-wave h-24 rounded-2xl border border-white/[0.06] bg-white/[0.025]" />
+  ),
+});
 import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
 import { getEngagement, recordExploredSpot, subscribeEngagement } from "@/lib/engagement";
 import { trackEvent } from "@/lib/analytics";
@@ -55,6 +64,22 @@ export function HomeContent() {
   const [exploredCount, setExploredCount] = useState(0);
 
   useEffect(() => { setHasGeo(typeof navigator !== "undefined" && !!navigator.geolocation); }, []);
+
+  // Non-blocking IP-based geo via Vercel edge headers. Fires once on mount,
+  // gives us an approximate position without showing a permission prompt.
+  // The precise browser geolocation is still requested when the user taps "Near me".
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/geo")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { lat: number | null; lon: number | null } | null) => {
+        if (cancelled || !data || data.lat == null || data.lon == null) return;
+        // Only set if precise geo hasn't already been resolved
+        setUserPos((prev) => prev ?? { lat: data.lat as number, lon: data.lon as number });
+      })
+      .catch(() => { /* silent */ });
+    return () => { cancelled = true; };
+  }, []);
 
   // Sync favorites from localStorage + listen to changes
   useEffect(() => {
@@ -206,7 +231,6 @@ export function HomeContent() {
 
       <div className="mt-4">
         <BuoyMiniPanel
-          title={userPos ? "Bouées live près de toi" : "Bouées live à surveiller"}
           lat={userPos?.lat}
           lon={userPos?.lon}
           limit={3}

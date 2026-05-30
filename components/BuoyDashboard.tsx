@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { ArrowDownUp, Clock, ExternalLink, Waves, Wind } from "lucide-react";
 import type { BuoyArea, BuoyObservation, BuoyStatus } from "@/lib/buoys";
 import { fmt } from "@/lib/utils";
+import { useLocale } from "@/lib/useLocale";
+import { t, tf, type Locale } from "@/lib/i18n";
 
 type SortKey = "waveHeight" | "dominantPeriod" | "windSpeedKmh" | "ageMinutes" | "name";
 
@@ -14,7 +16,18 @@ interface Props {
 
 const AREA_FILTERS: Array<BuoyArea | "Toutes"> = ["Toutes", "Atlantique", "Manche", "Méditerranée", "International"];
 
+function areaLabel(area: BuoyArea | "Toutes", locale: Locale): string {
+  switch (area) {
+    case "Toutes": return t(locale, "buoysFilterAll");
+    case "Atlantique": return t(locale, "buoysAreaAtlantique");
+    case "Manche": return t(locale, "buoysAreaManche");
+    case "Méditerranée": return t(locale, "buoysAreaMed");
+    case "International": return t(locale, "buoysAreaIntl");
+  }
+}
+
 export function BuoyDashboard({ observations, updatedAt }: Props) {
+  const { locale } = useLocale();
   const [area, setArea] = useState<BuoyArea | "Toutes">("Toutes");
   const [sort, setSort] = useState<SortKey>("waveHeight");
   const [liveOnly, setLiveOnly] = useState(false);
@@ -31,15 +44,15 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
       <div className="rounded-3xl border border-white/[0.06] bg-white/[0.025] p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-sand-200/60">Relevés directs</p>
-            <h2 className="mt-1 font-display text-2xl font-bold">Toutes les bouées en un coup d'oeil</h2>
+            <p className="text-xs uppercase tracking-[0.25em] text-sand-200/60">{t(locale, "buoysDashboardKicker")}</p>
+            <h2 className="mt-1 font-display text-2xl font-bold">{t(locale, "buoysDashboardTitle")}</h2>
             <p className="mt-1 text-sm text-white/55">
-              Dernière synchronisation Yosurf : {formatDate(updatedAt)}
+              {tf(locale, "buoysDashboardSync", { date: formatDate(updatedAt) })}
             </p>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto] lg:min-w-[760px]">
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" aria-label="Filtrer les bouées par zone">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" aria-label={t(locale, "buoysKicker")}>
               {AREA_FILTERS.map((item) => (
                 <button
                   key={item}
@@ -50,7 +63,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                       : "border-white/[0.08] bg-white/[0.03] text-white/60 hover:text-white"
                   }`}
                 >
-                  {item}
+                  {areaLabel(item, locale)}
                 </button>
               ))}
             </div>
@@ -58,13 +71,13 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
               value={sort}
               onChange={(event) => setSort(event.target.value as SortKey)}
               className="w-full appearance-none rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-white/80 outline-none [color-scheme:dark] focus:border-ocean-400 sm:w-auto"
-              aria-label="Trier les bouées"
+              aria-label={t(locale, "buoysSortWave")}
             >
-              <option value="waveHeight">Tri : hauteur</option>
-              <option value="dominantPeriod">Tri : période</option>
-              <option value="windSpeedKmh">Tri : vent</option>
-              <option value="ageMinutes">Tri : fraîcheur</option>
-              <option value="name">Tri : A-Z</option>
+              <option value="waveHeight">{t(locale, "buoysSortWave")}</option>
+              <option value="dominantPeriod">{t(locale, "buoysSortPeriod")}</option>
+              <option value="windSpeedKmh">{t(locale, "buoysSortWind")}</option>
+              <option value="ageMinutes">{t(locale, "buoysSortAge")}</option>
+              <option value="name">{t(locale, "buoysSortName")}</option>
             </select>
             <button
               onClick={() => setLiveOnly((value) => !value)}
@@ -74,7 +87,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                   : "border-white/[0.08] bg-white/[0.03] text-white/60 hover:text-white"
               }`}
             >
-              Live seulement
+              {t(locale, "buoysFilterLiveOnly")}
             </button>
           </div>
         </div>
@@ -82,7 +95,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
 
       <div className="grid gap-3 lg:hidden">
         {visible.map((observation) => (
-          <BuoyMobileCard key={observation.station.id} observation={observation} />
+          <BuoyMobileCard key={observation.station.id} observation={observation} locale={locale} />
         ))}
       </div>
 
@@ -90,16 +103,16 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-white/[0.06] bg-white/[0.025] text-xs uppercase tracking-widest text-white/40">
             <tr>
-              <Th label="Bouée" />
-              <Th label="Zone" />
-              <Th label="H moy" />
-              <Th label="H max" />
-              <Th label="H min" />
-              <Th label="Période" />
-              <Th label="Dir" />
-              <Th label="Vent" />
-              <Th label="Relevé" />
-              <Th label="État" />
+              <Th label={t(locale, "buoysColBuoy")} />
+              <Th label={t(locale, "buoysColZone")} />
+              <Th label={t(locale, "buoysColAvgH")} />
+              <Th label={t(locale, "buoysColMaxH")} />
+              <Th label={t(locale, "buoysColMinH")} />
+              <Th label={t(locale, "buoysColPeriod")} />
+              <Th label={t(locale, "buoysColDir")} />
+              <Th label={t(locale, "buoysColWind")} />
+              <Th label={t(locale, "buoysColAge")} />
+              <Th label={t(locale, "buoysColStatus")} />
             </tr>
           </thead>
           <tbody>
@@ -117,7 +130,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                   </a>
                   <div className="text-xs text-white/35">NOAA {observation.station.id}</div>
                 </td>
-                <td className="px-4 py-3 text-white/65">{observation.station.area}</td>
+                <td className="px-4 py-3 text-white/65">{areaLabel(observation.station.area, locale)}</td>
                 <td className="px-4 py-3 font-semibold">{fmt(observation.waveHeight)} m</td>
                 <td className="px-4 py-3 text-white/70">{fmt(observation.waveMax)} m</td>
                 <td className="px-4 py-3 text-white/70">{fmt(observation.waveMin)} m</td>
@@ -127,7 +140,7 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
                   {fmt(observation.windSpeedKmh, 0)} km/h {observation.windDirectionCardinal}
                 </td>
                 <td className="px-4 py-3 text-white/60">{formatAge(observation.ageMinutes)}</td>
-                <td className="px-4 py-3"><StatusPill status={observation.status} /></td>
+                <td className="px-4 py-3"><StatusPill status={observation.status} locale={locale} /></td>
               </tr>
             ))}
           </tbody>
@@ -136,32 +149,32 @@ export function BuoyDashboard({ observations, updatedAt }: Props) {
 
       {visible.length === 0 && (
         <div className="rounded-3xl border border-white/[0.06] bg-white/[0.025] p-8 text-center text-white/55">
-          Aucune bouée ne correspond aux filtres.
+          {t(locale, "buoysEmpty")}
         </div>
       )}
     </div>
   );
 }
 
-export function BuoyMobileCard({ observation }: { observation: BuoyObservation }) {
+export function BuoyMobileCard({ observation, locale }: { observation: BuoyObservation; locale: Locale }) {
   return (
     <article className="rounded-3xl border border-white/[0.06] bg-white/[0.025] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-white/35">
-            {observation.station.area} · NOAA {observation.station.id}
+            {areaLabel(observation.station.area, locale)} · NOAA {observation.station.id}
           </div>
           <h3 className="mt-1 font-display text-xl font-bold">{observation.station.name}</h3>
           <p className="mt-1 text-xs text-white/45">{observation.station.note}</p>
         </div>
-        <StatusPill status={observation.status} />
+        <StatusPill status={observation.status} locale={locale} />
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <Metric icon={<Waves className="h-3.5 w-3.5" />} label="Houle" value={`${fmt(observation.waveHeight)} m`} sub={`max ${fmt(observation.waveMax)} m`} />
-        <Metric icon={<ArrowDownUp className="h-3.5 w-3.5" />} label="Période" value={`${fmt(observation.dominantPeriod, 0)} s`} sub={observation.waveDirectionCardinal || "direction —"} />
-        <Metric icon={<Wind className="h-3.5 w-3.5" />} label="Vent" value={`${fmt(observation.windSpeedKmh, 0)} km/h`} sub={observation.windDirectionCardinal || "direction —"} />
-        <Metric icon={<Clock className="h-3.5 w-3.5" />} label="Relevé" value={formatAge(observation.ageMinutes)} sub={formatDate(observation.observedAt)} />
+        <Metric icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileSwell")} value={`${fmt(observation.waveHeight)} m`} sub={`max ${fmt(observation.waveMax)} m`} />
+        <Metric icon={<ArrowDownUp className="h-3.5 w-3.5" />} label={t(locale, "buoysMobilePeriod")} value={`${fmt(observation.dominantPeriod, 0)} s`} sub={observation.waveDirectionCardinal || "—"} />
+        <Metric icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileWind")} value={`${fmt(observation.windSpeedKmh, 0)} km/h`} sub={observation.windDirectionCardinal || "—"} />
+        <Metric icon={<Clock className="h-3.5 w-3.5" />} label={t(locale, "buoysMobileReading")} value={formatAge(observation.ageMinutes)} sub={formatDate(observation.observedAt)} />
       </div>
 
       <p className="mt-3 text-xs text-white/42">{observation.qualityNote}</p>
@@ -171,7 +184,7 @@ export function BuoyMobileCard({ observation }: { observation: BuoyObservation }
         rel="noreferrer"
         className="mt-4 inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs text-white/60 hover:text-ocean-200"
       >
-        Source NOAA
+        {t(locale, "buoysSourceNoaa")}
         <ExternalLink className="h-3 w-3" />
       </a>
     </article>
@@ -195,7 +208,7 @@ function Th({ label }: { label: string }) {
   return <th className="px-4 py-3 font-medium">{label}</th>;
 }
 
-function StatusPill({ status }: { status: BuoyStatus }) {
+function StatusPill({ status, locale }: { status: BuoyStatus; locale: Locale }) {
   const styles: Record<BuoyStatus, string> = {
     live: "border-emerald-400/40 bg-emerald-500/15 text-emerald-200",
     partial: "border-sand-300/35 bg-sand-300/10 text-sand-100",
@@ -203,10 +216,10 @@ function StatusPill({ status }: { status: BuoyStatus }) {
     offline: "border-white/[0.08] bg-white/[0.03] text-white/45",
   };
   const labels: Record<BuoyStatus, string> = {
-    live: "Live",
-    partial: "Partiel",
-    stale: "Ancien",
-    offline: "Offline",
+    live: t(locale, "buoysStatusLive"),
+    partial: t(locale, "buoysStatusPartial"),
+    stale: t(locale, "buoysStatusStale"),
+    offline: t(locale, "buoysStatusOffline"),
   };
   return (
     <span className={`inline-flex shrink-0 rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-widest ${styles[status]}`}>
