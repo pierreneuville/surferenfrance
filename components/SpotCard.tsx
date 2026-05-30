@@ -15,10 +15,11 @@ const REGION_GRADIENT: Record<string, string> = {
   "Manche & Nord": "from-slate-300 via-ocean-300 to-ocean-600",
   "Bretagne": "from-teal-300 via-ocean-500 to-ocean-800",
   "Atlantique Nord": "from-ocean-200 via-lagoon-400 to-ocean-700",
-  "Côte d'Argent": "from-sand-100 via-sand-400 to-sunset-500",
+  "Aquitaine": "from-sand-100 via-sand-400 to-sunset-500",
   "Pays Basque": "from-coral-300 via-sunset-500 to-sand-300",
   "Méditerranée": "from-lagoon-300 via-lagoon-500 to-ocean-600",
   "Corse": "from-emerald-300 via-lagoon-400 to-sand-300",
+  "Outre-Mer": "from-emerald-300 via-coral-400 to-sunset-500",
 };
 
 interface Props {
@@ -166,11 +167,16 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
           <Stat icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={degToCardinal(d.windDir)} />
         </div>
 
-        {(d.wavePower != null || d.engagedSurf || forecast.spot.worldClass) && (
+        {(d.wavePower != null || d.engagedSurf || forecast.spot.worldClass || (d.tideExtremes && d.tideExtremes.length)) && (
           <div className="mb-4 flex flex-wrap gap-1.5 text-[10px]">
             {d.wavePower != null && (
               <span className="rounded-full border border-ocean-300/20 bg-ocean-400/10 px-2 py-1 text-ocean-100/80">
                 puissance {fmt(d.wavePower, 1)} kW/m
+              </span>
+            )}
+            {d.tideExtremes && d.tideExtremes.length > 0 && (
+              <span className="rounded-full border border-lagoon-300/25 bg-lagoon-400/10 px-2 py-1 text-lagoon-100">
+                {tideBadge(d.tideExtremes)}
               </span>
             )}
             {d.engagedSurf && (
@@ -264,6 +270,15 @@ function periodLabel(period: number | null | undefined, locale: import("@/lib/i1
 function setLabel(waveHeight: number | null | undefined, effective: number | null | undefined): string | null {
   if (waveHeight == null || effective == null || effective <= waveHeight + 0.1) return null;
   return `sets ~${fmt(effective)} m`;
+}
+
+function tideBadge(extremes: import("@/lib/types").TideExtreme[]): string {
+  // Pick the next extreme from "now" if today, else the day's first extreme.
+  const now = new Date();
+  const upcoming = extremes.find((e) => new Date(e.time) >= now) ?? extremes[0];
+  const label = upcoming.type === "high" ? "marée haute" : "marée basse";
+  const t = new Date(upcoming.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return `${label} ${t}`;
 }
 
 function ScoreGauge({ score, color, tone }: { score: number; color: string; tone: string }) {

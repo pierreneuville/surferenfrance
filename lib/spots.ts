@@ -4,10 +4,11 @@ export const REGIONS = [
   "Manche & Nord",
   "Bretagne",
   "Atlantique Nord",
-  "Côte d'Argent",
+  "Aquitaine",
   "Pays Basque",
   "Méditerranée",
   "Corse",
+  "Outre-Mer",
   "Espagne Atlantique",
   "Canaries",
   "Portugal",
@@ -20,10 +21,11 @@ export const REGION_EMOJI: Record<string, string> = {
   "Manche & Nord": "🏰",
   "Bretagne": "🌬️",
   "Atlantique Nord": "🐚",
-  "Côte d'Argent": "🏖️",
+  "Aquitaine": "🏖️",
   "Pays Basque": "🏄",
   "Méditerranée": "☀️",
   "Corse": "🏝️",
+  "Outre-Mer": "🌺",
   "Espagne Atlantique": "🇪🇸",
   "Canaries": "🌋",
   "Portugal": "🇵🇹",
@@ -57,11 +59,83 @@ export const WORLD_CLASS_SPOT_SLUGS = new Set([
   "thurso-east",
   "aileens",
   "mullaghmore",
+  // Outre-Mer
+  "teahupoo",
+  "saint-leu",
+  "le-souffleur",
 ]);
+
+/**
+ * Tide preference per spot.
+ *   "low"        works only at low tide (uncovered reefs, sand banks revealed)
+ *   "high"       works only at high tide (covered rocks, deep enough)
+ *   "mid"        narrow window around mid
+ *   "mid-low"    falling through low — beach breaks that wake up on the drop
+ *   "mid-high"   rising through high — sand banks that need depth
+ *   "rising"     loose preference for incoming tide
+ *   "falling"    loose preference for outgoing tide
+ *   "any"        not tide-sensitive
+ * Default when unset: "any" — no boost/penalty.
+ */
+const TIDE_PREFERENCES: Record<string, Spot["tideOptimal"]> = {
+  // France — Manche / Bretagne reefs (mostly tide-driven)
+  "siouville": "mid",
+  "vauville": "mid",
+  "le-dossen": "mid-high",
+  "la-palue": "mid",
+  "la-torche": "mid-low",
+  "la-baleine": "mid",
+  "groix-vivier": "mid-high",
+  "guidel": "mid-low",
+  // Aquitaine beach breaks (sand banks)
+  "lacanau": "mid-low",
+  "le-porge": "mid-low",
+  "le-grand-crohot": "mid-low",
+  "biscarrosse": "mid-low",
+  "mimizan": "mid-low",
+  "messanges": "mid-low",
+  "moliets": "mid-low",
+  "vieux-boucau": "mid-low",
+  "hossegor": "mid-low",
+  "hossegor-nord": "mid-low",
+  "capbreton": "mid",
+  "seignosse-les-bourdaines": "mid-low",
+  "seignosse-le-penon": "mid-low",
+  // Pays Basque points / reefs
+  "anglet-vvf": "mid",
+  "anglet-cavaliers": "mid",
+  "anglet-marinella": "mid",
+  "biarritz-cote-des-basques": "mid-low",
+  "biarritz-grande-plage": "mid",
+  "guethary": "mid-high",
+  "lafitenia": "mid",
+  "belharra": "high",
+  "hendaye": "rising",
+  // Spain / Portugal
+  "mundaka": "mid",
+  "menakoz": "mid-high",
+  "punta-galea": "mid-high",
+  "coxos": "mid-high",
+  "supertubos": "mid",
+  "ribeira-d-ilhas": "mid",
+  "carcavelos": "mid",
+  // Morocco
+  "anchor-point": "mid-high",
+  "killers": "mid",
+  "boilers": "mid",
+  // Ireland / UK
+  "aileens": "mid-high",
+  "mullaghmore": "mid-high",
+  "thurso-east": "mid",
+};
 
 // Helper to keep entries compact
 function s(slug: string, name: string, shortName: string, region: Spot["region"], department: string, lat: number, lon: number, offshore: number, level: Spot["level"], type: string, description: string): Spot {
-  return { slug, name, shortName, region, department, lat, lon, offshore, level, type, description, worldClass: WORLD_CLASS_SPOT_SLUGS.has(slug) || undefined };
+  return {
+    slug, name, shortName, region, department, lat, lon, offshore, level, type, description,
+    worldClass: WORLD_CLASS_SPOT_SLUGS.has(slug) || undefined,
+    tideOptimal: TIDE_PREFERENCES[slug],
+  };
 }
 
 export const SPOTS: Spot[] = [
@@ -228,46 +302,46 @@ export const SPOTS: Spot[] = [
 
   // ==================== CÔTE D'ARGENT (Gironde + Landes) ====================
   // Gironde
-  s("le-verdon", "Le Verdon-sur-Mer (Pointe de Grave)", "Le Verdon", "Côte d'Argent", "Gironde", 45.560, -1.066, 90, "beginner", "Beach break", "Embouchure de la Gironde. Vagues par houle SW."),
-  s("soulac-sur-mer", "Soulac-sur-Mer", "Soulac", "Côte d'Argent", "Gironde", 45.518, -1.123, 90, "beginner", "Beach break", "Pointe du Médoc, plage longue."),
-  s("amelie-soulac", "L'Amélie-sur-Mer (Soulac)", "L'Amélie", "Côte d'Argent", "Gironde", 45.500, -1.137, 90, "intermediate", "Beach break", "Petite plage à côté de Soulac. Spot local."),
-  s("montalivet", "Montalivet", "Montalivet", "Côte d'Argent", "Gironde", 45.379, -1.143, 90, "intermediate", "Beach break", "Plage forestière préservée. Vagues puissantes."),
-  s("hourtin", "Hourtin-Plage", "Hourtin", "Côte d'Argent", "Gironde", 45.246, -1.158, 90, "intermediate", "Beach break", "Station familiale dans la pinède."),
-  s("le-pin-sec", "Le Pin Sec (Naujac)", "Le Pin Sec", "Côte d'Argent", "Gironde", 45.297, -1.156, 90, "intermediate", "Beach break", "Plage forestière préservée, accès sauvage."),
-  s("carcans", "Carcans-Plage", "Carcans", "Côte d'Argent", "Gironde", 45.111, -1.176, 90, "intermediate", "Beach break", "Plage sauvage au nord de Lacanau."),
-  s("lacanau", "Lacanau-Océan", "Lacanau", "Côte d'Argent", "Gironde", 45.000, -1.205, 90, "intermediate", "Beach break", "Référence du Médoc. Étape du tour pro."),
-  s("super-sud-lacanau", "Lacanau - Super Sud", "Super Sud", "Côte d'Argent", "Gironde", 44.985, -1.213, 90, "intermediate", "Beach break", "Spot sud de Lacanau, moins fréquenté."),
-  s("le-porge", "Le Porge", "Le Porge", "Côte d'Argent", "Gironde", 44.883, -1.183, 90, "beginner", "Beach break", "Plage forestière préservée."),
-  s("le-grand-crohot", "Le Grand-Crohot", "Grand-Crohot", "Côte d'Argent", "Gironde", 44.770, -1.218, 90, "intermediate", "Beach break", "Plage du Cap-Ferret, sauvage."),
-  s("truc-vert", "Le Truc Vert (Cap-Ferret)", "Truc Vert", "Côte d'Argent", "Gironde", 44.690, -1.243, 90, "intermediate", "Beach break", "Plage tranquille du Cap-Ferret."),
-  s("cap-ferret", "Cap Ferret - Horizon", "Cap Ferret", "Côte d'Argent", "Gironde", 44.640, -1.250, 90, "intermediate", "Beach break", "Pointe sauvage face à l'océan."),
-  s("la-salie", "La Salie", "La Salie", "Côte d'Argent", "Gironde", 44.560, -1.220, 90, "advanced", "Beach break", "Bassin d'Arcachon sud. Forts courants."),
-  s("petit-nice-pyla", "Pyla - Petit Nice", "Petit Nice", "Côte d'Argent", "Gironde", 44.583, -1.231, 90, "intermediate", "Beach break", "Au pied de la Dune du Pilat."),
+  s("le-verdon", "Le Verdon-sur-Mer (Pointe de Grave)", "Le Verdon", "Aquitaine", "Gironde", 45.560, -1.066, 90, "beginner", "Beach break", "Embouchure de la Gironde. Vagues par houle SW."),
+  s("soulac-sur-mer", "Soulac-sur-Mer", "Soulac", "Aquitaine", "Gironde", 45.518, -1.123, 90, "beginner", "Beach break", "Pointe du Médoc, plage longue."),
+  s("amelie-soulac", "L'Amélie-sur-Mer (Soulac)", "L'Amélie", "Aquitaine", "Gironde", 45.500, -1.137, 90, "intermediate", "Beach break", "Petite plage à côté de Soulac. Spot local."),
+  s("montalivet", "Montalivet", "Montalivet", "Aquitaine", "Gironde", 45.379, -1.143, 90, "intermediate", "Beach break", "Plage forestière préservée. Vagues puissantes."),
+  s("hourtin", "Hourtin-Plage", "Hourtin", "Aquitaine", "Gironde", 45.246, -1.158, 90, "intermediate", "Beach break", "Station familiale dans la pinède."),
+  s("le-pin-sec", "Le Pin Sec (Naujac)", "Le Pin Sec", "Aquitaine", "Gironde", 45.297, -1.156, 90, "intermediate", "Beach break", "Plage forestière préservée, accès sauvage."),
+  s("carcans", "Carcans-Plage", "Carcans", "Aquitaine", "Gironde", 45.111, -1.176, 90, "intermediate", "Beach break", "Plage sauvage au nord de Lacanau."),
+  s("lacanau", "Lacanau-Océan", "Lacanau", "Aquitaine", "Gironde", 45.000, -1.205, 90, "intermediate", "Beach break", "Référence du Médoc. Étape du tour pro."),
+  s("super-sud-lacanau", "Lacanau - Super Sud", "Super Sud", "Aquitaine", "Gironde", 44.985, -1.213, 90, "intermediate", "Beach break", "Spot sud de Lacanau, moins fréquenté."),
+  s("le-porge", "Le Porge", "Le Porge", "Aquitaine", "Gironde", 44.883, -1.183, 90, "beginner", "Beach break", "Plage forestière préservée."),
+  s("le-grand-crohot", "Le Grand-Crohot", "Grand-Crohot", "Aquitaine", "Gironde", 44.770, -1.218, 90, "intermediate", "Beach break", "Plage du Cap-Ferret, sauvage."),
+  s("truc-vert", "Le Truc Vert (Cap-Ferret)", "Truc Vert", "Aquitaine", "Gironde", 44.690, -1.243, 90, "intermediate", "Beach break", "Plage tranquille du Cap-Ferret."),
+  s("cap-ferret", "Cap Ferret - Horizon", "Cap Ferret", "Aquitaine", "Gironde", 44.640, -1.250, 90, "intermediate", "Beach break", "Pointe sauvage face à l'océan."),
+  s("la-salie", "La Salie", "La Salie", "Aquitaine", "Gironde", 44.560, -1.220, 90, "advanced", "Beach break", "Bassin d'Arcachon sud. Forts courants."),
+  s("petit-nice-pyla", "Pyla - Petit Nice", "Petit Nice", "Aquitaine", "Gironde", 44.583, -1.231, 90, "intermediate", "Beach break", "Au pied de la Dune du Pilat."),
 
   // Landes
-  s("biscarrosse", "Biscarrosse-Plage", "Biscarrosse", "Côte d'Argent", "Landes", 44.435, -1.260, 90, "intermediate", "Beach break", "Premier spot landais. École et compétitions."),
-  s("biscarrosse-vivier", "Biscarrosse - Le Vivier", "Le Vivier", "Côte d'Argent", "Landes", 44.385, -1.275, 90, "intermediate", "Beach break", "Plage sud de Biscarrosse, moins fréquentée."),
-  s("mimizan", "Mimizan-Plage", "Mimizan", "Côte d'Argent", "Landes", 44.205, -1.300, 90, "beginner", "Beach break", "Plage du Courant. École reconnue."),
-  s("contis", "Contis-Plage", "Contis", "Côte d'Argent", "Landes", 44.082, -1.323, 90, "intermediate", "Beach break", "Spot des Landes préservé, cadre forestier."),
-  s("cap-de-l-homy", "Cap-de-l'Homy (Lit-et-Mixe)", "Cap-de-l'Homy", "Côte d'Argent", "Landes", 44.030, -1.341, 90, "intermediate", "Beach break", "Village à dunes, ambiance authentique."),
-  s("saint-girons-plage", "Saint-Girons-Plage", "Saint-Girons", "Côte d'Argent", "Landes", 43.952, -1.358, 90, "intermediate", "Beach break", "Spot sauvage à côté de Moliets."),
-  s("moliets", "Moliets-Plage", "Moliets", "Côte d'Argent", "Landes", 43.857, -1.383, 90, "intermediate", "Beach break", "Étape historique du tour pro. École dynamique."),
-  s("messanges", "Messanges", "Messanges", "Côte d'Argent", "Landes", 43.825, -1.395, 90, "intermediate", "Beach break", "Plage Sud, ambiance camping et surf."),
-  s("vieux-boucau", "Vieux-Boucau-les-Bains", "Vieux-Boucau", "Côte d'Argent", "Landes", 43.794, -1.404, 90, "intermediate", "Beach break", "Plage du Penon, ambiance village basque."),
-  s("soustons-plage", "Soustons-Plage", "Soustons", "Côte d'Argent", "Landes", 43.760, -1.408, 90, "intermediate", "Beach break", "Plage des Casernes, cadre dunaire."),
-  s("seignosse-penon", "Seignosse - Le Penon", "Le Penon", "Côte d'Argent", "Landes", 43.725, -1.420, 90, "intermediate", "Beach break", "Plage nord de Seignosse."),
-  s("seignosse-estagnots", "Seignosse - Les Estagnots", "Estagnots", "Côte d'Argent", "Landes", 43.700, -1.430, 90, "intermediate", "Beach break", "Plage des sessions des pros."),
-  s("seignosse", "Seignosse - Les Bourdaines", "Bourdaines", "Côte d'Argent", "Landes", 43.690, -1.435, 90, "intermediate", "Beach break", "Spot mondialement reconnu. Étape WSL."),
-  s("hossegor-nord", "Hossegor - La Nord", "Hossegor Nord", "Côte d'Argent", "Landes", 43.685, -1.435, 90, "advanced", "Beach break", "Plage nord d'Hossegor, vagues puissantes."),
-  s("hossegor", "Hossegor - La Gravière", "La Gravière", "Côte d'Argent", "Landes", 43.670, -1.440, 90, "advanced", "Beach break / fosse", "Tube break le plus célèbre d'Europe. Étape WSL."),
-  s("hossegor-sud", "Hossegor - La Sud", "Hossegor Sud", "Côte d'Argent", "Landes", 43.660, -1.443, 90, "advanced", "Beach break", "Plage sud d'Hossegor."),
-  s("capbreton-piste", "Capbreton - La Piste", "La Piste", "Côte d'Argent", "Landes", 43.665, -1.450, 90, "advanced", "Beach break", "Plage iconique de Capbreton."),
-  s("capbreton", "Capbreton - Le Santocha", "Santocha", "Côte d'Argent", "Landes", 43.645, -1.447, 90, "intermediate", "Beach break / jetée", "Fonctionne quand Hossegor sature."),
-  s("capbreton-prevent", "Capbreton - Le Prévent", "Le Prévent", "Côte d'Argent", "Landes", 43.660, -1.443, 90, "intermediate", "Beach break", "Beach break central de Capbreton."),
-  s("labenne", "Labenne-Océan", "Labenne", "Côte d'Argent", "Landes", 43.595, -1.450, 90, "intermediate", "Beach break", "Station landaise, plage longue."),
-  s("ondres", "Ondres-Plage", "Ondres", "Côte d'Argent", "Landes", 43.572, -1.460, 90, "intermediate", "Beach break", "Petite station landaise, peu fréquentée."),
-  s("tarnos", "Tarnos - La Digue", "Tarnos", "Côte d'Argent", "Landes", 43.547, -1.500, 90, "intermediate", "Beach break / jetée", "Plage de la Digue Nord, jetée de l'Adour."),
-  s("hourquet", "Hourquet (Vieux-Boucau)", "Hourquet", "Côte d'Argent", "Landes", 43.770, -1.412, 90, "intermediate", "Beach break", "Petit spot landais entre Vieux-Boucau et Seignosse, ambiance secrète."),
+  s("biscarrosse", "Biscarrosse-Plage", "Biscarrosse", "Aquitaine", "Landes", 44.435, -1.260, 90, "intermediate", "Beach break", "Premier spot landais. École et compétitions."),
+  s("biscarrosse-vivier", "Biscarrosse - Le Vivier", "Le Vivier", "Aquitaine", "Landes", 44.385, -1.275, 90, "intermediate", "Beach break", "Plage sud de Biscarrosse, moins fréquentée."),
+  s("mimizan", "Mimizan-Plage", "Mimizan", "Aquitaine", "Landes", 44.205, -1.300, 90, "beginner", "Beach break", "Plage du Courant. École reconnue."),
+  s("contis", "Contis-Plage", "Contis", "Aquitaine", "Landes", 44.082, -1.323, 90, "intermediate", "Beach break", "Spot des Landes préservé, cadre forestier."),
+  s("cap-de-l-homy", "Cap-de-l'Homy (Lit-et-Mixe)", "Cap-de-l'Homy", "Aquitaine", "Landes", 44.030, -1.341, 90, "intermediate", "Beach break", "Village à dunes, ambiance authentique."),
+  s("saint-girons-plage", "Saint-Girons-Plage", "Saint-Girons", "Aquitaine", "Landes", 43.952, -1.358, 90, "intermediate", "Beach break", "Spot sauvage à côté de Moliets."),
+  s("moliets", "Moliets-Plage", "Moliets", "Aquitaine", "Landes", 43.857, -1.383, 90, "intermediate", "Beach break", "Étape historique du tour pro. École dynamique."),
+  s("messanges", "Messanges", "Messanges", "Aquitaine", "Landes", 43.825, -1.395, 90, "intermediate", "Beach break", "Plage Sud, ambiance camping et surf."),
+  s("vieux-boucau", "Vieux-Boucau-les-Bains", "Vieux-Boucau", "Aquitaine", "Landes", 43.794, -1.404, 90, "intermediate", "Beach break", "Plage du Penon, ambiance village basque."),
+  s("soustons-plage", "Soustons-Plage", "Soustons", "Aquitaine", "Landes", 43.760, -1.408, 90, "intermediate", "Beach break", "Plage des Casernes, cadre dunaire."),
+  s("seignosse-penon", "Seignosse - Le Penon", "Le Penon", "Aquitaine", "Landes", 43.725, -1.420, 90, "intermediate", "Beach break", "Plage nord de Seignosse."),
+  s("seignosse-estagnots", "Seignosse - Les Estagnots", "Estagnots", "Aquitaine", "Landes", 43.700, -1.430, 90, "intermediate", "Beach break", "Plage des sessions des pros."),
+  s("seignosse", "Seignosse - Les Bourdaines", "Bourdaines", "Aquitaine", "Landes", 43.690, -1.435, 90, "intermediate", "Beach break", "Spot mondialement reconnu. Étape WSL."),
+  s("hossegor-nord", "Hossegor - La Nord", "Hossegor Nord", "Aquitaine", "Landes", 43.685, -1.435, 90, "advanced", "Beach break", "Plage nord d'Hossegor, vagues puissantes."),
+  s("hossegor", "Hossegor - La Gravière", "La Gravière", "Aquitaine", "Landes", 43.670, -1.440, 90, "advanced", "Beach break / fosse", "Tube break le plus célèbre d'Europe. Étape WSL."),
+  s("hossegor-sud", "Hossegor - La Sud", "Hossegor Sud", "Aquitaine", "Landes", 43.660, -1.443, 90, "advanced", "Beach break", "Plage sud d'Hossegor."),
+  s("capbreton-piste", "Capbreton - La Piste", "La Piste", "Aquitaine", "Landes", 43.665, -1.450, 90, "advanced", "Beach break", "Plage iconique de Capbreton."),
+  s("capbreton", "Capbreton - Le Santocha", "Santocha", "Aquitaine", "Landes", 43.645, -1.447, 90, "intermediate", "Beach break / jetée", "Fonctionne quand Hossegor sature."),
+  s("capbreton-prevent", "Capbreton - Le Prévent", "Le Prévent", "Aquitaine", "Landes", 43.660, -1.443, 90, "intermediate", "Beach break", "Beach break central de Capbreton."),
+  s("labenne", "Labenne-Océan", "Labenne", "Aquitaine", "Landes", 43.595, -1.450, 90, "intermediate", "Beach break", "Station landaise, plage longue."),
+  s("ondres", "Ondres-Plage", "Ondres", "Aquitaine", "Landes", 43.572, -1.460, 90, "intermediate", "Beach break", "Petite station landaise, peu fréquentée."),
+  s("tarnos", "Tarnos - La Digue", "Tarnos", "Aquitaine", "Landes", 43.547, -1.500, 90, "intermediate", "Beach break / jetée", "Plage de la Digue Nord, jetée de l'Adour."),
+  s("hourquet", "Hourquet (Vieux-Boucau)", "Hourquet", "Aquitaine", "Landes", 43.770, -1.412, 90, "intermediate", "Beach break", "Petit spot landais entre Vieux-Boucau et Seignosse, ambiance secrète."),
 
   // ==================== PAYS BASQUE ====================
   s("anglet-barre", "Anglet - La Barre", "La Barre", "Pays Basque", "Pyrénées-Atlantiques", 43.525, -1.515, 90, "advanced", "Beach break / jetée", "Spot historique, vagues puissantes près de la jetée de l'Adour."),
@@ -373,6 +447,38 @@ export const SPOTS: Spot[] = [
   s("pinarello", "Pinarello", "Pinarello", "Corse", "Corse-du-Sud", 41.687, 9.388, 90, "intermediate", "Beach break", "Plage du sud-est corse, ambiance lagon."),
   s("algajola", "Algajola", "Algajola", "Corse", "Haute-Corse", 42.611, 8.857, 0, "intermediate", "Beach break", "Plage entre Calvi et L'Île-Rousse, vagues régulières en hiver."),
   s("lumio", "Lumio (Sant'Ambroggio)", "Lumio", "Corse", "Haute-Corse", 42.580, 8.825, 0, "intermediate", "Beach break", "Spot du golfe de Calvi, accessible et joli."),
+
+  // ==================== 🌺 OUTRE-MER ====================
+  // La Réunion (974) — saison houle australe avril-octobre, baignade dangereuse (requins) hors lagons et spots habilités
+  s("saint-leu", "Saint-Leu", "Saint-Leu", "Outre-Mer", "La Réunion", -21.165, 55.279, 90, "advanced", "Reef left", "Gauche tubulaire de classe mondiale sur lagon récifal. Travelers magnet."),
+  s("la-gauche-de-saint-leu", "Gauche de Saint-Leu (inside)", "Saint-Leu Inside", "Outre-Mer", "La Réunion", -21.170, 55.282, 90, "intermediate", "Reef left", "Section inside plus accessible que la pointe."),
+  s("trois-bassins", "Trois-Bassins", "Trois-Bassins", "Outre-Mer", "La Réunion", -21.094, 55.232, 90, "intermediate", "Reef break", "Spot familial de la côte ouest, vagues régulières."),
+  s("boucan-canot", "Boucan-Canot", "Boucan", "Outre-Mer", "La Réunion", -21.040, 55.220, 90, "intermediate", "Beach break", "Plage urbaine de Saint-Gilles, attention vigilance requins."),
+  s("la-souris-blanche", "La Souris Blanche (Étang-Salé)", "Souris Blanche", "Outre-Mer", "La Réunion", -21.275, 55.331, 90, "intermediate", "Beach break", "Plage de sable noir, vagues consistantes."),
+  s("saint-pierre", "Saint-Pierre - Terre-Sainte", "Saint-Pierre", "Outre-Mer", "La Réunion", -21.343, 55.488, 180, "beginner", "Beach break", "Plage abritée du sud, école active."),
+
+  // Guadeloupe (971) — saison hiver nord (nov-mars) côte nord/grande-terre, été swell sud rare
+  s("le-souffleur", "Le Souffleur (Port-Louis)", "Le Souffleur", "Outre-Mer", "Guadeloupe", 16.428, -61.521, 90, "advanced", "Reef break", "Vague droite puissante sur récif, classe mondiale. Pour confirmés."),
+  s("anse-bertrand", "Anse-Bertrand (Anse Laborde)", "Anse-Bertrand", "Outre-Mer", "Guadeloupe", 16.493, -61.500, 45, "intermediate", "Beach break", "Plage nord Grande-Terre, vagues régulières en hiver."),
+  s("le-moule", "Le Moule (Plage du Helleux)", "Le Moule", "Outre-Mer", "Guadeloupe", 16.345, -61.366, 90, "intermediate", "Beach break / reef", "Spot le plus pratiqué de Guadeloupe, beach break et reefs autour."),
+  s("port-louis", "Port-Louis - Plage du Souffleur (school)", "Port-Louis School", "Outre-Mer", "Guadeloupe", 16.423, -61.527, 45, "beginner", "Beach break", "Plage école protégée, idéale pour démarrer."),
+  s("petit-havre", "Petit Havre (Gosier)", "Petit Havre", "Outre-Mer", "Guadeloupe", 16.215, -61.456, 135, "intermediate", "Beach break", "Crique abritée du sud, vagues douces fréquentes."),
+
+  // Martinique (972) — Atlantique nord-est (Tartane, Anses-d'Arlet), saison nov-mai
+  s("tartane-anse-bonneville", "Tartane - Anse Bonneville", "Tartane", "Outre-Mer", "Martinique", 14.769, -60.913, 90, "intermediate", "Beach break", "Spot historique de la presqu'île de la Caravelle."),
+  s("baie-du-galion", "Baie du Galion", "Galion", "Outre-Mer", "Martinique", 14.732, -60.913, 90, "intermediate", "Reef break", "Reef de la Caravelle, plus technique que Tartane."),
+  s("le-diamant", "Le Diamant", "Le Diamant", "Outre-Mer", "Martinique", 14.470, -60.967, 180, "intermediate", "Beach break", "Longue plage face au Rocher du Diamant, parfois magique."),
+
+  // Polynésie française (987) — Tahiti, saison houle sud avril-octobre
+  s("teahupoo", "Teahupo'o", "Teahupo'o", "Outre-Mer", "Tahiti", -17.872, -149.267, 180, "advanced", "Reef left", "Vague la plus lourde du monde. Trésor national. Spectateur uniquement sans pilote local."),
+  s("papenoo", "Papenoo", "Papenoo", "Outre-Mer", "Tahiti", -17.508, -149.428, 0, "intermediate", "River mouth", "Embouchure de rivière, beach break le plus consistant de Tahiti."),
+  s("papara", "Papara", "Papara", "Outre-Mer", "Tahiti", -17.738, -149.547, 180, "intermediate", "Beach break", "Plage de sable noir, vagues constantes et école active."),
+  s("matavai", "Pointe Vénus (Matavai)", "Matavai", "Outre-Mer", "Tahiti", -17.494, -149.491, 0, "intermediate", "Reef break", "Spot historique du nord de Tahiti, vagues élégantes."),
+
+  // Mayotte (976), Nouvelle-Calédonie (988) - quelques spots de référence
+  s("ngouja", "N'Gouja (Mayotte)", "N'Gouja", "Outre-Mer", "Mayotte", -12.985, 45.097, 270, "intermediate", "Reef break", "Spot de l'île aux parfums, lagon ouvert."),
+  s("ouano", "Ouano (Nouvelle-Calédonie)", "Ouano", "Outre-Mer", "Nouvelle-Calédonie", -21.797, 165.738, 180, "advanced", "Reef break", "Passe de la Foa, vague puissante du lagon calédonien."),
+  s("ile-des-pins", "Île des Pins (Kuto)", "Île des Pins", "Outre-Mer", "Nouvelle-Calédonie", -22.667, 167.470, 180, "intermediate", "Reef break", "Reef discret au cœur du Pacifique sud."),
 
   // ==================== 🇪🇸 ESPAGNE ATLANTIQUE — Pays basque + Cantabrie ====================
   // Pays basque espagnol (Vizcaya / Gipuzkoa)

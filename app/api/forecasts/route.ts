@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { SPOTS } from "@/lib/spots";
 import { computeScore, computeWavePower, effectiveWaveHeight, isEngagedSurf } from "@/lib/score";
+import { detectTideExtremes, tideRangeForDay, tideStateAt } from "@/lib/tide";
 import type { Spot, DaySummary, BestWindowSummary, Level, SpotForecast } from "@/lib/types";
 
 // Cached at the edge for 30 min — forecasts from Open-Meteo refresh every 6h anyway.
@@ -29,7 +30,7 @@ async function fetchChunk(chunk: Spot[]): Promise<Array<{ marine: OMResponse | u
 
   const marineUrl =
     `${MARINE_BASE}?latitude=${lats}&longitude=${lons}` +
-    `&hourly=wave_height,wave_period,wave_direction` +
+    `&hourly=wave_height,wave_period,wave_direction,sea_level_height_msl` +
     `&daily=wave_height_max,wave_period_max,wave_direction_dominant` +
     `&timezone=${tz}&forecast_days=7`;
 
@@ -56,8 +57,10 @@ function num(x: unknown): number | null {
 
 function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse | undefined): DaySummary[] {
   const days: DaySummary[] = [];
+  const hTimes = (marine?.hourly?.time ?? []) as Array<string | null>;
   const hWaves = (marine?.hourly?.wave_height ?? []) as Array<number | null>;
   const hPeriods = (marine?.hourly?.wave_period ?? []) as Array<number | null>;
+  const hTide = (marine?.hourly?.sea_level_height_msl ?? []) as Array<number | null>;
   const hWindSpd = (wind?.hourly?.wind_speed_10m ?? []) as Array<number | null>;
   const hWindDir = (wind?.hourly?.wind_direction_10m ?? []) as Array<number | null>;
 
@@ -87,9 +90,9 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
 
     const startH = i * 24;
     for (const level of LEVELS) {
-      scoresByLevel[level] = computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level, { worldClass: spot.worldClass });
+      scoresByLevel[level] = computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level, { worldClass: spot.worldClass, tideOptimal: spot.tideOptimal });
 
-      // Hourly scores for that day
+      // Hourly scores for that day — pass tide state per hour so best-window aligns with tide
       const hScores: number[] = new Array(24).fill(0);
       for (let h = 0; h < 24; h++) {
         const idx = startH + h;
@@ -100,7 +103,11 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
           num(hWindDir[idx]),
           spot.offshore,
           level,
-          { worldClass: spot.worldClass }
+          {
+            worldClass: spot.worldClass,
+            tideOptimal: spot.tideOptimal,
+            tideState: spot.tideOptimal ? tideStateAt(hTide, idx) : undefined,
+          }
         );
       }
       let bestStart = -1, bestSum = -1;
@@ -112,6 +119,11 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
         ? { start: bestStart, end: bestStart + 2, avg: Math.round(bestSum / 3) }
         : null;
     }
+
+    const dayTimes = hTimes.slice(startH, startH + 24);
+    const dayTideHeights = hTide.slice(startH, startH + 24);
+    const tideExtremes = detectTideExtremes(dayTimes, dayTideHeights);
+    const tideRange = tideRangeForDay(hTide, startH);
 
     days.push({
       date,
@@ -126,6 +138,8 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
       windGusts,
       sunrise,
       sunset,
+      tideExtremes,
+      tideRange,
       score: scoresByLevel.intermediate,
       scoresByLevel,
       bestWindowByLevel,

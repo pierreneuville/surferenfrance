@@ -1,5 +1,6 @@
 import type { Spot, SpotForecast, DaySummary, HourlyData, Level } from "./types";
 import { computeScore, computeWavePower, effectiveWaveHeight, isEngagedSurf } from "./score";
+import { detectTideExtremes, tideRangeForDay, tideStateAt } from "./tide";
 
 const MARINE_BASE = "https://marine-api.open-meteo.com/v1/marine";
 const FORECAST_BASE = "https://api.open-meteo.com/v1/forecast";
@@ -7,7 +8,7 @@ const FORECAST_BASE = "https://api.open-meteo.com/v1/forecast";
 export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate"): Promise<SpotForecast> {
   const marineUrl =
     `${MARINE_BASE}?latitude=${spot.lat}&longitude=${spot.lon}` +
-    `&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature` +
+    `&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,sea_level_height_msl` +
     `&daily=wave_height_max,wave_period_max,wave_direction_dominant` +
     `&timezone=Europe%2FParis&forecast_days=7`;
 
@@ -25,6 +26,9 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
     fetch(windUrl, fetchOpts).then((r) => r.json()),
   ]);
 
+  const hourlyTimes: string[] = marineRes.hourly?.time ?? [];
+  const hourlyTide: (number | null)[] = marineRes.hourly?.sea_level_height_msl ?? [];
+
   const days: DaySummary[] = [];
   for (let i = 0; i < 7; i++) {
     const waveHeight = marineRes.daily?.wave_height_max?.[i] ?? null;
@@ -33,6 +37,11 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
     const windSpeed = windRes.daily?.wind_speed_10m_max?.[i] ?? null;
     const windDir = windRes.daily?.wind_direction_10m_dominant?.[i] ?? null;
     const windGusts = windRes.daily?.wind_gusts_10m_max?.[i] ?? null;
+    const startH = i * 24;
+    const dayTimes = hourlyTimes.slice(startH, startH + 24);
+    const dayTideHeights = hourlyTide.slice(startH, startH + 24);
+    const tideExtremes = detectTideExtremes(dayTimes, dayTideHeights);
+    const tideRange = tideRangeForDay(hourlyTide, startH);
     days.push({
       date: marineRes.daily?.time?.[i] ?? "",
       waveHeight,
@@ -46,12 +55,14 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
       windGusts,
       sunrise: windRes.daily?.sunrise?.[i] ?? null,
       sunset: windRes.daily?.sunset?.[i] ?? null,
-      score: computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level, { worldClass: spot.worldClass }),
+      tideExtremes,
+      tideRange,
+      score: computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level, { worldClass: spot.worldClass, tideOptimal: spot.tideOptimal }),
     });
   }
 
   const hourly: HourlyData = {
-    times: marineRes.hourly?.time ?? [],
+    times: hourlyTimes,
     waveHeight: marineRes.hourly?.wave_height ?? [],
     wavePeriod: marineRes.hourly?.wave_period ?? [],
     waveDir: marineRes.hourly?.wave_direction ?? [],
@@ -60,6 +71,7 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
     windDir: windRes.hourly?.wind_direction_10m ?? [],
     windGusts: windRes.hourly?.wind_gusts_10m ?? [],
     airTemp: windRes.hourly?.temperature_2m ?? [],
+    tideHeight: hourlyTide,
   };
 
   return { spot, days, hourly };
@@ -165,6 +177,8 @@ export function bestHoursForDay(
   level: Level = "intermediate"
 ): DaylightWindow {
   const start = dayIdx * 24;
+  const tideHeights = forecast.hourly.tideHeight ?? [];
+  const tideOptimal = forecast.spot.tideOptimal;
   const scores: HourScore[] = [];
   for (let h = 0; h < 24; h++) {
     const i = start + h;
@@ -177,7 +191,11 @@ export function bestHoursForDay(
         forecast.hourly.windDir[i],
         forecast.spot.offshore,
         level,
-        { worldClass: forecast.spot.worldClass }
+        {
+          worldClass: forecast.spot.worldClass,
+          tideOptimal,
+          tideState: tideOptimal && tideHeights.length ? tideStateAt(tideHeights, i) : undefined,
+        }
       ),
     });
   }

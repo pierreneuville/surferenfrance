@@ -12,16 +12,18 @@ import { SCORE_COLORS, computeScore, scoreLabel, scoreTone } from "@/lib/score";
 import { useLocale } from "@/lib/useLocale";
 import { t, tf } from "@/lib/i18n";
 import { degToCardinal, fmt, dayLongLabel, timeFromIso, dayShortLabel, dayDateNumber } from "@/lib/utils";
+import { tideStateAt, tideStateLabel } from "@/lib/tide";
 import { HourGrid } from "./HourGrid";
 
 const REGION_GRADIENT: Record<string, string> = {
   "Manche & Nord": "from-slate-400 via-ocean-500 to-ocean-800",
   "Bretagne": "from-teal-500 via-ocean-600 to-ocean-900",
   "Atlantique Nord": "from-ocean-300 via-lagoon-500 to-ocean-800",
-  "Côte d'Argent": "from-sand-200 via-sand-500 to-sunset-600",
+  "Aquitaine": "from-sand-200 via-sand-500 to-sunset-600",
   "Pays Basque": "from-coral-400 via-sunset-500 to-sand-300",
   "Méditerranée": "from-lagoon-300 via-lagoon-500 to-ocean-700",
   "Corse": "from-emerald-400 via-lagoon-500 to-sand-400",
+  "Outre-Mer": "from-emerald-300 via-coral-500 to-sunset-700",
 };
 
 interface Props {
@@ -267,9 +269,23 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
           {/* Best window — hero */}
           {(best?.best || fallbackBest) && (
             <div className="mb-5 overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent p-4">
-              <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-300/90">
-                <Sparkles className="h-3.5 w-3.5" />
-                {t(locale, "modalBestWindowTitle")}
+              <div className="mb-2 flex items-center justify-between gap-2 text-xs uppercase tracking-widest text-emerald-300/90">
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {t(locale, "modalBestWindowTitle")}
+                </span>
+                {(() => {
+                  const tideHeights = forecast.hourly.tideHeight ?? [];
+                  const startHr = (best?.best?.start ?? fallbackBest?.start ?? null);
+                  if (startHr == null || tideHeights.length === 0) return null;
+                  const i = dayIdx * 24 + startHr;
+                  const state = tideStateAt(tideHeights, i);
+                  return (
+                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] tracking-normal text-emerald-100">
+                      sur {tideStateLabel(state)}
+                    </span>
+                  );
+                })()}
               </div>
               {best?.top?.length ? (
                 <div className="flex flex-wrap gap-2">

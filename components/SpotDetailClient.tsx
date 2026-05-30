@@ -7,7 +7,8 @@ import { ADSENSE_SLOT_SPOT_DETAIL } from "@/lib/adsense";
 import { SCORE_COLORS, scoreLabel, scoreTone, computeScore } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
-import { Waves, Wind, Compass, Sunrise, Zap } from "lucide-react";
+import { Waves, Wind, Compass, Sunrise, Zap, Droplet } from "lucide-react";
+import { tideOptimalLabel } from "@/lib/tide";
 import { AdSlot } from "./AdSlot";
 import { useLocale } from "@/lib/useLocale";
 import { t } from "@/lib/i18n";
@@ -108,7 +109,7 @@ export function SpotDetailClient({ spot }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-6">
         <Tile
           icon={<Waves className="h-3.5 w-3.5" />}
           label={t(locale, "cardWave")}
@@ -124,6 +125,12 @@ export function SpotDetailClient({ spot }: Props) {
           label="Puissance"
           value={forecast.days[dayIdx].wavePower != null ? `${fmt(forecast.days[dayIdx].wavePower, 1)} kW/m` : "—"}
           sub={forecast.days[dayIdx].engagedSurf ? "surf engagé" : undefined}
+        />
+        <Tile
+          icon={<Droplet className="h-3.5 w-3.5" />}
+          label="Marée"
+          value={tideTileValue(forecast.days[dayIdx].tideExtremes)}
+          sub={spot.tideOptimal ? `idéale ${tideOptimalLabel(spot.tideOptimal)}` : forecast.days[dayIdx].tideRange != null ? `amplitude ${fmt(forecast.days[dayIdx].tideRange, 1)} m` : undefined}
         />
         <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="☀" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
       </div>
@@ -156,4 +163,13 @@ function formatTime(iso: string | null) {
   if (!iso) return "—";
   try { return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); }
   catch { return "—"; }
+}
+
+function tideTileValue(extremes: import("@/lib/types").TideExtreme[] | undefined): string {
+  if (!extremes || extremes.length === 0) return "—";
+  // Show the next two extremes formatted as "▲ 09h · ▼ 15h"
+  return extremes
+    .slice(0, 2)
+    .map((e) => `${e.type === "high" ? "▲" : "▼"} ${new Date(e.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`)
+    .join(" · ");
 }

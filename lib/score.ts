@@ -1,4 +1,5 @@
-import type { Level } from "./types";
+import type { Level, TideOptimal, TideState } from "./types";
+import { tideMatchScore } from "./tide";
 
 interface IdealRange {
   waveMin: number;
@@ -18,6 +19,10 @@ const LEVEL_PROFILES: Record<Level, IdealRange> = {
 
 interface ScoreOptions {
   worldClass?: boolean;
+  /** Live tide state at the moment we're scoring (hourly resolution). */
+  tideState?: TideState;
+  /** Spot's preferred tide profile. */
+  tideOptimal?: TideOptimal;
 }
 
 export function computeWavePower(
@@ -109,7 +114,24 @@ export function computeScore(
     }
   }
 
-  let score = Math.round(waveScore * 0.35 + periodScore * 0.25 + windScore * 0.25 + powerScore * 0.15);
+  // Tide. Only applied when we have BOTH a spot preference AND a live tide state.
+  // Otherwise we fall back to 4-criteria weighting (35/25/25/15) so the daily
+  // summary isn't artificially flattened toward 50 when tide is unknown.
+  const tideEligible = options.tideOptimal != null && options.tideState != null;
+  let score: number;
+  if (tideEligible) {
+    const match = tideMatchScore(options.tideState as TideState, options.tideOptimal!);
+    const tideScore = Math.round(match * 100);
+    score = Math.round(
+      waveScore * 0.30 +
+      periodScore * 0.20 +
+      windScore * 0.20 +
+      powerScore * 0.15 +
+      tideScore * 0.15
+    );
+  } else {
+    score = Math.round(waveScore * 0.35 + periodScore * 0.25 + windScore * 0.25 + powerScore * 0.15);
+  }
   if (level === "intermediate" && isEngagedSurf(waveHeight, wavePeriod, level)) score = Math.min(score, 45);
   return score;
 }

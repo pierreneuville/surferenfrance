@@ -5,10 +5,11 @@ export type Region =
   | "Manche & Nord"
   | "Bretagne"
   | "Atlantique Nord"
-  | "Côte d'Argent"
+  | "Aquitaine"
   | "Pays Basque"
   | "Méditerranée"
   | "Corse"
+  | "Outre-Mer"
   // 🇪🇸 Espagne
   | "Espagne Atlantique"
   | "Canaries"
@@ -19,6 +20,12 @@ export type Region =
   // 🇬🇧 UK + 🇮🇪 Irlande
   | "Royaume-Uni"
   | "Irlande";
+
+/** Tide preference profile per spot. Many breaks only fire on specific tide states. */
+export type TideOptimal = "rising" | "falling" | "high" | "mid-high" | "mid" | "mid-low" | "low" | "any";
+
+/** Computed tide state for an hour. Mid covers anything within ~25% of the mean. */
+export type TideState = "rising" | "falling" | "high" | "low" | "mid";
 
 export interface Spot {
   slug: string;
@@ -34,6 +41,17 @@ export interface Spot {
   type: string;
   /** True for elite / consequential spots that should not be suggested to non-advanced surfers. */
   worldClass?: boolean;
+  /** When set, the score is boosted (or penalised) when the live tide matches (or contradicts) this preference. */
+  tideOptimal?: TideOptimal;
+}
+
+export interface TideExtreme {
+  /** ISO local time of the high or low water. */
+  time: string;
+  /** Height in meters above MSL — relative, not absolute. */
+  height: number;
+  /** "high" or "low". */
+  type: "high" | "low";
 }
 
 export interface BestWindowSummary {
@@ -58,6 +76,10 @@ export interface DaySummary {
   windGusts: number | null;
   sunrise: string | null;
   sunset: string | null;
+  /** Tide extremes for the day (high/low water), local time. */
+  tideExtremes?: TideExtreme[];
+  /** Range of the day's tide in meters (high - low). Indicates spring vs neap. */
+  tideRange?: number | null;
   /** Score at "intermediate" level — kept for backward compat. Prefer scoresByLevel. */
   score: number;
   /** Precomputed scores for each level (server-side). */
@@ -76,6 +98,8 @@ export interface HourlyData {
   windDir: (number | null)[];
   windGusts: (number | null)[];
   airTemp: (number | null)[];
+  /** Sea level height above mean (m). Used to derive tide state per hour. */
+  tideHeight?: (number | null)[];
 }
 
 export interface SpotForecast {
