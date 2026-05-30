@@ -6,13 +6,47 @@ interface IdealRange {
   waveMax: number;
   periodOptimal: number;
   windMax: number;
+  powerOptimal: number;
+  powerMax: number;
 }
 
 const LEVEL_PROFILES: Record<Level, IdealRange> = {
-  beginner: { waveMin: 0.3, waveOptimal: 0.8, waveMax: 1.5, periodOptimal: 8, windMax: 15 },
-  intermediate: { waveMin: 0.5, waveOptimal: 1.5, waveMax: 2.5, periodOptimal: 10, windMax: 20 },
-  advanced: { waveMin: 1.0, waveOptimal: 2.0, waveMax: 4.5, periodOptimal: 12, windMax: 25 },
+  beginner: { waveMin: 0.3, waveOptimal: 0.8, waveMax: 1.5, periodOptimal: 8, windMax: 15, powerOptimal: 2.5, powerMax: 7 },
+  intermediate: { waveMin: 0.5, waveOptimal: 1.5, waveMax: 2.5, periodOptimal: 10, windMax: 20, powerOptimal: 10, powerMax: 25 },
+  advanced: { waveMin: 1.0, waveOptimal: 2.0, waveMax: 4.5, periodOptimal: 12, windMax: 25, powerOptimal: 25, powerMax: 70 },
 };
+
+interface ScoreOptions {
+  worldClass?: boolean;
+}
+
+export function computeWavePower(
+  waveHeight: number | null | undefined,
+  wavePeriod: number | null | undefined
+): number | null {
+  if (waveHeight == null || wavePeriod == null) return null;
+  return round(0.49 * waveHeight * waveHeight * wavePeriod, 1);
+}
+
+export function effectiveWaveHeight(
+  waveHeight: number | null | undefined,
+  wavePeriod: number | null | undefined
+): number | null {
+  if (waveHeight == null) return null;
+  if (wavePeriod == null || wavePeriod <= 9) return round(waveHeight, 1);
+  return round(waveHeight * (1 + 0.175 * (wavePeriod - 9)), 1);
+}
+
+export function isEngagedSurf(
+  waveHeight: number | null | undefined,
+  wavePeriod: number | null | undefined,
+  level: Level
+): boolean {
+  const effective = effectiveWaveHeight(waveHeight, wavePeriod);
+  if (effective == null || wavePeriod == null || level === "advanced") return false;
+  if (level === "beginner") return effective > 1.4 || (waveHeight ?? 0) > 1.2 || wavePeriod > 10;
+  return effective > 2.3 || ((waveHeight ?? 0) > 1.5 && wavePeriod > 12);
+}
 
 export function computeScore(
   waveHeight: number | null | undefined,
@@ -20,20 +54,25 @@ export function computeScore(
   windSpeed: number | null | undefined,
   windDir: number | null | undefined,
   offshore: number,
-  level: Level = "intermediate"
+  level: Level = "intermediate",
+  options: ScoreOptions = {}
 ): number {
   if (waveHeight == null) return 0;
+  if (options.worldClass && level !== "advanced") return 0;
+  if (level === "beginner" && isEngagedSurf(waveHeight, wavePeriod, level)) return 0;
+
   const profile = LEVEL_PROFILES[level];
+  const effectiveHeight = effectiveWaveHeight(waveHeight, wavePeriod) ?? waveHeight;
 
   let waveScore: number;
-  if (waveHeight < profile.waveMin) {
-    waveScore = (waveHeight / profile.waveMin) * 30;
-  } else if (waveHeight <= profile.waveOptimal) {
-    waveScore = 60 + ((waveHeight - profile.waveMin) / (profile.waveOptimal - profile.waveMin)) * 40;
-  } else if (waveHeight <= profile.waveMax) {
-    waveScore = 100 - ((waveHeight - profile.waveOptimal) / (profile.waveMax - profile.waveOptimal)) * 30;
+  if (effectiveHeight < profile.waveMin) {
+    waveScore = (effectiveHeight / profile.waveMin) * 30;
+  } else if (effectiveHeight <= profile.waveOptimal) {
+    waveScore = 60 + ((effectiveHeight - profile.waveMin) / (profile.waveOptimal - profile.waveMin)) * 40;
+  } else if (effectiveHeight <= profile.waveMax) {
+    waveScore = 100 - ((effectiveHeight - profile.waveOptimal) / (profile.waveMax - profile.waveOptimal)) * 30;
   } else {
-    waveScore = Math.max(10, 70 - (waveHeight - profile.waveMax) * 20);
+    waveScore = Math.max(10, 70 - (effectiveHeight - profile.waveMax) * 20);
   }
   waveScore = Math.max(0, Math.min(100, waveScore));
 
@@ -58,7 +97,26 @@ export function computeScore(
     else if (diff > 135) windScore = Math.max(0, windScore - 25);
   }
 
-  return Math.round(waveScore * 0.4 + periodScore * 0.3 + windScore * 0.3);
+  const wavePower = computeWavePower(waveHeight, wavePeriod);
+  let powerScore = 55;
+  if (wavePower != null) {
+    if (wavePower <= profile.powerOptimal) {
+      powerScore = 55 + (wavePower / profile.powerOptimal) * 45;
+    } else if (wavePower <= profile.powerMax) {
+      powerScore = 100 - ((wavePower - profile.powerOptimal) / (profile.powerMax - profile.powerOptimal)) * 45;
+    } else {
+      powerScore = Math.max(0, 55 - (wavePower - profile.powerMax) * 2);
+    }
+  }
+
+  let score = Math.round(waveScore * 0.35 + periodScore * 0.25 + windScore * 0.25 + powerScore * 0.15);
+  if (level === "intermediate" && isEngagedSurf(waveHeight, wavePeriod, level)) score = Math.min(score, 45);
+  return score;
+}
+
+function round(value: number, digits: number) {
+  const factor = 10 ** digits;
+  return Math.round(value * factor) / factor;
 }
 
 export function scoreLabel(score: number): string {

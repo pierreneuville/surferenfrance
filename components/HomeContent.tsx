@@ -5,6 +5,7 @@ import { Filters, SortKey } from "./Filters";
 import { QuickActions } from "./QuickActions";
 import { HotToday } from "./HotToday";
 import { WeekHighlights } from "./WeekHighlights";
+import { BuoyMiniPanel } from "./BuoyMiniPanel";
 import { getFavorites, subscribeFavorites, toggleFavorite } from "@/lib/favorites";
 import { getEngagement, recordExploredSpot, subscribeEngagement } from "@/lib/engagement";
 import { trackEvent } from "@/lib/analytics";
@@ -136,6 +137,7 @@ export function HomeContent() {
         return { f, distanceKm };
       })
       .filter(({ f, distanceKm }) => {
+        if (prefs.level !== "advanced" && f.spot.worldClass) return false;
         if (favoritesOnly && !favoritesSet.has(f.spot.slug)) return false;
         if (!favoritesOnly && prefs.country !== "all" && REGION_COUNTRY[f.spot.region as keyof typeof REGION_COUNTRY] !== prefs.country) return false;
         if (!favoritesOnly && prefs.region !== "all" && f.spot.region !== prefs.region) return false;
@@ -157,7 +159,10 @@ export function HomeContent() {
   const favsInFire = useMemo(() => {
     if (!favorites.length || !forecasts.length) return 0;
     return forecasts.filter(
-      (f) => favoritesSet.has(f.spot.slug) && (f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? f.days[prefs.dayIdx]?.score ?? 0) >= 70
+      (f) =>
+        favoritesSet.has(f.spot.slug) &&
+        (prefs.level === "advanced" || !f.spot.worldClass) &&
+        (f.days[prefs.dayIdx]?.scoresByLevel?.[prefs.level] ?? f.days[prefs.dayIdx]?.score ?? 0) >= 70
     ).length;
   }, [forecasts, favoritesSet, favorites.length, prefs.dayIdx, prefs.level]);
 
@@ -171,6 +176,7 @@ export function HomeContent() {
           forecasts={forecasts}
           dayIdx={prefs.dayIdx}
           level={prefs.level}
+          userPos={userPos}
           onOpen={(slug) => setOpenSlug(slug)}
         />
       )}
@@ -180,6 +186,7 @@ export function HomeContent() {
         <WeekHighlights
           forecasts={forecasts}
           level={prefs.level}
+          userPos={userPos}
           onOpen={(slug, dayIdx) => {
             setPrefs((p) => ({ ...p, dayIdx }));
             setOpenSlug(slug);
@@ -196,6 +203,16 @@ export function HomeContent() {
         onApply={(patch) => setPrefs({ ...prefs, ...patch })}
         onToggleNearMe={requestGeo}
       />
+
+      <div className="mt-4">
+        <BuoyMiniPanel
+          title={userPos ? "Bouées live près de toi" : "Bouées live à surveiller"}
+          lat={userPos?.lat}
+          lon={userPos?.lon}
+          limit={3}
+        />
+      </div>
+
       <Filters
         dayIdx={prefs.dayIdx}
         country={prefs.country}
@@ -314,21 +331,26 @@ export function HomeContent() {
           <br />
           <span className="font-script text-4xl text-gradient-sunset sm:text-5xl">trois ingrédients.</span>
         </h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Pillar
             icon="🌊"
-            title="La vague (40%)"
-            text="Sa hauteur. 1 à 2,5 m c'est souvent la zone douce. Trop petit = épuisant. Trop gros = uniquement pour ceux qui savent."
+            title="La vague"
+            text="Sa hauteur réelle, puis sa hauteur ressentie quand la période allonge les sets. Trop petit = épuisant, trop gros = réservé."
           />
           <Pillar
             icon="⏱️"
-            title="La période (30%)"
-            text="Le temps entre deux vagues. Au-delà de 10 s, c'est de la vraie houle, formée loin au large — plus puissante, plus propre."
+            title="La période"
+            text="Au-delà de 9 s, les séries peuvent être nettement plus grosses que la moyenne. Le score le prend en compte."
           />
           <Pillar
             icon="💨"
-            title="Le vent (30%)"
+            title="Le vent"
             text="Idéalement faible. Bonus quand il vient de la terre (offshore) : il sculpte les vagues. Malus s'il vient du large (onshore)."
+          />
+          <Pillar
+            icon="⚡"
+            title="La puissance"
+            text="Un proxy d'énergie de houle en kW/m évite de confondre une petite vague molle avec une vraie houle longue."
           />
         </div>
         <p className="mt-6 text-sm text-white/55">

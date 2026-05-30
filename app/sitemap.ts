@@ -8,6 +8,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "hourly", priority: 1 },
     { url: `${SITE_URL}/llms.txt`, lastModified: now, changeFrequency: "weekly", priority: 0.2 },
     { url: `${SITE_URL}/llms-full.txt`, lastModified: now, changeFrequency: "weekly", priority: 0.2 },
+    { url: `${SITE_URL}/bouees`, lastModified: now, changeFrequency: "hourly", priority: 0.86 },
+    { url: `${SITE_URL}/bouees/llms.txt`, lastModified: now, changeFrequency: "weekly", priority: 0.2 },
     { url: `${SITE_URL}/spots`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     ...REGIONS.map((region) => ({
       url: `${SITE_URL}/region/${REGION_SLUGS[region]}`,

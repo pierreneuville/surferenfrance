@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles, Share2, Check, MapPin,
+  X, Sunrise, Sunset, Waves, Wind, Thermometer, ExternalLink, Sparkles, Share2, Check, MapPin, Zap,
 } from "lucide-react";
 import type { SpotForecast, Level } from "@/lib/types";
 import { bestHoursForDay } from "@/lib/api";
@@ -100,7 +100,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
   const score =
     d.scoresByLevel?.[level]
     ?? (d.waveHeight != null
-      ? computeScore(d.waveHeight, d.wavePeriod, d.windSpeed, d.windDir, forecast.spot.offshore, level)
+      ? computeScore(d.waveHeight, d.wavePeriod, d.windSpeed, d.windDir, forecast.spot.offshore, level, { worldClass: forecast.spot.worldClass })
       : d.score);
   const tone = scoreTone(score);
   const colors = SCORE_COLORS[tone];
@@ -209,7 +209,7 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
               const ds =
                 day.scoresByLevel?.[level]
                 ?? (day.waveHeight != null
-                  ? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, forecast.spot.offshore, level)
+                  ? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, forecast.spot.offshore, level, { worldClass: forecast.spot.worldClass })
                   : day.score);
               const isActive = i === dayIdx;
               const t = scoreTone(ds);
@@ -247,10 +247,19 @@ export function SpotModal({ forecast: lightForecast, dayIdx: initialDay, level, 
             </div>
           </div>
 
-          {/* Quick stats — 4 tiles */}
-          <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Tile icon={<Waves />} label={t(locale, "cardWave")} value={`${fmt(d.waveHeight)} m`} sub={`${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`} accent={colors.hex} />
+          {/* Quick stats */}
+          <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
+            <Tile
+              icon={<Waves />}
+              label={t(locale, "cardWave")}
+              value={`${fmt(d.waveHeight)} m`}
+              sub={d.effectiveWaveHeight != null && d.effectiveWaveHeight > (d.waveHeight ?? 0) + 0.1
+                ? `sets ~${fmt(d.effectiveWaveHeight)} m · ${fmt(d.wavePeriod, 0)}s`
+                : `${degToCardinal(d.waveDir)} · ${fmt(d.wavePeriod, 0)}s`}
+              accent={colors.hex}
+            />
             <Tile icon={<Wind />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(d.windGusts, 0)} · ${degToCardinal(d.windDir)}`} />
+            <Tile icon={<Zap />} label="Puissance" value={d.wavePower != null ? `${fmt(d.wavePower, 1)} kW/m` : "—"} sub={d.engagedSurf ? "surf engagé" : ""} />
             <Tile icon={<Thermometer />} label={t(locale, "tileWaterAir")} value={seaTempAvg != null ? `${fmt(seaTempAvg, 0)}°C` : "—"} sub={airTempMax != null ? `${t(locale, "tileAir")} ${fmt(airTempMax, 0)}°C` : ""} />
             <Tile icon={<Sparkles />} label="Note" value={scoreLabel(score)} sub={`${score}/100`} />
           </div>

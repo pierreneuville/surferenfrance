@@ -46,6 +46,7 @@ export function Footer() {
 
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/60">
             <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
+            <Link href="/bouees" className="transition hover:text-sand-200">Bouées live</Link>
             <Link href="/spots" className="transition hover:text-sand-200">Index des spots</Link>
             <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
             <PremiumTeaser

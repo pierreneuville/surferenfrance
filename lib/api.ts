@@ -1,5 +1,5 @@
 import type { Spot, SpotForecast, DaySummary, HourlyData, Level } from "./types";
-import { computeScore } from "./score";
+import { computeScore, computeWavePower, effectiveWaveHeight, isEngagedSurf } from "./score";
 
 const MARINE_BASE = "https://marine-api.open-meteo.com/v1/marine";
 const FORECAST_BASE = "https://api.open-meteo.com/v1/forecast";
@@ -37,13 +37,16 @@ export async function fetchSpotForecast(spot: Spot, level: Level = "intermediate
       date: marineRes.daily?.time?.[i] ?? "",
       waveHeight,
       wavePeriod,
+      effectiveWaveHeight: effectiveWaveHeight(waveHeight, wavePeriod),
+      wavePower: computeWavePower(waveHeight, wavePeriod),
+      engagedSurf: isEngagedSurf(waveHeight, wavePeriod, level),
       waveDir,
       windSpeed,
       windDir,
       windGusts,
       sunrise: windRes.daily?.sunrise?.[i] ?? null,
       sunset: windRes.daily?.sunset?.[i] ?? null,
-      score: computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level),
+      score: computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level, { worldClass: spot.worldClass }),
     });
   }
 
@@ -69,6 +72,9 @@ function emptyForecast(spot: Spot): SpotForecast {
       date: "",
       waveHeight: null,
       wavePeriod: null,
+      effectiveWaveHeight: null,
+      wavePower: null,
+      engagedSurf: false,
       waveDir: null,
       windSpeed: null,
       windDir: null,
@@ -170,7 +176,8 @@ export function bestHoursForDay(
         forecast.hourly.windSpeed[i],
         forecast.hourly.windDir[i],
         forecast.spot.offshore,
-        level
+        level,
+        { worldClass: forecast.spot.worldClass }
       ),
     });
   }

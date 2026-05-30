@@ -4,6 +4,7 @@ import { ArrowRight, Flame, MapPin } from "lucide-react";
 import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreTone } from "@/lib/score";
 import { REGION_EMOJI } from "@/lib/spots";
+import { haversineKm } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t, tf } from "@/lib/i18n";
 
@@ -11,6 +12,7 @@ interface Props {
   forecasts: SpotForecast[];
   dayIdx: number;
   level: Level;
+  userPos?: { lat: number; lon: number } | null;
   onOpen: (slug: string) => void;
 }
 
@@ -19,14 +21,21 @@ interface Props {
  * Surfaces the best spot of the selected day if its score >= 75.
  * Different each day → reason to return; surfeurs scrollent et "découvrent" leur prochaine session.
  */
-export function HotToday({ forecasts, dayIdx, level, onOpen }: Props) {
+export function HotToday({ forecasts, dayIdx, level, userPos, onOpen }: Props) {
   const { locale } = useLocale();
   if (!forecasts.length) return null;
+  const localForecasts = userPos
+    ? forecasts.filter((f) => haversineKm(userPos.lat, userPos.lon, f.spot.lat, f.spot.lon) <= 50)
+    : forecasts;
+  const candidates = level === "advanced"
+    ? localForecasts
+    : localForecasts.filter((f) => !f.spot.worldClass);
+  if (!candidates.length) return null;
 
   // Find the top scorer for the selected day
   let top: SpotForecast | null = null;
   let topScore = 0;
-  for (const f of forecasts) {
+  for (const f of candidates) {
     const s = f.days[dayIdx]?.scoresByLevel?.[level] ?? f.days[dayIdx]?.score ?? 0;
     if (s > topScore) {
       topScore = s;
@@ -41,7 +50,7 @@ export function HotToday({ forecasts, dayIdx, level, onOpen }: Props) {
   const bestWin = d.bestWindowByLevel?.[level];
 
   // Count other spots ≥ 70 for "abundance" feel
-  const otherGood = forecasts.filter((f) => {
+  const otherGood = candidates.filter((f) => {
     const s = f.days[dayIdx]?.scoresByLevel?.[level] ?? f.days[dayIdx]?.score ?? 0;
     return s >= 70 && f.spot.slug !== top!.spot.slug;
   }).length;

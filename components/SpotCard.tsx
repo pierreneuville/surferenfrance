@@ -156,10 +156,35 @@ export function SpotCard({ forecast, dayIdx, level, distanceKm, isFavorite, onCl
 
         {/* Stats triplet */}
         <div className="mb-4 grid grid-cols-3 gap-2">
-          <Stat icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "cardWave")} value={`${fmt(d.waveHeight)} m`} sub={degToCardinal(d.waveDir)} />
+          <Stat
+            icon={<Waves className="h-3.5 w-3.5" />}
+            label={t(locale, "cardWave")}
+            value={`${fmt(d.waveHeight)} m`}
+            sub={setLabel(d.waveHeight, d.effectiveWaveHeight) ?? degToCardinal(d.waveDir)}
+          />
           <Stat icon={<Compass className="h-3.5 w-3.5" />} label={t(locale, "cardPeriod")} value={`${fmt(d.wavePeriod, 0)} s`} sub={periodLabel(d.wavePeriod, locale)} />
           <Stat icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(d.windSpeed, 0)} km/h`} sub={degToCardinal(d.windDir)} />
         </div>
+
+        {(d.wavePower != null || d.engagedSurf || forecast.spot.worldClass) && (
+          <div className="mb-4 flex flex-wrap gap-1.5 text-[10px]">
+            {d.wavePower != null && (
+              <span className="rounded-full border border-ocean-300/20 bg-ocean-400/10 px-2 py-1 text-ocean-100/80">
+                puissance {fmt(d.wavePower, 1)} kW/m
+              </span>
+            )}
+            {d.engagedSurf && (
+              <span className="rounded-full border border-sand-300/25 bg-sand-300/10 px-2 py-1 text-sand-100">
+                surf engagé
+              </span>
+            )}
+            {forecast.spot.worldClass && (
+              <span className="rounded-full border border-coral-300/25 bg-coral-500/10 px-2 py-1 text-coral-100">
+                expert only
+              </span>
+            )}
+          </div>
+        )}
 
         {/* 7-day mini-bars */}
         <div className="grid grid-cols-7 gap-1 border-t border-white/[0.05] pt-3">
@@ -234,6 +259,11 @@ function periodLabel(period: number | null | undefined, locale: import("@/lib/i1
   if (period >= 11) return t(locale, "cardTopGood");
   if (period >= 8) return t(locale, "cardTopMedium");
   return t(locale, "cardTopLow");
+}
+
+function setLabel(waveHeight: number | null | undefined, effective: number | null | undefined): string | null {
+  if (waveHeight == null || effective == null || effective <= waveHeight + 0.1) return null;
+  return `sets ~${fmt(effective)} m`;
 }
 
 function ScoreGauge({ score, color, tone }: { score: number; color: string; tone: string }) {

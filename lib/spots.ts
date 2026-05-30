@@ -32,9 +32,36 @@ export const REGION_EMOJI: Record<string, string> = {
   "Irlande": "🇮🇪",
 };
 
+export const WORLD_CLASS_SPOT_SLUGS = new Set([
+  "le-dossen",
+  "la-palue",
+  "hossegor-nord",
+  "hossegor",
+  "belharra",
+  "mundaka",
+  "punta-galea",
+  "menakoz",
+  "el-fronton",
+  "la-santa",
+  "el-quemao",
+  "nazare-norte",
+  "supertubos",
+  "ribeira-d-ilhas",
+  "coxos",
+  "jardim-do-mar",
+  "paul-do-mar",
+  "anchor-point",
+  "killers",
+  "boilers",
+  "safi",
+  "thurso-east",
+  "aileens",
+  "mullaghmore",
+]);
+
 // Helper to keep entries compact
 function s(slug: string, name: string, shortName: string, region: Spot["region"], department: string, lat: number, lon: number, offshore: number, level: Spot["level"], type: string, description: string): Spot {
-  return { slug, name, shortName, region, department, lat, lon, offshore, level, type, description };
+  return { slug, name, shortName, region, department, lat, lon, offshore, level, type, description, worldClass: WORLD_CLASS_SPOT_SLUGS.has(slug) || undefined };
 }
 
 export const SPOTS: Spot[] = [

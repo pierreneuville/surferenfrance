@@ -134,7 +134,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="fr" className={`${sans.variable} ${display.variable} ${script.variable}`}>
+    <html lang="fr" data-scroll-behavior="smooth" className={`${sans.variable} ${display.variable} ${script.variable}`}>
       <head>
         <link rel="alternate" type="text/markdown" href="/llms.txt" title={`${SITE_NAME} LLM summary`} />
         <link rel="alternate" type="text/markdown" href="/llms-full.txt" title={`${SITE_NAME} full LLM context`} />

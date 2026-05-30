@@ -5,13 +5,14 @@ import { ArrowRight, CalendarDays, Wind, Waves } from "lucide-react";
 import type { Level, SpotForecast } from "@/lib/types";
 import { SCORE_COLORS, scoreTone } from "@/lib/score";
 import { REGION_EMOJI } from "@/lib/spots";
-import { dayShortLabel, dayDateNumber, fmt } from "@/lib/utils";
+import { dayShortLabel, dayDateNumber, fmt, haversineKm } from "@/lib/utils";
 import { useLocale } from "@/lib/useLocale";
 import { t, tf } from "@/lib/i18n";
 
 interface Props {
   forecasts: SpotForecast[];
   level: Level;
+  userPos?: { lat: number; lon: number } | null;
   onOpen: (slug: string, dayIdx: number) => void;
 }
 
@@ -24,13 +25,17 @@ interface Props {
  * - Curiosity : "C'est quoi cette session de samedi à La Torche ?"
  * - Variable reward : le contenu change chaque jour à mesure que le futur arrive
  */
-export function WeekHighlights({ forecasts, level, onOpen }: Props) {
+export function WeekHighlights({ forecasts, level, userPos, onOpen }: Props) {
   const { locale } = useLocale();
   const sessions = useMemo(() => {
     if (!forecasts.length) return [];
     type Session = { spot: SpotForecast["spot"]; dayIdx: number; score: number; forecast: SpotForecast };
     const candidates: Session[] = [];
-    for (const f of forecasts) {
+    const localForecasts = userPos
+      ? forecasts.filter((f) => haversineKm(userPos.lat, userPos.lon, f.spot.lat, f.spot.lon) <= 120)
+      : forecasts;
+    for (const f of localForecasts) {
+      if (level !== "advanced" && f.spot.worldClass) continue;
       let bestDay = 0;
       let bestScore = 0;
       for (let d = 0; d < 7; d++) {
@@ -49,7 +54,7 @@ export function WeekHighlights({ forecasts, level, onOpen }: Props) {
       .sort((a, b) => b.score - a.score)
       .slice(0, 6)
       .sort((a, b) => a.dayIdx - b.dayIdx);
-  }, [forecasts, level]);
+  }, [forecasts, level, userPos]);
 
   if (sessions.length === 0) return null;
 

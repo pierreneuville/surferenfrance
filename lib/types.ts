@@ -32,6 +32,8 @@ export interface Spot {
   level: Level;
   description: string;
   type: string;
+  /** True for elite / consequential spots that should not be suggested to non-advanced surfers. */
+  worldClass?: boolean;
 }
 
 export interface BestWindowSummary {
@@ -44,6 +46,12 @@ export interface DaySummary {
   date: string;
   waveHeight: number | null;
   wavePeriod: number | null;
+  /** Wave height adjusted for long-period sets; useful for safety and perceived size. */
+  effectiveWaveHeight?: number | null;
+  /** Deep-water wave energy proxy in kW/m: ~0.49 * H² * T. */
+  wavePower?: number | null;
+  /** True when the conditions are beyond the comfort zone of the selected level. */
+  engagedSurf?: boolean;
   waveDir: number | null;
   windSpeed: number | null;
   windDir: number | null;

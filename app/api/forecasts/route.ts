@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { SPOTS } from "@/lib/spots";
-import { computeScore } from "@/lib/score";
+import { computeScore, computeWavePower, effectiveWaveHeight, isEngagedSurf } from "@/lib/score";
 import type { Spot, DaySummary, BestWindowSummary, Level, SpotForecast } from "@/lib/types";
 
 // Cached at the edge for 30 min — forecasts from Open-Meteo refresh every 6h anyway.
@@ -87,7 +87,7 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
 
     const startH = i * 24;
     for (const level of LEVELS) {
-      scoresByLevel[level] = computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level);
+      scoresByLevel[level] = computeScore(waveHeight, wavePeriod, windSpeed, windDir, spot.offshore, level, { worldClass: spot.worldClass });
 
       // Hourly scores for that day
       const hScores: number[] = new Array(24).fill(0);
@@ -99,7 +99,8 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
           num(hWindSpd[idx]),
           num(hWindDir[idx]),
           spot.offshore,
-          level
+          level,
+          { worldClass: spot.worldClass }
         );
       }
       let bestStart = -1, bestSum = -1;
@@ -116,6 +117,9 @@ function buildDays(spot: Spot, marine: OMResponse | undefined, wind: OMResponse 
       date,
       waveHeight,
       wavePeriod,
+      effectiveWaveHeight: effectiveWaveHeight(waveHeight, wavePeriod),
+      wavePower: computeWavePower(waveHeight, wavePeriod),
+      engagedSurf: isEngagedSurf(waveHeight, wavePeriod, "intermediate"),
       waveDir,
       windSpeed,
       windDir,
@@ -135,6 +139,7 @@ function emptyForecast(spot: Spot): SpotForecast {
     spot,
     days: Array.from({ length: 7 }, () => ({
       date: "", waveHeight: null, wavePeriod: null, waveDir: null,
+      effectiveWaveHeight: null, wavePower: null, engagedSurf: false,
       windSpeed: null, windDir: null, windGusts: null,
       sunrise: null, sunset: null, score: 0,
       scoresByLevel: { beginner: 0, intermediate: 0, advanced: 0 },

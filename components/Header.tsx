@@ -58,6 +58,7 @@ export function Header() {
             {/* Desktop nav */}
             <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
               <Link href="/#spots" className="transition hover:text-sand-200">Spots</Link>
+              <Link href="/bouees" className="transition hover:text-sand-200">Bouées</Link>
               <Link href="/spots" className="transition hover:text-sand-200">Index</Link>
               <Link href="/#a-propos" className="transition hover:text-sand-200">À propos</Link>
             </nav>
@@ -121,6 +122,7 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-4 text-base">
           <MobileLink href="/#spots" onClick={onClose}>🏄 Tous les spots</MobileLink>
+          <MobileLink href="/bouees" onClick={onClose}>🌊 Bouées live</MobileLink>
           <MobileLink href="/spots" onClick={onClose}>🗺️ Index des spots</MobileLink>
           <MobileLink href="/#a-propos" onClick={onClose}>ℹ️ À propos du score</MobileLink>
           <MobileLink href="/mentions-legales" onClick={onClose}>Mentions légales</MobileLink>

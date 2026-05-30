@@ -7,7 +7,7 @@ import { ADSENSE_SLOT_SPOT_DETAIL } from "@/lib/adsense";
 import { SCORE_COLORS, scoreLabel, scoreTone, computeScore } from "@/lib/score";
 import { degToCardinal, fmt, dayLongLabel } from "@/lib/utils";
 import { HourGrid } from "./HourGrid";
-import { Waves, Wind, Compass, Sunrise } from "lucide-react";
+import { Waves, Wind, Compass, Sunrise, Zap } from "lucide-react";
 import { AdSlot } from "./AdSlot";
 import { useLocale } from "@/lib/useLocale";
 import { t } from "@/lib/i18n";
@@ -71,7 +71,7 @@ export function SpotDetailClient({ spot }: Props) {
         {forecast.days.map((day, i) => {
           // Prefer server-precomputed scoresByLevel; else recompute from raw values.
           const ds = day.scoresByLevel?.[level]
-            ?? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, spot.offshore, level);
+            ?? computeScore(day.waveHeight, day.wavePeriod, day.windSpeed, day.windDir, spot.offshore, level, { worldClass: spot.worldClass });
           const t = scoreTone(ds);
           return (
             <button
@@ -108,10 +108,23 @@ export function SpotDetailClient({ spot }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Tile icon={<Waves className="h-3.5 w-3.5" />} label={t(locale, "cardWave")} value={`${fmt(forecast.days[dayIdx].waveHeight)} m`} sub={degToCardinal(forecast.days[dayIdx].waveDir)} />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <Tile
+          icon={<Waves className="h-3.5 w-3.5" />}
+          label={t(locale, "cardWave")}
+          value={`${fmt(forecast.days[dayIdx].waveHeight)} m`}
+          sub={forecast.days[dayIdx].effectiveWaveHeight != null && forecast.days[dayIdx].effectiveWaveHeight! > (forecast.days[dayIdx].waveHeight ?? 0) + 0.1
+            ? `sets ~${fmt(forecast.days[dayIdx].effectiveWaveHeight)} m`
+            : degToCardinal(forecast.days[dayIdx].waveDir)}
+        />
         <Tile icon={<Compass className="h-3.5 w-3.5" />} label={t(locale, "cardPeriod")} value={`${fmt(forecast.days[dayIdx].wavePeriod, 0)} s`} />
         <Tile icon={<Wind className="h-3.5 w-3.5" />} label={t(locale, "cardWind")} value={`${fmt(forecast.days[dayIdx].windSpeed, 0)} km/h`} sub={`${t(locale, "tileGust")} ${fmt(forecast.days[dayIdx].windGusts, 0)}`} />
+        <Tile
+          icon={<Zap className="h-3.5 w-3.5" />}
+          label="Puissance"
+          value={forecast.days[dayIdx].wavePower != null ? `${fmt(forecast.days[dayIdx].wavePower, 1)} kW/m` : "—"}
+          sub={forecast.days[dayIdx].engagedSurf ? "surf engagé" : undefined}
+        />
         <Tile icon={<Sunrise className="h-3.5 w-3.5" />} label="☀" value={`${formatTime(forecast.days[dayIdx].sunrise)} → ${formatTime(forecast.days[dayIdx].sunset)}`} />
       </div>
 
