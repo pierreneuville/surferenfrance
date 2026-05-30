@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Bricolage_Grotesque, Caveat } from "next/font/google";
 import "./globals.css";
 import { AdSenseScript } from "@/components/AdSenseScript";
+import { ADSENSE_PUBLISHER_ID } from "@/lib/adsense";
 import { AnalyticsScripts } from "@/components/AnalyticsScripts";
 import { BackToTop } from "@/components/BackToTop";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -159,6 +160,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://plausible.io" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        {/* AdSense site-ownership verification — works with the async script
+            below AND lets Google verify ownership even if a tracker blocks pagead2. */}
+        {ADSENSE_PUBLISHER_ID && (
+          <meta name="google-adsense-account" content={`ca-${ADSENSE_PUBLISHER_ID}`} />
+        )}
       </head>
       <body className="font-sans flex min-h-screen flex-col">
         {/* Google Tag Manager (noscript) */}
