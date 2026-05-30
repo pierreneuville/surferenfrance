@@ -85,3 +85,18 @@ html { scroll-behavior: smooth; }
 
 /* Hide arrows in date input on iOS */
 input::-webkit-date-and-time-value { text-align: left; }
+
+/* Heart pop when toggling favorite */
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.4); }
+  65%  { transform: scale(0.92); }
+  100% { transform: scale(1.1); }
+}
+
+/* Score gauge ease-in on mount */
+@keyframes score-rise {
+  0%   { stroke-dashoffset: var(--gauge-circ, 200); opacity: 0.6; }
+  100% { stroke-dashoffset: var(--gauge-offset, 100); opacity: 1; }
+}
+.score-anim { animation: score-rise 700ms cubic-bezier(.22,1,.36,1) both; }

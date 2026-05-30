@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
 import { useLocale } from "@/lib/useLocale";
 import { t } from "@/lib/i18n";
+import { getEngagement, subscribeEngagement } from "@/lib/engagement";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -11,12 +12,14 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const STORAGE_KEY = "yosurf-install-prompt-v1";
-const DELAY_MS = 30_000; // appear after 30s of engagement
+const DELAY_MS = 30_000;          // 30s engagement delay
+const MIN_SPOT_OPENS = 3;         // OR after exploring 3 distinct spots — proves real interest
 
 /**
- * PWA install prompt — appears subtly after 30 seconds for engaged visitors.
- * Once dismissed, never bothers again. Boosts retention: an installed app
- * is opened ~3× more than a bookmarked website.
+ * PWA install prompt — appears either after 30s of engagement OR after the user opened
+ * 3 distinct spots, whichever comes first. Engagement-based triggers convert better than
+ * pure time-based ones because they catch the "moment of intent".
+ * Once dismissed, never bothers again.
  */
 export function InstallPrompt() {
   const { locale } = useLocale();
@@ -31,8 +34,17 @@ export function InstallPrompt() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
-      const t = setTimeout(() => setVisible(true), DELAY_MS);
-      return () => clearTimeout(t);
+      // Time-based trigger
+      const timer = setTimeout(() => setVisible(true), DELAY_MS);
+      // Engagement-based trigger: surface as soon as 3 spots were explored
+      const checkExploration = () => {
+        if (getEngagement().exploredSlugs.length >= MIN_SPOT_OPENS) {
+          setVisible(true);
+        }
+      };
+      checkExploration();
+      const unsub = subscribeEngagement(checkExploration);
+      return () => { clearTimeout(timer); unsub(); };
     };
     window.addEventListener("beforeinstallprompt", handler);
 

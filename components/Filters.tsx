@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, MapPin, Search, SlidersHorizontal, Target, X } from "lucide-react";
 import type { Level } from "@/lib/types";
 import { REGIONS, REGION_EMOJI } from "@/lib/spots";
@@ -55,6 +55,14 @@ export function Filters(props: FiltersProps) {
   // Mobile FilterSheet state
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  // Allow the mobile bottom bar (or any other component) to open the filter sheet
+  // via a decoupled custom event — avoids prop-drilling state up to HomeContent.
+  useEffect(() => {
+    const handler = () => setSheetOpen(true);
+    window.addEventListener("yosurf:open-filters", handler);
+    return () => window.removeEventListener("yosurf:open-filters", handler);
+  }, []);
 
   // Count "active" non-default filters to badge the Filtrer button
   const activeCount =
