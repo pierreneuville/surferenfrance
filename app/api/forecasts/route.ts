@@ -23,16 +23,35 @@ function toArray<T>(x: T | T[]): T[] {
   return Array.isArray(x) ? x : [x];
 }
 
-async function fetchChunk(chunk: Spot[]): Promise<Array<{ marine: OMResponse | undefined; wind: OMResponse | undefined }>> {
-  const lats = chunk.map((s) => s.lat).join(",");
-  const lons = chunk.map((s) => s.lon).join(",");
-  const tz = "Europe%2FParis";
+/** Counts how many entries in a marine bulk response have today's wave_height_max. */
+function marineNullRatio(marines: OMResponse[]): number {
+  if (!marines.length) return 1;
+  const nulls = marines.filter((m) => m?.daily?.wave_height_max?.[0] == null).length;
+  return nulls / marines.length;
+}
 
-  const marineUrl =
+async function fetchMarine(lats: string, lons: string, tz: string): Promise<OMResponse[]> {
+  const url =
     `${MARINE_BASE}?latitude=${lats}&longitude=${lons}` +
     `&hourly=wave_height,wave_period,wave_direction,sea_level_height_msl` +
     `&daily=wave_height_max,wave_period_max,wave_direction_dominant` +
     `&timezone=${tz}&forecast_days=7`;
+  // No `next: { revalidate }` here — we want to control caching ourselves at the
+  // route level after we've validated the data is healthy. Keep the data fresh
+  // by relying on the route's `revalidate` + Cache-Control header below.
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) return [];
+  const raw = await res.json();
+  return raw ? toArray<OMResponse>(raw) : [];
+}
+
+async function fetchChunk(chunk: Spot[]): Promise<{
+  results: Array<{ marine: OMResponse | undefined; wind: OMResponse | undefined }>;
+  marineHealthy: boolean;
+}> {
+  const lats = chunk.map((s) => s.lat).join(",");
+  const lons = chunk.map((s) => s.lon).join(",");
+  const tz = "Europe%2FParis";
 
   const windUrl =
     `${FORECAST_BASE}?latitude=${lats}&longitude=${lons}` +
@@ -40,15 +59,24 @@ async function fetchChunk(chunk: Spot[]): Promise<Array<{ marine: OMResponse | u
     `&daily=wind_speed_10m_max,wind_direction_10m_dominant,wind_gusts_10m_max,sunrise,sunset` +
     `&timezone=${tz}&forecast_days=7`;
 
-  const [marineRaw, windRaw] = await Promise.all([
-    fetch(marineUrl, { next: { revalidate: 1800 } }).then((r) => (r.ok ? r.json() : null)),
-    fetch(windUrl, { next: { revalidate: 1800 } }).then((r) => (r.ok ? r.json() : null)),
-  ]);
+  // 1st marine attempt
+  let marines = await fetchMarine(lats, lons, tz);
+  let nullRatio = marineNullRatio(marines);
+  // If > 30% nulls, retry once after short backoff — Open-Meteo occasionally
+  // returns a partial/empty payload that gets cached for 30min if we don't catch it.
+  if (nullRatio > 0.3) {
+    await new Promise((r) => setTimeout(r, 250));
+    const retry = await fetchMarine(lats, lons, tz);
+    if (marineNullRatio(retry) < nullRatio) marines = retry;
+    nullRatio = marineNullRatio(marines);
+  }
+  const marineHealthy = nullRatio < 0.3;
 
-  const marines = marineRaw ? toArray<OMResponse>(marineRaw) : [];
+  const windRaw = await fetch(windUrl, { next: { revalidate: 1800 } }).then((r) => (r.ok ? r.json() : null));
   const winds = windRaw ? toArray<OMResponse>(windRaw) : [];
 
-  return chunk.map((_, i) => ({ marine: marines[i], wind: winds[i] }));
+  const results = chunk.map((_, i) => ({ marine: marines[i], wind: winds[i] }));
+  return { results, marineHealthy };
 }
 
 function num(x: unknown): number | null {
@@ -172,7 +200,7 @@ export async function GET() {
     chunks.push(SPOTS.slice(i, i + CHUNK_SIZE));
   }
 
-  let chunkResults: Array<Array<{ marine: OMResponse | undefined; wind: OMResponse | undefined }>>;
+  let chunkResults: Array<{ results: Array<{ marine: OMResponse | undefined; wind: OMResponse | undefined }>; marineHealthy: boolean }>;
   try {
     chunkResults = await Promise.all(chunks.map(fetchChunk));
   } catch (e) {
@@ -182,10 +210,14 @@ export async function GET() {
     );
   }
 
+  // Track overall data health so we can shorten the cache TTL when too much is null.
+  const unhealthyChunks = chunkResults.filter((c) => !c.marineHealthy).length;
+  const overallHealthy = unhealthyChunks / chunkResults.length < 0.2;
+
   const forecasts: SpotForecast[] = [];
   chunks.forEach((chunk, ci) => {
     chunk.forEach((spot, i) => {
-      const { marine, wind } = chunkResults[ci][i] ?? {};
+      const { marine, wind } = chunkResults[ci].results[i] ?? {};
       if (!marine && !wind) {
         forecasts.push(emptyForecast(spot));
         return;
@@ -202,10 +234,17 @@ export async function GET() {
     });
   });
 
+  // Short-cache unhealthy responses (60s) so a transient upstream glitch doesn't
+  // poison the CDN for 30 minutes. Healthy → full 30min cache.
+  const cacheControl = overallHealthy
+    ? "public, s-maxage=1800, stale-while-revalidate=3600"
+    : "public, s-maxage=60, stale-while-revalidate=120";
+
   return NextResponse.json(forecasts, {
     headers: {
-      "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600",
-      "CDN-Cache-Control": "public, s-maxage=1800",
+      "Cache-Control": cacheControl,
+      "CDN-Cache-Control": cacheControl,
+      "X-Data-Health": overallHealthy ? "ok" : `degraded-${unhealthyChunks}/${chunkResults.length}`,
     },
   });
 }
