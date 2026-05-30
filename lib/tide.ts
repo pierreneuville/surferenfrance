@@ -110,8 +110,8 @@ export function tideRangeForDay(heights: (number | null)[], startHour: number): 
 /** Friendly French label for a tide state. */
 export function tideStateLabel(state: TideState): string {
   switch (state) {
-    case "rising": return "marée montante";
-    case "falling": return "marée descendante";
+    case "rising": return "marée monte ↑";
+    case "falling": return "marée descend ↓";
     case "high": return "marée haute";
     case "low": return "marée basse";
     case "mid": return "mi-marée";
@@ -120,12 +120,12 @@ export function tideStateLabel(state: TideState): string {
 
 export function tideOptimalLabel(opt: TideOptimal): string {
   switch (opt) {
-    case "rising": return "marée montante";
-    case "falling": return "marée descendante";
+    case "rising": return "marée montante ↑";
+    case "falling": return "marée descendante ↓";
     case "high": return "marée haute";
     case "low": return "marée basse";
-    case "mid-high": return "mi-marée montante";
-    case "mid-low": return "mi-marée descendante";
+    case "mid-high": return "mi-marée montante ↗";
+    case "mid-low": return "mi-marée descendante ↘";
     case "mid": return "mi-marée";
     case "any": return "toutes marées";
   }

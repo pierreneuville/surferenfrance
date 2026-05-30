@@ -1,20 +1,20 @@
 import { Compass, MapPin, Sparkles } from "lucide-react";
 
 const PUNCHLINES = [
-  "Hmm. La mer est calme par ici.",
-  "Aucun spot sous ces critères.",
-  "Personne ne surfe ce coin aujourd'hui.",
-  "Tu cherches une vague invisible ?",
-  "Le banc de sable a dû bouger.",
-  "Élargis ta recherche, la vague est ailleurs.",
+  "Ça plate par ici.",
+  "Personne n'envoie aujourd'hui.",
+  "La houle dort, à toi de la réveiller ailleurs.",
+  "Pas de vague dans ce coin — encore.",
+  "Le banc s'est fait la malle.",
+  "Élargis le scan, ça envoie peut-être plus loin.",
 ];
 
 const SUGGESTIONS = [
-  "Essaie une autre région",
-  "Change de jour",
-  "Désactive le filtre proximité",
-  "Bascule sur un autre pays",
-  "Vérifie ton niveau",
+  "essaie une autre région ou un autre jour",
+  "change ton niveau pour ouvrir plus de spots",
+  "coupe le filtre 'près de moi'",
+  "regarde demain, ça change vite",
+  "switch de pays — l'Espagne marche peut-être",
 ];
 
 export function EmptyState({ message }: { message?: string }) {

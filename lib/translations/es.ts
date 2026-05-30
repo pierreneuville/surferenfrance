@@ -81,7 +81,7 @@ export const es: Translations = {
   weekTitleB: "en el agua",
   weekSessionsCount: "top {n} sesiones por venir",
 
-  modalBestWindowTitle: "Mejor ventana del día",
+  modalBestWindowTitle: "Sal al agua a estas horas",
   modalScoreAverage: "puntuación media {n}",
   modalHourly: "Hora a hora",
   modalHourlyHint: "color = puntuación · gris = noche",
@@ -237,6 +237,9 @@ export const es: Translations = {
   cardSW: "Suroeste",
   cardW: "Oeste",
   cardNW: "Noroeste",
+
+  // My spots
+  mySpotsTitle: "Mis spots",
 
   // Buoys
   buoysPageBreadcrumb: "← Volver al mapa de olas",

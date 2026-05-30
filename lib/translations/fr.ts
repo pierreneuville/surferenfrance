@@ -88,7 +88,7 @@ export const fr = {
   weekSessionsCount: "top {n} sessions à venir",
 
   // Modal
-  modalBestWindowTitle: "Meilleur créneau du jour",
+  modalBestWindowTitle: "Vas-y à ces heures",
   modalScoreAverage: "score moyen {n}",
   modalHourly: "Heure par heure",
   modalHourlyHint: "couleur = score · gris = nuit",
@@ -119,15 +119,15 @@ export const fr = {
   stateNoResults: "Aucun spot ne correspond à tes filtres.",
 
   // Onboarding
-  onboardingWelcome: "bienvenue !",
-  onboardingTitleA: "Quels spots",
-  onboardingTitleB: "tu surfes ?",
-  onboardingDescription: "Ajoute tes spots favoris pour les retrouver instantanément à chaque visite.",
-  onboardingGeoFound: "On t'a trouvé près de chez toi",
-  onboardingAddCta: "Ajouter {n} favori{s} →",
-  onboardingPickHint: "Sélectionne au moins 1 spot",
-  onboardingLater: "Plus tard",
-  onboardingNoAccount: "Aucun compte, aucune donnée envoyée. Les favoris restent sur ton appareil.",
+  onboardingWelcome: "yo, bienvenue 🤙",
+  onboardingTitleA: "Tes spots,",
+  onboardingTitleB: "à portée de main.",
+  onboardingDescription: "Pick tes spots préférés une fois — on les remettra direct en haut à chaque session.",
+  onboardingGeoFound: "On t'a chopé par ici",
+  onboardingAddCta: "C'est parti, je garde {n} spot{s} →",
+  onboardingPickHint: "Choisis au moins 1 spot",
+  onboardingLater: "Pas maintenant",
+  onboardingNoAccount: "Zéro compte, zéro tracking — tes favoris restent chez toi.",
 
   // Cookie
   cookieTextLong: "On utilise des cookies pour mesurer l'audience et afficher de la pub.",
@@ -266,6 +266,9 @@ export const fr = {
   cardSW: "Sud-Ouest",
   cardW: "Ouest",
   cardNW: "Nord-Ouest",
+
+  // My spots
+  mySpotsTitle: "Mes spots",
 
   // Buoys
   buoysPageBreadcrumb: "← Retour à la carte des vagues",

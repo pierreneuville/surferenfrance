@@ -142,11 +142,12 @@ function round(value: number, digits: number) {
 }
 
 export function scoreLabel(score: number): string {
-  if (score >= 80) return "Excellent";
-  if (score >= 60) return "Bien";
-  if (score >= 40) return "Moyen";
-  if (score >= 20) return "Faible";
-  return "Plat";
+  // Surfer-tone labels — more action-oriented than abstract grading.
+  if (score >= 80) return "Magique";   // session de rêve
+  if (score >= 60) return "Joue-la";   // ça vaut le déplacement
+  if (score >= 40) return "Possible";  // surfable si t'es à proximité
+  if (score >= 20) return "Mou";       // technique pour faire chauffer la combi
+  return "Plat";                       // pas de vague
 }
 
 export function scoreTone(score: number): "excellent" | "good" | "medium" | "poor" {
